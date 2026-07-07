@@ -45,7 +45,7 @@ const ACCENT_BY_TYPE: Record<NotificationType, string> = {
   day_broadcast: "bg-neutral-900/10 text-neutral-900",
 };
 
-export function NotificationsPanel() {
+export function NotificationsPanel({ dark = false }: { dark?: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { role } = useRoleStore();
@@ -68,7 +68,12 @@ export function NotificationsPanel() {
       <button
         aria-label="알림"
         onClick={() => setOpen((v) => !v)}
-        className="relative flex h-9 w-9 items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100"
+        className={cn(
+          "relative flex h-9 w-9 items-center justify-center rounded-full transition-colors",
+          dark
+            ? "text-white/60 hover:bg-white/10"
+            : "text-neutral-500 hover:bg-neutral-100"
+        )}
       >
         <Bell className="h-4.5 w-4.5" />
         {unread > 0 && (

@@ -115,10 +115,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     switchRole(order[(order.indexOf(role) + 1) % order.length]);
   };
 
+  // 광고주는 다크 럭셔리 크롬, 소속사·아티스트는 라이트
+  const dark = role === "company";
+
   return (
-    <div className="flex min-h-dvh">
+    <div className={cn("flex min-h-dvh", dark && "adv-dark")}>
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-neutral-200 bg-white md:flex">
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r md:flex",
+          dark
+            ? "border-white/8 bg-[#0c0c0e]"
+            : "border-neutral-200 bg-white"
+        )}
+      >
         <div className="flex h-16 items-center px-6">
           <Link href={account.home} aria-label="xong 홈으로">
             <Wordmark height={22} priority />
@@ -132,16 +142,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-neutral-900 text-white"
-                    : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
+                  "premium-ease flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium",
+                  dark
+                    ? active
+                      ? "bg-brand-500 text-white"
+                      : "text-white/55 hover:bg-white/5 hover:text-white"
+                    : active
+                      ? "bg-neutral-900 text-white"
+                      : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
                 )}
               >
                 <item.icon
                   className={cn(
                     "h-4.5 w-4.5",
-                    active ? "text-brand-400" : "text-neutral-400"
+                    dark
+                      ? active
+                        ? "text-white"
+                        : "text-white/40"
+                      : active
+                        ? "text-brand-400"
+                        : "text-neutral-400"
                   )}
                 />
                 {item.label}
@@ -149,8 +169,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
-        <div className="border-t border-neutral-100 p-4">
-          <div className="rounded-xl bg-neutral-50 p-3">
+        <div
+          className={cn(
+            "border-t p-4",
+            dark ? "border-white/8" : "border-neutral-100"
+          )}
+        >
+          <div
+            className={cn(
+              "rounded-xl p-3",
+              dark ? "bg-white/[0.04]" : "bg-neutral-50"
+            )}
+          >
             <div className="flex items-center gap-3">
               <span
                 className={cn(
@@ -161,22 +191,41 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 {account.initial}
               </span>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">
+                <p
+                  className={cn(
+                    "truncate text-sm font-semibold",
+                    dark && "text-white"
+                  )}
+                >
                   {account.name}
                 </p>
-                <p className="text-xs text-neutral-400">{account.label}</p>
+                <p
+                  className={cn(
+                    "text-xs",
+                    dark ? "text-white/40" : "text-neutral-400"
+                  )}
+                >
+                  {account.label}
+                </p>
               </div>
             </div>
-            <div className="mt-3 grid grid-cols-3 gap-1 rounded-lg bg-white p-1">
+            <div
+              className={cn(
+                "mt-3 grid grid-cols-3 gap-1 rounded-lg p-1",
+                dark ? "bg-black/40" : "bg-white"
+              )}
+            >
               {(Object.keys(ROLE_LABELS) as Role[]).map((r) => (
                 <button
                   key={r}
                   onClick={() => switchRole(r)}
                   className={cn(
-                    "rounded-md py-1.5 text-[11px] font-semibold transition-colors",
+                    "premium-ease rounded-md py-1.5 text-[11px] font-semibold",
                     role === r
-                      ? "bg-neutral-900 text-white"
-                      : "text-neutral-400 hover:text-neutral-900"
+                      ? "bg-brand-500 text-white"
+                      : dark
+                        ? "text-white/45 hover:text-white"
+                        : "text-neutral-400 hover:text-neutral-900"
                   )}
                 >
                   {ROLE_LABELS[r]}
@@ -190,7 +239,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Main column */}
       <div className="flex min-w-0 flex-1 flex-col md:pl-60">
         {/* Top bar */}
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-neutral-200 bg-white/90 px-4 backdrop-blur sm:px-6">
+        <header
+          className={cn(
+            "sticky top-0 z-30 flex h-16 items-center justify-between border-b px-4 backdrop-blur sm:px-6",
+            dark
+              ? "border-white/8 bg-[#0a0a0b]/85"
+              : "border-neutral-200 bg-white/90"
+          )}
+        >
           <Link
             href={account.home}
             className="md:hidden"
@@ -198,14 +254,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           >
             <Wordmark height={20} priority />
           </Link>
-          <div className="hidden items-center gap-2 text-sm text-neutral-400 md:flex">
+          <div
+            className={cn(
+              "hidden items-center gap-2 text-sm md:flex",
+              dark ? "text-white/40" : "text-neutral-400"
+            )}
+          >
             {role === "agency" && (
               <Building2 className="h-3.5 w-3.5 text-neutral-300" />
             )}
             {nav.find((n) => isActive(pathname, n.href))?.label ?? ""}
           </div>
           <div className="flex items-center gap-2">
-            <NotificationsPanel />
+            <NotificationsPanel dark={dark} />
             <button
               onClick={cycleRole}
               aria-label="계정 전환"
@@ -219,7 +280,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 bg-neutral-50 pb-20 md:pb-0">
+        <main
+          className={cn(
+            "flex-1 pb-20 md:pb-0",
+            dark ? "adv-dark" : "bg-neutral-50"
+          )}
+        >
           <SampleHint />
           {children}
         </main>
@@ -229,7 +295,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <SampleLauncher />
 
       {/* Mobile bottom tab bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-neutral-200 bg-white/95 backdrop-blur md:hidden">
+      <nav
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-40 flex border-t backdrop-blur md:hidden",
+          dark
+            ? "border-white/8 bg-[#0a0a0b]/95"
+            : "border-neutral-200 bg-white/95"
+        )}
+      >
         {nav.map((item) => {
           const active = isActive(pathname, item.href);
           return (
@@ -238,7 +311,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               href={item.href}
               className={cn(
                 "flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] font-medium",
-                active ? "text-brand-600" : "text-neutral-400"
+                active
+                  ? "text-brand-500"
+                  : dark
+                    ? "text-white/40"
+                    : "text-neutral-400"
               )}
             >
               <item.icon className="h-5 w-5" />

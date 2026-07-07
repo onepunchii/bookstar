@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { Eyebrow } from "@/components/premium/eyebrow";
+import { Reveal } from "@/components/premium/reveal";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { allRequests, useBookingsStore } from "@/lib/bookings-store";
 import { formatBudget } from "@/lib/types";
 import { ChevronRight } from "lucide-react";
@@ -14,36 +15,44 @@ export default function RequestsPage() {
   const requests = allRequests(extra, overrides);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
-      <h1 className="text-2xl font-bold tracking-tight">섭외 관리</h1>
-      <p className="mt-1 text-sm text-neutral-500">
-        보낸 요청의 진행 상황을 한눈에 확인하세요 · 총 {requests.length}건
-      </p>
+    <div className="adv-dark mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-16">
+      <Reveal>
+        <Eyebrow>My Requests</Eyebrow>
+        <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-4xl">
+          섭외 관리
+        </h1>
+        <p className="mt-2 text-sm text-white/50">
+          보낸 요청의 진행 상황을 한눈에 확인하세요 · 총 {requests.length}건
+        </p>
+      </Reveal>
 
       <div className="mt-8 space-y-3">
-        {requests.map((req) => (
-          <Link key={req.id} href={`/requests/${req.id}`} className="block">
-            <Card className="flex items-center gap-4 p-5 transition-colors hover:border-neutral-900">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-100 to-brand-50 text-lg font-black text-neutral-300">
-                {req.artistName.slice(0, 1)}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold">{req.artistName}</span>
-                  <Badge>{req.eventType}</Badge>
-                  {req.unreadCount ? (
-                    <Badge variant="solid">새 메시지 {req.unreadCount}</Badge>
-                  ) : null}
+        {requests.map((req, i) => (
+          <Reveal key={req.id} delay={(i % 6) * 50}>
+            <Link href={`/requests/${req.id}`} className="group block">
+              <div className="adv-card adv-card-hover flex items-center gap-4 rounded-2xl p-5">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/[0.06] text-lg font-black text-white/40">
+                  {req.artistName.slice(0, 1)}
                 </div>
-                <p className="mt-1 truncate text-sm text-neutral-500">
-                  {req.date} · {req.location} · 예산{" "}
-                  {formatBudget(req.budget)}
-                </p>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-white">
+                      {req.artistName}
+                    </span>
+                    <Badge>{req.eventType}</Badge>
+                    {req.unreadCount ? (
+                      <Badge variant="solid">새 메시지 {req.unreadCount}</Badge>
+                    ) : null}
+                  </div>
+                  <p className="mt-1 truncate text-sm text-white/50">
+                    {req.date} · {req.location} · 예산 {formatBudget(req.budget)}
+                  </p>
+                </div>
+                <StatusBadge status={req.status} />
+                <ChevronRight className="h-4 w-4 shrink-0 text-white/25" />
               </div>
-              <StatusBadge status={req.status} />
-              <ChevronRight className="h-4 w-4 shrink-0 text-neutral-300" />
-            </Card>
-          </Link>
+            </Link>
+          </Reveal>
         ))}
       </div>
     </div>

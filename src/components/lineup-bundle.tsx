@@ -9,70 +9,124 @@ import { ArrowRight, Package } from "lucide-react";
 interface Props {
   bundle: LineupBundle;
   className?: string;
+  dark?: boolean;
 }
 
-export function LineupBundleCard({ bundle, className }: Props) {
+export function LineupBundleCard({ bundle, className, dark = false }: Props) {
   const artists = bundle.artistIds
     .map((id) => getArtist(id))
     .filter(Boolean) as NonNullable<ReturnType<typeof getArtist>>[];
 
-  return (
-    <Link href={`/artists?bundle=${bundle.id}`} className={cn("group", className)}>
-      <Card className="h-full p-5 transition-colors group-hover:border-neutral-900">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-1.5">
-              <Package className="h-3.5 w-3.5 text-brand-500" />
-              <span className="text-xs font-bold text-brand-600">
-                {artists.length}인 세트
-              </span>
-              {bundle.discountPct && (
-                <Badge variant="solid">-{bundle.discountPct}%</Badge>
-              )}
-            </div>
-            <h3 className="mt-1 text-base font-black">{bundle.title}</h3>
-            <p className="mt-0.5 text-xs text-neutral-500">{bundle.subtitle}</p>
-          </div>
-          <ArrowRight className="h-4 w-4 shrink-0 text-neutral-300 transition-colors group-hover:text-neutral-900" />
-        </div>
-
-        {/* 아티스트 썸네일 스택 */}
-        <div className="mt-4 flex -space-x-2">
-          {artists.map((a) => (
-            <div
-              key={a.id}
-              title={a.name}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-neutral-100 to-brand-50 text-sm font-black text-neutral-400 ring-2 ring-white"
-            >
-              {a.name.slice(0, 1)}
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs text-neutral-600">
-          {artists.map((a, i) => (
-            <span key={a.id} className="flex items-center gap-1.5">
-              {i > 0 && <span className="text-neutral-300">·</span>}
-              <span className="font-semibold">{a.name}</span>
+  const inner = (
+    <>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-1.5">
+            <Package className="h-3.5 w-3.5 text-brand-500" />
+            <span className="text-xs font-bold text-brand-500">
+              {artists.length}인 세트
             </span>
-          ))}
+            {bundle.discountPct && (
+              <Badge variant="solid">-{bundle.discountPct}%</Badge>
+            )}
+          </div>
+          <h3 className={cn("mt-1 text-base font-black", dark && "text-white")}>
+            {bundle.title}
+          </h3>
+          <p className={cn("mt-0.5 text-xs", dark ? "text-white/45" : "text-neutral-500")}>
+            {bundle.subtitle}
+          </p>
         </div>
+        <ArrowRight
+          className={cn(
+            "premium-ease h-4 w-4 shrink-0",
+            dark
+              ? "text-white/30 group-hover:text-white"
+              : "text-neutral-300 group-hover:text-neutral-900"
+          )}
+        />
+      </div>
 
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {bundle.eventTypes.map((t) => (
-            <Badge key={t}>{t}</Badge>
-          ))}
-        </div>
+      {/* 아티스트 썸네일 스택 */}
+      <div className="mt-4 flex -space-x-2">
+        {artists.map((a) => (
+          <div
+            key={a.id}
+            title={a.name}
+            className={cn(
+              "flex h-10 w-10 items-center justify-center rounded-full text-sm font-black",
+              dark
+                ? "bg-white/10 text-white/70 ring-2 ring-[#141416]"
+                : "bg-gradient-to-br from-neutral-100 to-brand-50 text-neutral-400 ring-2 ring-white"
+            )}
+          >
+            {a.name.slice(0, 1)}
+          </div>
+        ))}
+      </div>
 
-        <div className="mt-4 flex items-baseline justify-between border-t border-neutral-100 pt-3">
-          <span className="text-xs text-neutral-400">세트 예산</span>
-          <span className="text-lg font-black">
-            {formatBudget(bundle.totalBudget[0])}
-            <span className="text-sm font-bold text-neutral-400"> ~ </span>
-            {formatBudget(bundle.totalBudget[1])}
+      <div
+        className={cn(
+          "mt-3 flex flex-wrap items-center gap-1.5 text-xs",
+          dark ? "text-white/70" : "text-neutral-600"
+        )}
+      >
+        {artists.map((a, i) => (
+          <span key={a.id} className="flex items-center gap-1.5">
+            {i > 0 && (
+              <span className={dark ? "text-white/25" : "text-neutral-300"}>·</span>
+            )}
+            <span className="font-semibold">{a.name}</span>
           </span>
+        ))}
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {bundle.eventTypes.map((t) => (
+          <span
+            key={t}
+            className={cn(
+              "rounded-full px-2.5 py-0.5 text-xs font-medium",
+              dark ? "bg-white/8 text-white/70" : "bg-neutral-100 text-neutral-600"
+            )}
+          >
+            {t}
+          </span>
+        ))}
+      </div>
+
+      <div
+        className={cn(
+          "mt-4 flex items-baseline justify-between border-t pt-3",
+          dark ? "border-white/8" : "border-neutral-100"
+        )}
+      >
+        <span className={cn("text-xs", dark ? "text-white/40" : "text-neutral-400")}>
+          세트 예산
+        </span>
+        <span className={cn("text-lg font-black", dark && "text-white")}>
+          {formatBudget(bundle.totalBudget[0])}
+          <span className={cn("text-sm font-bold", dark ? "text-white/40" : "text-neutral-400")}>
+            {" "}
+            ~{" "}
+          </span>
+          {formatBudget(bundle.totalBudget[1])}
+        </span>
+      </div>
+    </>
+  );
+
+  return (
+    <Link href={`/artists?bundle=${bundle.id}`} className={cn("group block h-full", className)}>
+      {dark ? (
+        <div className="adv-card adv-card-hover h-full rounded-[1.75rem] p-5">
+          {inner}
         </div>
-      </Card>
+      ) : (
+        <Card className="h-full p-5 transition-colors group-hover:border-neutral-900">
+          {inner}
+        </Card>
+      )}
     </Link>
   );
 }

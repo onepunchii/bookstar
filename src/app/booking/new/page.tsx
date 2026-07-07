@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Eyebrow } from "@/components/premium/eyebrow";
 import { getArtist } from "@/lib/mock-data";
 import { BookingForm } from "./booking-form";
 
@@ -12,12 +13,20 @@ export default async function NewBookingPage({
   if (!artist) notFound();
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-      <h1 className="text-2xl font-bold tracking-tight">섭외 요청</h1>
-      <p className="mt-1 text-sm text-neutral-500">
-        표준 브리프로 작성하면 소속사가 더 빠르게 답변할 수 있어요
-      </p>
-      <BookingForm artist={artist} />
+    <div className="adv-dark min-h-dvh">
+      <div className="mx-auto max-w-2xl px-5 py-12 sm:px-8 sm:py-16">
+        <Eyebrow>Booking Request</Eyebrow>
+        <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-4xl">
+          섭외 요청
+        </h1>
+        <p className="mt-2 text-sm text-white/50">
+          표준 브리프로 작성하면 소속사가 더 빠르게 답변할 수 있어요
+        </p>
+        {/* 폼은 라이트 워킹 시트 (입력은 라이트가 명료) */}
+        <div className="mt-6 rounded-[2rem] bg-white p-5 shadow-2xl shadow-black/40 sm:p-8">
+          <BookingForm artist={artist} />
+        </div>
+      </div>
     </div>
   );
 }

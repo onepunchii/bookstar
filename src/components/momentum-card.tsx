@@ -4,9 +4,13 @@ import { generateMetrics, recentDelta, recentSum } from "@/lib/metrics";
 import { cn } from "@/lib/utils";
 import { ArrowDownRight, ArrowUpRight, TrendingUp } from "lucide-react";
 
-const NEUTRAL_COLOR = "var(--color-neutral-400)";
-
-export function MomentumCard({ artistId }: { artistId: string }) {
+export function MomentumCard({
+  artistId,
+  dark = false,
+}: {
+  artistId: string;
+  dark?: boolean;
+}) {
   const m = generateMetrics(artistId);
   const newsSum = recentSum(m.news, 30);
   const newsDelta = recentDelta(m.news, 7);
@@ -16,18 +20,8 @@ export function MomentumCard({ artistId }: { artistId: string }) {
   const followersDelta = recentDelta(m.followers, 15);
 
   const items = [
-    {
-      label: "최근 30일 기사",
-      value: `${newsSum}건`,
-      delta: newsDelta,
-      series: m.news,
-    },
-    {
-      label: "검색 트렌드",
-      value: `${searchLast}`,
-      delta: searchDelta,
-      series: m.search,
-    },
+    { label: "최근 30일 기사", value: `${newsSum}건`, delta: newsDelta, series: m.news },
+    { label: "검색 트렌드", value: `${searchLast}`, delta: searchDelta, series: m.search },
     {
       label: "팔로워 (만)",
       value: `${followersLast.toLocaleString()}`,
@@ -36,17 +30,30 @@ export function MomentumCard({ artistId }: { artistId: string }) {
     },
   ];
 
+  const dimColor = dark ? "rgba(255,255,255,0.35)" : "var(--color-neutral-400)";
+
+  const Wrap = ({ children }: { children: React.ReactNode }) =>
+    dark ? (
+      <div className="adv-card rounded-[1.75rem] p-6">{children}</div>
+    ) : (
+      <Card className="p-6">{children}</Card>
+    );
+
   return (
-    <Card className="p-6">
+    <Wrap>
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="flex items-center gap-1.5 text-lg font-bold">
+          <h2
+            className={cn(
+              "flex items-center gap-1.5 text-lg font-bold",
+              dark && "text-white"
+            )}
+          >
             <TrendingUp className="h-4 w-4 text-brand-500" />
             화제성 · 팬덤
           </h2>
-          <p className="mt-0.5 text-xs text-neutral-400">
-            지난 30일 · 데모 데이터 (실데이터는 네이버/YouTube 연동 시 자동
-            반영)
+          <p className={cn("mt-0.5 text-xs", dark ? "text-white/40" : "text-neutral-400")}>
+            지난 30일 · 데모 데이터 (실데이터는 네이버/YouTube 연동 시 자동 반영)
           </p>
         </div>
       </div>
@@ -56,23 +63,36 @@ export function MomentumCard({ artistId }: { artistId: string }) {
           const isPositive = item.delta > 0;
           const isNeutral = item.delta === 0;
           const color = isNeutral
-            ? NEUTRAL_COLOR
+            ? dimColor
             : isPositive
               ? "var(--color-brand-500)"
-              : "var(--color-neutral-400)";
+              : dimColor;
           return (
             <div
               key={item.label}
-              className="rounded-xl border border-neutral-100 bg-neutral-50/40 p-4"
+              className={cn(
+                "rounded-xl p-4",
+                dark
+                  ? "bg-white/[0.04] ring-1 ring-white/8"
+                  : "border border-neutral-100 bg-neutral-50/40"
+              )}
             >
-              <p className="text-xs text-neutral-500">{item.label}</p>
+              <p className={cn("text-xs", dark ? "text-white/50" : "text-neutral-500")}>
+                {item.label}
+              </p>
               <div className="mt-1 flex items-baseline gap-2">
-                <p className="text-2xl font-black">{item.value}</p>
+                <p className={cn("text-2xl font-black", dark && "text-white")}>
+                  {item.value}
+                </p>
                 {!isNeutral && (
                   <span
                     className={cn(
                       "flex items-center text-xs font-bold",
-                      isPositive ? "text-brand-600" : "text-neutral-400"
+                      isPositive
+                        ? "text-brand-500"
+                        : dark
+                          ? "text-white/40"
+                          : "text-neutral-400"
                     )}
                   >
                     {isPositive ? (
@@ -97,6 +117,6 @@ export function MomentumCard({ artistId }: { artistId: string }) {
           );
         })}
       </div>
-    </Card>
+    </Wrap>
   );
 }

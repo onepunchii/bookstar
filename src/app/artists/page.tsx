@@ -93,36 +93,36 @@ export default async function ArtistsPage({
   };
 
   return (
-    <div className="mx-auto max-w-6xl bg-white px-5 py-12 sm:px-8 sm:py-16">
+    <div className="adv-dark mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-16">
       <Reveal>
         <Eyebrow>Discover</Eyebrow>
-        <h1 className="display-kr mt-3 text-3xl font-black sm:text-4xl">
+        <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-4xl">
           아티스트 찾기
         </h1>
-        <p className="mt-2 text-sm text-neutral-500 sm:text-base">
+        <p className="mt-2 text-sm text-white/50 sm:text-base">
           {filtered.length}팀이 섭외를 기다리고 있어요 · &lsquo;다음주 가능한
           여자 아이돌&rsquo; 같은 자연어로 검색해보세요
         </p>
       </Reveal>
 
       <Reveal delay={60} className="mt-6">
-        <SLACounter variant="inline" />
+        <SLACounter variant="inline" dark />
       </Reveal>
 
       <Reveal delay={90} className="mt-4">
-        <SearchBar defaultValue={q} />
+        <SearchBar defaultValue={q} dark />
       </Reveal>
 
       {/* AI가 이해한 조건 chip strip */}
       {nl && nl.chips.length > 0 && (
-        <div className="mt-3 flex flex-wrap items-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50/50 px-3 py-2">
-          <span className="flex items-center gap-1 text-xs font-bold text-brand-700">
+        <div className="mt-3 flex flex-wrap items-center gap-1.5 rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-2">
+          <span className="flex items-center gap-1 text-xs font-bold text-brand-300">
             <Sparkles className="h-3 w-3" /> AI가 이해한 조건
           </span>
           {nl.chips.map((chip) => (
             <span
               key={chip}
-              className="rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-neutral-700 ring-1 ring-brand-200"
+              className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-white/85 ring-1 ring-brand-500/30"
             >
               {chip}
             </span>
@@ -135,10 +135,10 @@ export default async function ArtistsPage({
         <Link
           href={buildQuery({ category: undefined })}
           className={cn(
-            "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+            "premium-ease rounded-full px-4 py-1.5 text-sm font-medium",
             !category
-              ? "bg-neutral-900 text-white"
-              : "border border-neutral-200 text-neutral-600 hover:border-neutral-900"
+              ? "bg-white text-neutral-900"
+              : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-white"
           )}
         >
           전체
@@ -148,10 +148,10 @@ export default async function ArtistsPage({
             key={c}
             href={buildQuery({ category: c })}
             className={cn(
-              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+              "premium-ease rounded-full px-4 py-1.5 text-sm font-medium",
               category === c
-                ? "bg-neutral-900 text-white"
-                : "border border-neutral-200 text-neutral-600 hover:border-neutral-900"
+                ? "bg-white text-neutral-900"
+                : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-white"
             )}
           >
             {CATEGORY_LABELS[c]}
@@ -166,10 +166,10 @@ export default async function ArtistsPage({
             key={b.key}
             href={buildQuery({ budget: b.key === "all" ? undefined : b.key })}
             className={cn(
-              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+              "premium-ease rounded-full px-4 py-1.5 text-sm font-medium",
               budgetFilter.key === b.key
                 ? "bg-brand-500 text-white"
-                : "border border-neutral-200 text-neutral-600 hover:border-brand-500 hover:text-brand-600"
+                : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-brand-300 hover:ring-brand-500/30"
             )}
           >
             {b.label}
@@ -178,11 +178,11 @@ export default async function ArtistsPage({
       </div>
 
       {filtered.length === 0 ? (
-        <div className="mt-16 rounded-2xl border border-dashed border-neutral-300 py-20 text-center">
-          <p className="font-semibold text-neutral-700">
+        <div className="mt-16 rounded-2xl border border-dashed border-white/15 py-20 text-center">
+          <p className="font-semibold text-white/80">
             조건에 맞는 아티스트가 없어요
           </p>
-          <p className="mt-1 text-sm text-neutral-500">
+          <p className="mt-1 text-sm text-white/45">
             필터를 조정하거나, AI 캐스팅 추천으로 조건에 맞는 아티스트를
             찾아보세요
           </p>

@@ -18,8 +18,10 @@ const RECENT_RESPONSES = [
 
 export function SLACounter({
   variant = "hero",
+  dark = false,
 }: {
   variant?: "hero" | "inline";
+  dark?: boolean;
 }) {
   const [idx, setIdx] = useState(0);
   const avgHours =
@@ -44,18 +46,42 @@ export function SLACounter({
 
   if (variant === "inline") {
     return (
-      <div className="flex flex-wrap items-center gap-4 rounded-xl bg-neutral-50 px-4 py-3 text-sm">
-        <span className="flex items-center gap-1.5 text-neutral-500">
+      <div
+        className={cn(
+          "flex flex-wrap items-center gap-4 rounded-2xl px-5 py-3.5 text-sm",
+          dark ? "adv-glass" : "bg-neutral-50"
+        )}
+      >
+        <span
+          className={cn(
+            "flex items-center gap-1.5",
+            dark ? "text-white/55" : "text-neutral-500"
+          )}
+        >
           <Clock className="h-3.5 w-3.5 text-brand-500" />
           평균 응답{" "}
-          <span className="font-black text-neutral-900">{avgHours}시간</span>
+          <span className={cn("font-black", dark ? "text-white" : "text-neutral-900")}>
+            {avgHours}시간
+          </span>
         </span>
-        <span className="flex items-center gap-1.5 text-neutral-500">
+        <span
+          className={cn(
+            "flex items-center gap-1.5",
+            dark ? "text-white/55" : "text-neutral-500"
+          )}
+        >
           <TrendingUp className="h-3.5 w-3.5 text-brand-500" />
           응답률{" "}
-          <span className="font-black text-neutral-900">{avgRate}%</span>
+          <span className={cn("font-black", dark ? "text-white" : "text-neutral-900")}>
+            {avgRate}%
+          </span>
         </span>
-        <span className="ml-auto flex items-center gap-1.5 text-xs text-neutral-500">
+        <span
+          className={cn(
+            "ml-auto flex items-center gap-1.5 text-xs",
+            dark ? "text-white/50" : "text-neutral-500"
+          )}
+        >
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-500" />

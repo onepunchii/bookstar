@@ -3,6 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { getRatingSummary } from "@/lib/mock-data";
 import { allReviewsFor, useReviewsStore } from "@/lib/reviews-store";
+import { cn } from "@/lib/utils";
 import { RatingStars } from "./rating-stars";
 
 function formatDate(iso: string) {
@@ -10,7 +11,13 @@ function formatDate(iso: string) {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 }
 
-export function ReviewsSection({ artistId }: { artistId: string }) {
+export function ReviewsSection({
+  artistId,
+  dark = false,
+}: {
+  artistId: string;
+  dark?: boolean;
+}) {
   const extra = useReviewsStore((s) => s.extra);
   const reviews = allReviewsFor(artistId, extra);
   // 유저가 남긴 리뷰가 더 있으면 avg 재계산
@@ -29,8 +36,8 @@ export function ReviewsSection({ artistId }: { artistId: string }) {
   if (reviews.length === 0) {
     return (
       <section>
-        <h2 className="text-lg font-bold">리뷰</h2>
-        <p className="mt-2 text-sm text-neutral-400">
+        <h2 className={cn("text-lg font-bold", dark && "text-white")}>리뷰</h2>
+        <p className={cn("mt-2 text-sm", dark ? "text-white/40" : "text-neutral-400")}>
           아직 등록된 리뷰가 없어요. 첫 섭외 후 광고주가 남기는 리뷰가 여기에
           쌓여요.
         </p>
@@ -41,32 +48,49 @@ export function ReviewsSection({ artistId }: { artistId: string }) {
   return (
     <section>
       <div className="flex items-baseline justify-between">
-        <h2 className="text-lg font-bold">리뷰</h2>
+        <h2 className={cn("text-lg font-bold", dark && "text-white")}>리뷰</h2>
         <div className="flex items-center gap-2">
           <RatingStars value={avg} size="sm" />
-          <span className="text-sm font-bold">{avg.toFixed(1)}</span>
-          <span className="text-xs text-neutral-400">({count}건)</span>
+          <span className={cn("text-sm font-bold", dark && "text-white")}>
+            {avg.toFixed(1)}
+          </span>
+          <span className={cn("text-xs", dark ? "text-white/40" : "text-neutral-400")}>
+            ({count}건)
+          </span>
         </div>
       </div>
       <div className="mt-4 space-y-3">
-        {reviews.map((r) => (
-          <Card key={r.id} className="p-5">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <RatingStars value={r.rating} size="sm" />
-                  <span className="text-sm font-bold">{r.companyName}</span>
-                </div>
-                <p className="mt-0.5 text-xs text-neutral-400">
-                  {r.eventTitle} · {formatDate(r.createdAt)}
-                </p>
+        {reviews.map((r) =>
+          dark ? (
+            <div key={r.id} className="adv-card rounded-2xl p-5">
+              <div className="flex items-center gap-2">
+                <RatingStars value={r.rating} size="sm" />
+                <span className="text-sm font-bold text-white">
+                  {r.companyName}
+                </span>
               </div>
+              <p className="mt-0.5 text-xs text-white/40">
+                {r.eventTitle} · {formatDate(r.createdAt)}
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-white/75">
+                {r.comment}
+              </p>
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-neutral-700">
-              {r.comment}
-            </p>
-          </Card>
-        ))}
+          ) : (
+            <Card key={r.id} className="p-5">
+              <div className="flex items-center gap-2">
+                <RatingStars value={r.rating} size="sm" />
+                <span className="text-sm font-bold">{r.companyName}</span>
+              </div>
+              <p className="mt-0.5 text-xs text-neutral-400">
+                {r.eventTitle} · {formatDate(r.createdAt)}
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-neutral-700">
+                {r.comment}
+              </p>
+            </Card>
+          )
+        )}
       </div>
     </section>
   );

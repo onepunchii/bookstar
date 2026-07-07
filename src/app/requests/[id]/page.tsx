@@ -26,20 +26,23 @@ export default function RequestDetailPage({
   const thread = [...getThread(id), ...(threads[id] ?? [])];
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
-      <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-2xl font-bold tracking-tight">
-          {request.artistName}
-        </h1>
-        <Badge>{request.eventType}</Badge>
-        <StatusBadge status={request.status} />
-      </div>
-      <p className="mt-1 text-sm text-neutral-500">
-        {request.date} · {request.location} · 제안 예산{" "}
-        {formatBudget(request.budget)}
-      </p>
+    <div className="adv-dark min-h-dvh">
+      <div className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-16">
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="display-kr text-3xl font-black text-white">
+            {request.artistName}
+          </h1>
+          <Badge>{request.eventType}</Badge>
+          <StatusBadge status={request.status} />
+        </div>
+        <p className="mt-2 text-sm text-white/50">
+          {request.date} · {request.location} · 제안 예산{" "}
+          {formatBudget(request.budget)}
+        </p>
 
-      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* 채팅·요약은 라이트 워킹 시트 */}
+        <div className="mt-8 rounded-[2rem] bg-white p-5 shadow-2xl shadow-black/40 sm:p-7">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Thread */}
         <div className="lg:col-span-2">
           <Card className="flex h-[560px] flex-col">
@@ -162,6 +165,8 @@ export default function RequestDetailPage({
               )}
             </ol>
           </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>
