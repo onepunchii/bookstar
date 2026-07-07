@@ -71,17 +71,17 @@ export function PremiumArtistCard({
         </div>
 
         {/* 정보 바 */}
-        <div className="flex items-center justify-between px-5 py-4">
-          <div>
-            <p className="eyebrow text-white/35">Followers</p>
+        <div className="flex items-center justify-between gap-2 px-4 py-3.5 sm:px-5 sm:py-4">
+          <div className="min-w-0">
+            <p className="eyebrow text-white/35">Follower</p>
             <p className="mt-0.5 text-sm font-bold text-white/90">
               {formatFollowers(artist.followers)}
             </p>
           </div>
-          <div className="h-8 w-px bg-white/10" />
-          <div className="text-right">
-            <p className="eyebrow text-white/35">예상 섭외가</p>
-            <p className="mt-0.5 text-sm font-bold text-white/90">
+          <div className="h-8 w-px shrink-0 bg-white/10" />
+          <div className="min-w-0 text-right">
+            <p className="eyebrow text-white/35">섭외가</p>
+            <p className="mt-0.5 whitespace-nowrap text-sm font-bold text-white/90">
               {formatBudget(artist.budgetRange[0])}~
             </p>
           </div>

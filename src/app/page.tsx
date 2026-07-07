@@ -4,8 +4,6 @@ import { Eyebrow } from "@/components/premium/eyebrow";
 import { PremiumArtistCard } from "@/components/premium/premium-artist-card";
 import { PremiumCTA } from "@/components/premium/premium-cta";
 import { Reveal } from "@/components/premium/reveal";
-import { SLACounter } from "@/components/sla-counter";
-import { StatusBadge } from "@/components/status-badge";
 import {
   ARTISTS,
   BOOKING_REQUESTS,
@@ -17,10 +15,11 @@ import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
 import {
   ArrowUpRight,
   CalendarCheck,
+  Clock,
   MessageSquare,
   Search,
   Sparkles,
-  Zap,
+  TrendingUp,
 } from "lucide-react";
 
 export default function HomePage() {
@@ -49,304 +48,281 @@ export default function HomePage() {
   }))
     .sort((x, y) => y.days - x.days)
     .slice(0, 4);
+  const avgHours =
+    Math.round(
+      (ARTISTS.reduce((s, a) => s + a.responseHours, 0) / ARTISTS.length) * 10
+    ) / 10;
+  const avgRate = Math.round(
+    ARTISTS.reduce((s, a) => s + a.responseRate, 0) / ARTISTS.length
+  );
 
   return (
-    <div className="adv-dark">
-      {/* ── HERO ─────────────────────────────── */}
-      <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="adv-orb float-orb pointer-events-none absolute -right-32 -top-24 h-[30rem] w-[30rem] rounded-full blur-2xl"
-        />
-        <div
-          aria-hidden
-          className="adv-orb-dim pointer-events-none absolute -left-24 top-40 h-72 w-72 rounded-full blur-2xl"
-        />
-        <div className="relative mx-auto max-w-6xl px-5 pb-10 pt-14 sm:px-8 sm:pb-14 sm:pt-20">
-          <Reveal>
-            <Eyebrow>Booking OS · 광고주 콘솔</Eyebrow>
-            <h1 className="display-kr mt-5 max-w-3xl text-4xl font-black text-white sm:text-[3.4rem]">
-              안녕하세요, 브라이트마케팅님
-              <br />
-              <span className="text-white/35">오늘도 완벽한 캐스팅을.</span>
-            </h1>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-white/55 sm:text-lg">
-              진행 중인 섭외 {inProgress.length}건, 새 메시지 {unread}개.
-              대행사를 거치지 않고 소속사와 직접, 매칭 수수료 0%로 연결됩니다.
-            </p>
+    <div className="adv-dark relative overflow-hidden">
+      {/* ── 오렌지 조명 레이어 (유리 뒤) ─────────── */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div className="glow-orange float-orb absolute -top-10 left-[8%] h-72 w-72 rounded-full blur-2xl sm:h-96 sm:w-96" />
+        <div className="glow-soft absolute right-[4%] top-[38%] h-72 w-72 rounded-full blur-2xl" />
+        <div className="glow-orange absolute bottom-[6%] left-1/2 h-80 w-80 -translate-x-1/2 rounded-full blur-2xl opacity-70" />
+      </div>
+
+      <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10">
+        {/* ── HERO 벤토 ─────────────────────────── */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          {/* 인사 (풀폭) */}
+          <Reveal className="col-span-2">
+            <div className="glass relative overflow-hidden rounded-[1.75rem] p-6 sm:p-9">
+              <Eyebrow>광고주 콘솔</Eyebrow>
+              <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-5xl">
+                안녕하세요,
+                <br className="sm:hidden" /> 브라이트마케팅님
+              </h1>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/80">
+                  진행 중 {inProgress.length}건
+                </span>
+                <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/80">
+                  새 메시지 {unread}
+                </span>
+                <span className="rounded-full bg-brand-500 px-3 py-1.5 text-xs font-bold text-white">
+                  매칭 수수료 0%
+                </span>
+              </div>
+            </div>
           </Reveal>
 
-          {/* 프리미엄 검색 */}
-          <Reveal delay={80} className="mt-9 max-w-2xl">
-            <form action="/artists" className="group relative">
+          {/* 검색 (풀폭) */}
+          <Reveal delay={60} className="col-span-2">
+            <form action="/artists" className="relative">
               <Search className="pointer-events-none absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" />
               <input
                 name="q"
-                placeholder="아티스트, 소속사, 키워드로 검색하세요"
-                className="adv-glass premium-ease h-16 w-full rounded-full pl-14 pr-32 text-base text-white outline-none placeholder:text-white/35 focus:border-brand-500/50 focus:ring-2 focus:ring-brand-500/25"
+                placeholder="아티스트·소속사·키워드 검색"
+                className="glass premium-ease h-15 w-full rounded-full py-4 pl-14 pr-28 text-base text-white outline-none placeholder:text-white/35 focus:border-brand-500/50"
               />
               <button
                 type="submit"
-                className="premium-ease absolute right-2.5 top-1/2 flex h-11 -translate-y-1/2 items-center gap-2 rounded-full bg-brand-500 px-6 text-sm font-semibold text-white hover:bg-brand-600 hover:brand-glow"
+                className="premium-ease absolute right-2 top-1/2 flex h-11 -translate-y-1/2 items-center rounded-full bg-brand-500 px-6 text-sm font-semibold text-white hover:bg-brand-600 hover:brand-glow"
               >
                 검색
               </button>
             </form>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {(Object.keys(CATEGORY_LABELS) as ArtistCategory[]).map((c) => (
-                <Link
-                  key={c}
-                  href={`/artists?category=${c}`}
-                  className="premium-ease rounded-full bg-white/5 px-4 py-2 text-sm font-medium text-white/60 ring-1 ring-white/10 hover:bg-brand-500/15 hover:text-brand-300 hover:ring-brand-500/30"
-                >
-                  {CATEGORY_LABELS[c]}
-                </Link>
-              ))}
-            </div>
           </Reveal>
 
-          {/* SLA 라이브 */}
-          <Reveal delay={140} className="mt-8 max-w-2xl">
-            <SLACounter variant="inline" dark />
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ── FEATURED ─────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24">
-        <Reveal className="flex items-end justify-between">
-          <div>
-            <Eyebrow>Featured</Eyebrow>
-            <h2 className="display-kr mt-3 text-2xl font-black text-white sm:text-3xl">
-              지금 섭외 가능한 아티스트
-            </h2>
-            <p className="mt-2 text-sm text-white/50">
-              응답률과 가능 일정이 검증된 프로필만 큐레이션했어요
-            </p>
-          </div>
-          <Link
-            href="/artists"
-            className="premium-ease hidden items-center gap-1.5 text-sm font-semibold text-white hover:text-brand-400 sm:flex"
-          >
-            전체 보기
-            <ArrowUpRight className="h-4 w-4" />
-          </Link>
-        </Reveal>
-
-        <div className="mt-8 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
-          {featured.map((artist, i) => (
-            <Reveal key={artist.id} delay={i * 70}>
-              <PremiumArtistCard artist={artist} />
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ── 콘솔 위젯 ─────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-5 pb-16 sm:px-8 sm:pb-24">
-        <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
           {/* 섭외 현황 */}
-          <Reveal className="lg:col-span-1">
+          <Reveal delay={110}>
             <Link href="/requests" className="group block h-full">
-              <div className="adv-card adv-card-hover flex h-full flex-col rounded-[1.75rem] p-7">
+              <div className="glass glass-hover flex h-full flex-col rounded-[1.5rem] p-5">
                 <div className="flex items-center justify-between">
-                  <Eyebrow>In Progress</Eyebrow>
+                  <Eyebrow>진행 현황</Eyebrow>
                   <ArrowUpRight className="premium-ease h-4 w-4 text-white/30 group-hover:text-white" />
                 </div>
-                <p className="mt-5 text-5xl font-black tracking-tight text-white">
+                <p className="mt-3 text-4xl font-black text-white">
                   {inProgress.length}
-                  <span className="ml-2 text-base font-semibold text-white/40">
-                    건 진행 중
+                  <span className="ml-1 text-sm font-semibold text-white/40">
+                    건
                   </span>
                 </p>
-                <div className="mt-auto space-y-2.5 pt-6">
-                  {inProgress.slice(0, 3).map((r) => (
-                    <div
-                      key={r.id}
-                      className="flex items-center justify-between text-sm"
-                    >
-                      <span className="truncate font-medium text-white/80">
-                        {r.artistName}
-                      </span>
-                      <StatusBadge status={r.status} />
-                    </div>
-                  ))}
-                </div>
+                <p className="mt-auto pt-3 text-xs text-white/45">
+                  섭외가 협의 중이에요
+                </p>
               </div>
             </Link>
           </Reveal>
 
           {/* 새 메시지 */}
-          <Reveal delay={80} className="lg:col-span-1">
+          <Reveal delay={150}>
             <Link
               href={
                 latestRequest ? `/requests/${latestRequest.id}` : "/requests"
               }
               className="group block h-full"
             >
-              <div className="adv-card adv-card-hover flex h-full flex-col rounded-[1.75rem] p-7">
+              <div className="glass glass-hover flex h-full flex-col rounded-[1.5rem] p-5">
                 <div className="flex items-center justify-between">
-                  <Eyebrow>Messages</Eyebrow>
+                  <Eyebrow>
+                    <MessageSquare className="h-3 w-3" /> 메시지
+                  </Eyebrow>
                   {unread > 0 && (
-                    <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-brand-500 px-2 text-xs font-bold text-white">
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-white">
                       {unread}
                     </span>
                   )}
                 </div>
                 {latestMessage ? (
-                  <>
-                    <MessageSquare className="mt-5 h-5 w-5 text-brand-500" />
-                    <p className="mt-3 line-clamp-3 text-[15px] font-medium leading-relaxed text-white/85">
-                      &ldquo;{latestMessage.body}&rdquo;
-                    </p>
-                    <p className="mt-auto pt-5 text-xs text-white/40">
-                      {latestMessage.senderName}
-                    </p>
-                  </>
-                ) : (
-                  <p className="mt-5 text-sm text-white/40">
-                    아직 메시지가 없어요
+                  <p className="mt-3 line-clamp-3 text-[13px] font-medium leading-relaxed text-white/80">
+                    &ldquo;{latestMessage.body}&rdquo;
                   </p>
+                ) : (
+                  <p className="mt-3 text-sm text-white/40">메시지 없음</p>
                 )}
               </div>
             </Link>
           </Reveal>
 
-          {/* AI 캐스팅 (오렌지 강조) */}
-          <Reveal delay={160} className="lg:col-span-1">
-            <Link href="/recommend" className="group block h-full">
-              <div className="premium-ease relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-brand-500/30 bg-gradient-to-br from-brand-500/15 to-transparent p-7 group-hover:-translate-y-[3px] group-hover:border-brand-500/50">
+          {/* AI 캐스팅 (풀폭, 오렌지 강조 글래스) */}
+          <Reveal delay={190} className="col-span-2">
+            <Link href="/recommend" className="group block">
+              <div className="glass glass-hover relative flex items-center gap-4 overflow-hidden rounded-[1.5rem] p-5 sm:p-6">
                 <div
                   aria-hidden
-                  className="adv-orb float-orb pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full blur-2xl"
+                  className="glow-orange pointer-events-none absolute -right-6 -top-8 h-40 w-40 rounded-full blur-2xl"
                 />
-                <div className="relative flex items-center justify-between">
-                  <Eyebrow>AI Casting</Eyebrow>
-                  <span className="rounded-full bg-brand-500 px-2 py-0.5 text-[10px] font-bold text-white">
-                    BETA
-                  </span>
-                </div>
-                <Sparkles className="relative mt-5 h-6 w-6 text-brand-400" />
-                <h3 className="display-kr relative mt-3 text-xl font-black text-white">
-                  예산만 넣으면
-                  <br />딱 맞는 캐스팅을
-                </h3>
-                <p className="relative mt-2 text-sm leading-relaxed text-white/55">
-                  예산·카테고리·이미지 태그로 5초 만에 추천받으세요.
-                </p>
-                <span className="relative mt-auto flex items-center gap-1.5 pt-6 text-sm font-bold text-brand-400">
-                  추천 시작하기
-                  <ArrowUpRight className="premium-ease h-4 w-4 group-hover:translate-x-0.5" />
+                <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-500/20 ring-1 ring-brand-500/40">
+                  <Sparkles className="h-5 w-5 text-brand-400" />
                 </span>
+                <div className="relative min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-black text-white sm:text-lg">
+                      AI 캐스팅 추천
+                    </h3>
+                    <span className="rounded-full bg-brand-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                      BETA
+                    </span>
+                  </div>
+                  <p className="mt-0.5 truncate text-sm text-white/55">
+                    예산·이미지 넣으면 5초 만에 딱 맞는 캐스팅
+                  </p>
+                </div>
+                <ArrowUpRight className="premium-ease relative h-5 w-5 shrink-0 text-brand-400 group-hover:translate-x-0.5" />
               </div>
             </Link>
           </Reveal>
-        </div>
-      </section>
 
-      {/* ── 세트 라인업 ───────────────────────── */}
-      <section className="border-t border-white/8">
-        <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24">
+          {/* SLA 라이브 (풀폭) */}
+          <Reveal delay={230} className="col-span-2">
+            <div className="glass flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl px-5 py-3.5 text-sm">
+              <span className="flex items-center gap-1.5 text-white/55">
+                <Clock className="h-3.5 w-3.5 text-brand-500" /> 평균 응답{" "}
+                <span className="font-black text-white">{avgHours}시간</span>
+              </span>
+              <span className="flex items-center gap-1.5 text-white/55">
+                <TrendingUp className="h-3.5 w-3.5 text-brand-500" /> 응답률{" "}
+                <span className="font-black text-white">{avgRate}%</span>
+              </span>
+              <span className="ml-auto flex items-center gap-1.5 text-xs text-white/45">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-500" />
+                </span>
+                지금 소속사 응답 중
+              </span>
+            </div>
+          </Reveal>
+        </div>
+
+        {/* ── FEATURED ─────────────────────────── */}
+        <section className="mt-14 sm:mt-20">
+          <Reveal className="flex items-end justify-between">
+            <div>
+              <Eyebrow>Featured</Eyebrow>
+              <h2 className="display-kr mt-3 text-xl font-black text-white sm:text-3xl">
+                지금 섭외 가능한 아티스트
+              </h2>
+            </div>
+            <Link
+              href="/artists"
+              className="premium-ease flex items-center gap-1.5 text-sm font-semibold text-white hover:text-brand-400"
+            >
+              전체
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
+          </Reveal>
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
+            {featured.map((artist, i) => (
+              <Reveal key={artist.id} delay={i * 60}>
+                <PremiumArtistCard artist={artist} />
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        {/* ── 세트 라인업 ───────────────────────── */}
+        <section className="mt-14 sm:mt-20">
           <Reveal>
             <Eyebrow>Curated Sets</Eyebrow>
-            <h2 className="display-kr mt-3 text-2xl font-black text-white sm:text-3xl">
+            <h2 className="display-kr mt-3 text-xl font-black text-white sm:text-3xl">
               세트로 섭외하면 더 완성도 높게
             </h2>
-            <p className="mt-2 text-sm text-white/50">
-              소속사가 직접 큐레이션한 조합. 세트 할인까지.
-            </p>
           </Reveal>
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 gap-3 sm:gap-6 lg:grid-cols-3">
             {BUNDLES.map((b, i) => (
-              <Reveal key={b.id} delay={i * 70}>
+              <Reveal key={b.id} delay={i * 60}>
                 <LineupBundleCard bundle={b} dark />
               </Reveal>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── 인사이트 2열 ──────────────────────── */}
-      <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24">
-        <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
-          <Reveal>
-            <div className="adv-card h-full rounded-[1.75rem] p-7">
-              <Eyebrow>
-                <Zap className="h-3 w-3" /> Fast Response
-              </Eyebrow>
-              <h3 className="mt-3 text-lg font-black text-white">
-                빠른 응답 아티스트
-              </h3>
-              <div className="mt-5 divide-y divide-white/8">
-                {fastResponders.map((a) => (
-                  <Link
-                    key={a.id}
-                    href={`/artists/${a.id}`}
-                    className="premium-ease flex items-center justify-between py-3 text-white/80 first:pt-0 last:pb-0 hover:text-brand-400"
-                  >
-                    <span className="font-semibold">{a.name}</span>
-                    <span className="text-sm text-white/40">
-                      평균 {a.responseHours}시간
-                    </span>
-                  </Link>
-                ))}
+        {/* ── 인사이트 2열 ──────────────────────── */}
+        <section className="mt-14 sm:mt-20">
+          <div className="grid grid-cols-1 gap-3 sm:gap-6 md:grid-cols-2">
+            <Reveal>
+              <div className="glass h-full rounded-[1.5rem] p-6">
+                <Eyebrow>Fast Response</Eyebrow>
+                <div className="mt-4 divide-y divide-white/8">
+                  {fastResponders.map((a) => (
+                    <Link
+                      key={a.id}
+                      href={`/artists/${a.id}`}
+                      className="premium-ease flex items-center justify-between py-3 text-white/80 first:pt-0 last:pb-0 hover:text-brand-400"
+                    >
+                      <span className="font-semibold">{a.name}</span>
+                      <span className="text-sm text-white/40">
+                        평균 {a.responseHours}시간
+                      </span>
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </div>
-          </Reveal>
-
-          <Reveal delay={80}>
-            <div className="adv-card h-full rounded-[1.75rem] p-7">
-              <Eyebrow>
-                <CalendarCheck className="h-3 w-3" /> This Week
-              </Eyebrow>
-              <h3 className="mt-3 text-lg font-black text-white">
-                이번 주 섭외 가능
-              </h3>
-              <div className="mt-5 divide-y divide-white/8">
-                {availableThisWeek.map(({ artist, days }) => (
-                  <Link
-                    key={artist.id}
-                    href={`/artists/${artist.id}`}
-                    className="premium-ease flex items-center justify-between py-3 text-white/80 first:pt-0 last:pb-0 hover:text-brand-400"
-                  >
-                    <span className="font-semibold">{artist.name}</span>
-                    <span className="text-sm font-bold text-brand-400">
-                      {days}일 가능
-                    </span>
-                  </Link>
-                ))}
+            </Reveal>
+            <Reveal delay={80}>
+              <div className="glass h-full rounded-[1.5rem] p-6">
+                <Eyebrow>
+                  <CalendarCheck className="h-3 w-3" /> This Week
+                </Eyebrow>
+                <div className="mt-4 divide-y divide-white/8">
+                  {availableThisWeek.map(({ artist, days }) => (
+                    <Link
+                      key={artist.id}
+                      href={`/artists/${artist.id}`}
+                      className="premium-ease flex items-center justify-between py-3 text-white/80 first:pt-0 last:pb-0 hover:text-brand-400"
+                    >
+                      <span className="font-semibold">{artist.name}</span>
+                      <span className="text-sm font-bold text-brand-400">
+                        {days}일 가능
+                      </span>
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ── CTA 밴드 ──────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-5 pb-20 sm:px-8 sm:pb-28">
-        <Reveal>
-          <div className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/[0.03] px-8 py-16 text-center sm:px-16 sm:py-24">
-            <div
-              aria-hidden
-              className="adv-orb float-orb pointer-events-none absolute left-1/2 top-0 h-80 w-80 -translate-x-1/2 rounded-full blur-2xl"
-            />
-            <div className="relative">
-              <Eyebrow className="justify-center">수수료 0%</Eyebrow>
-              <h2 className="display-kr mx-auto mt-4 max-w-2xl text-3xl font-black text-white sm:text-4xl">
-                첫 섭외 요청까지{" "}
-                <span className="text-brand-500">5분</span>이면 충분합니다
-              </h2>
-              <p className="mx-auto mt-4 max-w-lg text-white/55">
-                대행사 거품 없이, 검증된 소속사와 직접. 요청은 언제나 무료예요.
-              </p>
-              <div className="mt-9 flex justify-center">
-                <PremiumCTA href="/artists" variant="solid">
-                  아티스트 둘러보기
-                </PremiumCTA>
-              </div>
-            </div>
+            </Reveal>
           </div>
-        </Reveal>
-      </section>
+        </section>
+
+        {/* ── CTA 밴드 ──────────────────────────── */}
+        <section className="mt-14 sm:mt-20">
+          <Reveal>
+            <div className="glass relative overflow-hidden rounded-[2rem] px-6 py-14 text-center sm:px-16 sm:py-20">
+              <div
+                aria-hidden
+                className="glow-orange float-orb pointer-events-none absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full blur-2xl"
+              />
+              <div className="relative">
+                <Eyebrow className="justify-center">수수료 0%</Eyebrow>
+                <h2 className="display-kr mx-auto mt-4 max-w-xl text-2xl font-black text-white sm:text-4xl">
+                  첫 섭외 요청까지{" "}
+                  <span className="text-brand-500">5분</span>이면 충분합니다
+                </h2>
+                <div className="mt-8 flex justify-center">
+                  <PremiumCTA href="/artists" variant="solid">
+                    아티스트 둘러보기
+                  </PremiumCTA>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </section>
+      </div>
     </div>
   );
 }

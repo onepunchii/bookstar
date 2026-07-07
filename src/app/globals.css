@@ -187,3 +187,43 @@ body {
   background: rgba(255, 90, 0, 0.35);
   color: #fff;
 }
+
+/* ── 글래스모피즘 (오렌지 조명이 유리를 통과) ────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(22px) saturate(1.25);
+  -webkit-backdrop-filter: blur(22px) saturate(1.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 20px 50px -28px rgba(0, 0, 0, 0.7);
+}
+.glass-hover {
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-hover:hover {
+  background: rgba(255, 255, 255, 0.075);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 30px 70px -30px rgba(0, 0, 0, 0.8),
+    0 20px 60px -30px rgba(255, 90, 0, 0.3);
+}
+
+/* 오렌지 조명 오브 (유리 뒤 배경) */
+.glow-orange {
+  background: radial-gradient(
+    circle,
+    rgba(255, 90, 0, 0.55) 0%,
+    rgba(255, 90, 0, 0.12) 45%,
+    rgba(255, 90, 0, 0) 72%
+  );
+}
+.glow-soft {
+  background: radial-gradient(
+    circle,
+    rgba(255, 120, 40, 0.35) 0%,
+    rgba(255, 120, 40, 0) 70%
+  );
+}
