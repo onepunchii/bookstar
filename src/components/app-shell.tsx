@@ -5,17 +5,18 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useRoleStore, type Role } from "@/lib/role-store";
 import { cn } from "@/lib/utils";
+import { NotificationsPanel } from "./notifications-panel";
 import { SampleHint } from "./sample-hint";
 import { SampleLauncher } from "./sample-launcher";
 import {
   Banknote,
-  Bell,
   Building2,
   CalendarDays,
   Inbox,
   LayoutGrid,
   Palmtree,
   Search,
+  Sparkles,
   Users,
 } from "lucide-react";
 
@@ -26,6 +27,7 @@ const NAV_BY_ROLE: Record<
   company: [
     { href: "/", label: "홈", icon: LayoutGrid },
     { href: "/artists", label: "아티스트", icon: Search },
+    { href: "/recommend", label: "AI 추천", icon: Sparkles },
     { href: "/requests", label: "섭외 관리", icon: Inbox },
   ],
   agency: [
@@ -86,6 +88,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     useRoleStore.persist.rehydrate();
   }, []);
+
+  // 공개 페이지(/p/, /@, /d/)는 앱 셸을 벗어난 자체 레이아웃 사용
+  if (
+    pathname.startsWith("/p/") ||
+    pathname.startsWith("/@") ||
+    pathname.startsWith("/d/")
+  ) {
+    return <>{children}</>;
+  }
 
   const nav = NAV_BY_ROLE[role];
   const account = ACCOUNT[role];
@@ -194,13 +205,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {nav.find((n) => isActive(pathname, n.href))?.label ?? ""}
           </div>
           <div className="flex items-center gap-2">
-            <button
-              aria-label="알림"
-              className="relative flex h-9 w-9 items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100"
-            >
-              <Bell className="h-4.5 w-4.5" />
-              <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-brand-500" />
-            </button>
+            <NotificationsPanel />
             <button
               onClick={cycleRole}
               aria-label="계정 전환"

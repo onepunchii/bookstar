@@ -3,19 +3,31 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { DAY_SCHEDULES } from "@/lib/mock-data";
+import { WeatherBadge } from "@/components/weather-badge";
+import { selectDaySchedules, useDayStore } from "@/lib/day-store";
+import { useScopedArtistIds } from "@/lib/scope-store";
 import { cn } from "@/lib/utils";
 import {
   Car,
   Check,
   ChevronLeft,
   ChevronRight,
+  Link2,
   MapPin,
   MessageCircle,
   UserRound,
 } from "lucide-react";
 
-const DATES = ["2026-07-07", "2026-07-08", "2026-07-09"];
+const DATES = [
+  "2026-07-07",
+  "2026-07-08",
+  "2026-07-09",
+  "2026-07-18",
+  "2026-07-24",
+  "2026-08-15",
+  "2026-08-22",
+  "2026-09-02",
+];
 
 function formatDate(date: string): string {
   const d = new Date(date);
@@ -26,8 +38,18 @@ function formatDate(date: string): string {
 export function DaySheet() {
   const [dateIdx, setDateIdx] = useState(0);
   const [sent, setSent] = useState<Record<string, boolean>>({});
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const copyShare = (id: string) => {
+    const url = `${window.location.origin}/d/${id}`;
+    navigator.clipboard?.writeText(url).catch(() => {});
+    setCopied(id);
+    setTimeout(() => setCopied((c) => (c === id ? null : c)), 1600);
+  };
   const date = DATES[dateIdx];
-  const schedules = DAY_SCHEDULES.filter((s) => s.date === date);
+  const scopedIds = useScopedArtistIds();
+  const extra = useDayStore((s) => s.extra);
+  const schedules = selectDaySchedules(date, extra, scopedIds);
 
   const sendAll = () =>
     setSent((prev) => ({
@@ -90,28 +112,48 @@ export function DaySheet() {
                     {s.artistName.slice(0, 1)}
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="font-bold">{s.artistName}</span>
                       <Badge>{s.eventType}</Badge>
+                      <WeatherBadge
+                        date={s.date}
+                        location={s.stops[0]?.location}
+                      />
                     </div>
                     <p className="text-sm text-neutral-500">{s.title}</p>
                   </div>
                 </div>
-                {sent[s.id] ? (
-                  <span className="flex items-center gap-1.5 rounded-lg bg-neutral-100 px-3 py-2 text-xs font-semibold text-neutral-500">
-                    <Check className="h-3.5 w-3.5 text-brand-500" /> 전파됨 ·
-                    읽음 2/3
-                  </span>
-                ) : (
+                <div className="flex items-center gap-2">
                   <button
-                    onClick={() =>
-                      setSent((prev) => ({ ...prev, [s.id]: true }))
-                    }
-                    className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-brand-500 hover:text-brand-600"
+                    onClick={() => copyShare(s.id)}
+                    className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
                   >
-                    <MessageCircle className="h-3.5 w-3.5" /> 카톡 전파
+                    {copied === s.id ? (
+                      <>
+                        <Check className="h-3.5 w-3.5 text-brand-500" /> 복사됨
+                      </>
+                    ) : (
+                      <>
+                        <Link2 className="h-3.5 w-3.5" /> 공유 링크
+                      </>
+                    )}
                   </button>
-                )}
+                  {sent[s.id] ? (
+                    <span className="flex items-center gap-1.5 rounded-lg bg-neutral-100 px-3 py-2 text-xs font-semibold text-neutral-500">
+                      <Check className="h-3.5 w-3.5 text-brand-500" /> 전파됨 ·
+                      읽음 2/3
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() =>
+                        setSent((prev) => ({ ...prev, [s.id]: true }))
+                      }
+                      className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-brand-500 hover:text-brand-600"
+                    >
+                      <MessageCircle className="h-3.5 w-3.5" /> 카톡 전파
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* 타임라인 */}

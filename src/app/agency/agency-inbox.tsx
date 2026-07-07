@@ -6,8 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label, Textarea } from "@/components/ui/input";
+import { useDayStore } from "@/lib/day-store";
 import { BOOKING_REQUESTS, SCHEDULES, getArtist } from "@/lib/mock-data";
+import { useNotificationsStore } from "@/lib/notifications-store";
+import { useScopedArtistIds } from "@/lib/scope-store";
 import { holdKey, useScheduleStore } from "@/lib/schedule-store";
+import { getForecast, isRainRisky } from "@/lib/weather";
 import {
   AVAILABILITY_LABELS,
   formatBudget,
@@ -22,6 +26,7 @@ import {
   Check,
   CheckCircle2,
   ClipboardCheck,
+  CloudRain,
   FileScan,
   Link2,
   Loader2,
@@ -98,6 +103,12 @@ export function AgencyInbox() {
   const [linkCopied, setLinkCopied] = useState(false);
 
   const { holds, placeHold } = useScheduleStore();
+  const addFromBooking = useDayStore((s) => s.addFromBooking);
+  const pushNotif = useNotificationsStore((s) => s.push);
+  const scopedIds = useScopedArtistIds();
+  const visibleRequests = scopedIds
+    ? requests.filter((r) => scopedIds.has(r.artistId))
+    : requests;
 
   const runAiIntake = () => {
     setAiState("processing");
@@ -129,6 +140,13 @@ export function AgencyInbox() {
   };
 
   const selected = requests.find((r) => r.id === selectedId);
+  const outdoorEvent =
+    selected && ["축제", "행사"].includes(selected.eventType);
+  const forecast = selected
+    ? getForecast(selected.date, selected.location)
+    : undefined;
+  const rainRisk =
+    selected && outdoorEvent && forecast && isRainRisky(forecast);
   const artist = selected ? getArtist(selected.artistId) : undefined;
   const preset = artist?.quotePreset;
 
@@ -160,6 +178,22 @@ export function AgencyInbox() {
       requestId: selected.id,
       companyName: selected.companyName,
       expiresAt: addDays(TODAY, HOLD_DAYS),
+    });
+    // 데일리 시트 자동 생성 (OS 흐름의 마지막 조각)
+    addFromBooking({
+      artistId: selected.artistId,
+      artistName: selected.artistName,
+      date: selected.date,
+      title: `${selected.eventType} · ${selected.companyName}`,
+      eventType: selected.eventType,
+      location: selected.location,
+    });
+    pushNotif({
+      type: "booking_accepted",
+      role: "agency",
+      title: "데일리 시트 자동 생성",
+      body: `${selected.artistName} · ${selected.date} · 담당 매니저 배정 필요`,
+      link: "/agency/today",
     });
     setHoldPlacedFor(selected.id);
   };
@@ -266,7 +300,7 @@ export function AgencyInbox() {
           )}
         </div>
 
-        {requests.map((req) => (
+        {visibleRequests.map((req) => (
           <button
             key={req.id}
             onClick={() => selectRequest(req.id)}
@@ -353,6 +387,21 @@ export function AgencyInbox() {
                   사업자 인증이 완료되지 않은 주최자예요. 계약 전 신원 확인을
                   권장하며, 에스크로 결제(2차 오픈)를 사용하면 안전하게 진행할
                   수 있어요.
+                </p>
+              </div>
+            )}
+
+            {/* 우천 리스크 (야외 행사 + 강수확률 60%↑) */}
+            {rainRisk && forecast && (
+              <div className="mt-4 flex items-start gap-2 rounded-xl border border-brand-300 bg-brand-50 px-4 py-3 text-sm text-brand-800">
+                <CloudRain className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
+                <p>
+                  <span className="font-bold">
+                    {selected!.date} {selected!.location} 강수확률{" "}
+                    {forecast.rainProb}%
+                  </span>{" "}
+                  · 야외 행사예요. 우천 시 대체 계획을 미리 요청하세요. (
+                  {forecast.tierLabel})
                 </p>
               </div>
             )}

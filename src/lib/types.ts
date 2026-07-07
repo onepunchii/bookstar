@@ -34,6 +34,7 @@ export interface QuotePreset {
 
 export interface Artist {
   id: string;
+  slug: string; // 공개 페이지 URL (`/@슬러그`)
   name: string;
   groupName?: string;
   agencyName: string;
@@ -148,6 +149,17 @@ export interface DocumentItem {
   eventTitle: string;
   artistName: string;
   date: string;
+}
+
+// ── 리뷰 ──
+export interface Review {
+  id: string;
+  artistId: string;
+  companyName: string;
+  eventTitle: string;
+  rating: number; // 1~5
+  comment: string;
+  createdAt: string;
 }
 
 // ── 매니저 ──

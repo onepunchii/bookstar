@@ -1,3 +1,4 @@
+import { ScopeToggle } from "@/components/scope-toggle";
 import { AgencyTabs } from "./agency-tabs";
 
 export default function AgencyLayout({
@@ -7,9 +8,14 @@ export default function AgencyLayout({
 }) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      <div className="mb-1 flex items-center justify-between">
+      <div className="mb-1 flex items-center justify-between gap-3">
         <h1 className="text-2xl font-black tracking-tight">소속사 센터</h1>
-        <span className="text-sm text-neutral-400">스타원엔터테인먼트</span>
+        <div className="flex items-center gap-3">
+          <ScopeToggle />
+          <span className="hidden text-sm text-neutral-400 sm:inline">
+            스타원엔터테인먼트
+          </span>
+        </div>
       </div>
       <p className="mb-5 text-sm text-neutral-500">
         아티스트 프로필, 일정, 섭외 요청을 한 곳에서 관리하세요

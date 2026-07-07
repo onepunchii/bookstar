@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Sparkline } from "@/components/sparkline";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { generateMetrics, recentDelta } from "@/lib/metrics";
 import { ARTISTS, BOOKING_REQUESTS, SCHEDULES } from "@/lib/mock-data";
 import { profileCompleteness } from "@/lib/profile";
 import { AVAILABILITY_LABELS, formatBudget } from "@/lib/types";
@@ -12,6 +14,7 @@ import {
   CalendarDays,
   CircleAlert,
   Clock,
+  Flame,
   Inbox,
   TrendingUp,
 } from "lucide-react";
@@ -37,6 +40,13 @@ export default function AgencyDashboardPage() {
   }))
     .filter((x) => x.score < 100)
     .sort((a, b) => a.score - b.score)
+    .slice(0, 3);
+
+  const trending = ARTISTS.map((a) => {
+    const m = generateMetrics(a.id);
+    return { artist: a, delta: recentDelta(m.news, 7), series: m.news };
+  })
+    .sort((x, y) => y.delta - x.delta)
     .slice(0, 3);
 
   return (
@@ -182,6 +192,48 @@ export default function AgencyDashboardPage() {
         >
           일정 관리로 이동 →
         </Link>
+      </Card>
+
+      {/* 화제성 급증 */}
+      <Card className="p-6">
+        <h2 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
+          <Flame className="h-3.5 w-3.5 text-brand-500" /> 화제성 급증
+        </h2>
+        <p className="mt-1 text-xs text-neutral-400">
+          최근 7일 기사 증감률 Top 3
+        </p>
+        <div className="mt-3 space-y-3">
+          {trending.map(({ artist, delta, series }) => (
+            <Link
+              key={artist.id}
+              href={`/artists/${artist.id}`}
+              className="flex items-center gap-3 text-sm hover:text-brand-600"
+            >
+              <span className="min-w-0 flex-1 truncate font-medium">
+                {artist.name}
+              </span>
+              <Sparkline
+                values={series}
+                width={60}
+                height={20}
+                color={
+                  delta >= 0
+                    ? "var(--color-brand-500)"
+                    : "var(--color-neutral-400)"
+                }
+              />
+              <span
+                className={cn(
+                  "shrink-0 text-xs font-bold",
+                  delta >= 0 ? "text-brand-600" : "text-neutral-400"
+                )}
+              >
+                {delta > 0 && "+"}
+                {delta}%
+              </span>
+            </Link>
+          ))}
+        </div>
       </Card>
 
       {/* 프로필 완성도 */}

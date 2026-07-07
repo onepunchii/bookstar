@@ -4,6 +4,7 @@ import type {
   DaySchedule,
   DocumentItem,
   Manager,
+  Review,
   ScheduleDay,
   Settlement,
   ThreadMessage,
@@ -12,6 +13,7 @@ import type {
 export const ARTISTS: Artist[] = [
   {
     id: "a1",
+    slug: "lisenne",
     name: "리센느",
     agencyName: "웨이크원",
     category: "idol",
@@ -33,6 +35,7 @@ export const ARTISTS: Artist[] = [
   },
   {
     id: "a2",
+    slug: "qwer",
     name: "QWER",
     agencyName: "타마고프로덕션",
     category: "idol",
@@ -49,6 +52,7 @@ export const ARTISTS: Artist[] = [
   },
   {
     id: "a3",
+    slug: "kimseoyeon",
     name: "김서연",
     agencyName: "매니지먼트숲",
     category: "actor",
@@ -70,6 +74,7 @@ export const ARTISTS: Artist[] = [
   },
   {
     id: "a4",
+    slug: "parkdohyun",
     name: "박도현",
     agencyName: "에스팀",
     category: "model",
@@ -86,6 +91,7 @@ export const ARTISTS: Artist[] = [
   },
   {
     id: "a5",
+    slug: "haneul",
     name: "정하늘",
     agencyName: "샌드박스네트워크",
     category: "influencer",
@@ -107,6 +113,7 @@ export const ARTISTS: Artist[] = [
   },
   {
     id: "a6",
+    slug: "leejunho",
     name: "이준호",
     agencyName: "JH컴퍼니",
     category: "mc",
@@ -128,6 +135,7 @@ export const ARTISTS: Artist[] = [
   },
   {
     id: "a7",
+    slug: "mina",
     name: "최민아",
     agencyName: "크리에이티브랩",
     category: "influencer",
@@ -144,6 +152,7 @@ export const ARTISTS: Artist[] = [
   },
   {
     id: "a8",
+    slug: "taeyoon",
     name: "강태윤",
     agencyName: "스포츠원",
     category: "athlete",
@@ -491,6 +500,67 @@ export const DOCUMENTS: DocumentItem[] = [
   },
 ];
 
+// ── 리뷰 ──
+export const REVIEWS: Review[] = [
+  {
+    id: "rv1",
+    artistId: "a1",
+    companyName: "뷰티프리즘",
+    eventTitle: "봄 뷰티 브랜드 캠페인",
+    rating: 5,
+    comment:
+      "현장 매너, 촬영 몰입도 모두 최고. 대기실 요구도 합리적이었고 다음 시즌에도 재섭외 예정입니다.",
+    createdAt: "2026-06-12T00:00:00+09:00",
+  },
+  {
+    id: "rv2",
+    artistId: "a1",
+    companyName: "한강대학교",
+    eventTitle: "대학 축제",
+    rating: 5,
+    comment: "무대 반응 폭발. 팬 응대까지 챙겨주셔서 감사합니다.",
+    createdAt: "2026-05-28T00:00:00+09:00",
+  },
+  {
+    id: "rv3",
+    artistId: "a6",
+    companyName: "코엑스이벤트",
+    eventTitle: "IT 컨퍼런스 진행",
+    rating: 5,
+    comment: "큐시트 사전 리뷰까지 꼼꼼히 해주셔서 라이브가 매끄럽게 진행됐어요.",
+    createdAt: "2026-06-30T00:00:00+09:00",
+  },
+  {
+    id: "rv4",
+    artistId: "a5",
+    companyName: "브라이트마케팅",
+    eventTitle: "가전 브랜드 리뷰 영상",
+    rating: 4,
+    comment: "구성력 좋음. 편집 방향 협의만 조금 더 사전 조율되면 완벽할 듯.",
+    createdAt: "2026-06-22T00:00:00+09:00",
+  },
+  {
+    id: "rv5",
+    artistId: "a2",
+    companyName: "게임하우스",
+    eventTitle: "게임 브랜드 콜라보 행사",
+    rating: 5,
+    comment: "밴드 사운드 자체가 콘텐츠. 팬덤 유입 효과가 큰 섭외였습니다.",
+    createdAt: "2026-06-10T00:00:00+09:00",
+  },
+];
+
+export function getReviewsFor(artistId: string) {
+  return REVIEWS.filter((r) => r.artistId === artistId);
+}
+
+export function getRatingSummary(artistId: string) {
+  const rs = REVIEWS.filter((r) => r.artistId === artistId);
+  if (rs.length === 0) return { avg: 0, count: 0 };
+  const avg = rs.reduce((sum, r) => sum + r.rating, 0) / rs.length;
+  return { avg: Math.round(avg * 10) / 10, count: rs.length };
+}
+
 // ── 매니저 ──
 export const MANAGERS: Manager[] = [
   {
@@ -525,6 +595,10 @@ export const MANAGERS: Manager[] = [
 
 export function getArtist(id: string): Artist | undefined {
   return ARTISTS.find((a) => a.id === id);
+}
+
+export function getArtistBySlug(slug: string): Artist | undefined {
+  return ARTISTS.find((a) => a.slug === slug);
 }
 
 export function getRequest(id: string): BookingRequest | undefined {

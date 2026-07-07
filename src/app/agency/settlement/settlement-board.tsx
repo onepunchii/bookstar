@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { SETTLEMENTS } from "@/lib/mock-data";
+import { useScopedArtistIds } from "@/lib/scope-store";
 import { formatBudget, settlementBreakdown } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { BellRing, Check, FileText } from "lucide-react";
@@ -24,12 +25,17 @@ export function SettlementBoard() {
   const [reminded, setReminded] = useState<Record<string, boolean>>({});
   const [invoiced, setInvoiced] = useState<Record<string, boolean>>({});
 
-  const total = SETTLEMENTS.reduce((sum, s) => sum + s.gross, 0);
-  const pending = SETTLEMENTS.filter((s) => s.status === "pending").reduce(
+  const scopedIds = useScopedArtistIds();
+  const visible = scopedIds
+    ? SETTLEMENTS.filter((s) => scopedIds.has(s.artistId))
+    : SETTLEMENTS;
+
+  const total = visible.reduce((sum, s) => sum + s.gross, 0);
+  const pending = visible.filter((s) => s.status === "pending").reduce(
     (sum, s) => sum + s.gross,
     0
   );
-  const overdue = SETTLEMENTS.filter((s) => s.status === "overdue").reduce(
+  const overdue = visible.filter((s) => s.status === "overdue").reduce(
     (sum, s) => sum + s.gross,
     0
   );
@@ -66,7 +72,7 @@ export function SettlementBoard() {
 
       {/* 정산 목록 */}
       <div className="space-y-3">
-        {SETTLEMENTS.map((s) => {
+        {visible.map((s) => {
           const b = settlementBreakdown(s);
           const hasInvoice = s.taxInvoice || invoiced[s.id];
           return (

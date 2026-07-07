@@ -19,9 +19,9 @@ import {
   ArrowUpRight,
   BadgeCheck,
   CalendarCheck,
-  Megaphone,
   MessageSquare,
   Search,
+  Sparkles,
   Zap,
 } from "lucide-react";
 
@@ -188,24 +188,30 @@ export default function HomePage() {
           </div>
         </Card>
 
-        {/* 공고 올리기 타일 (역경매) */}
-        <Card className="border-neutral-900 bg-neutral-950 p-6 text-white md:col-span-2">
-          <div className="flex items-start justify-between">
-            <div>
-              <h2 className="flex items-center gap-2 text-lg font-bold">
-                <Megaphone className="h-4.5 w-4.5 text-brand-500" /> 섭외 공고
-                올리기
-              </h2>
-              <p className="mt-2 max-w-sm text-sm leading-relaxed text-neutral-400">
-                조건만 올리면 소속사가 직접 지원해요. 원하는 아티스트를 못
-                찾았을 때 가장 빠른 방법입니다.
-              </p>
+        {/* AI 캐스팅 추천 타일 */}
+        <Link href="/recommend" className="group md:col-span-2">
+          <Card className="h-full border-neutral-900 bg-neutral-950 p-6 text-white transition-colors group-hover:bg-neutral-800">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="flex items-center gap-2 text-lg font-bold">
+                  <Sparkles className="h-4 w-4 text-brand-500" /> AI 캐스팅
+                  추천
+                  <span className="ml-1 rounded bg-brand-500 px-1.5 py-0.5 text-[10px] font-bold">
+                    BETA
+                  </span>
+                </h2>
+                <p className="mt-2 max-w-sm text-sm leading-relaxed text-neutral-400">
+                  예산·카테고리·이미지 태그로 매칭도 높은 아티스트를 5초 만에
+                  찾아드려요.
+                </p>
+              </div>
+              <ArrowUpRight className="h-5 w-5 text-neutral-400 transition-colors group-hover:text-white" />
             </div>
-          </div>
-          <button className="mt-5 h-10 rounded-lg bg-brand-500 px-4 text-sm font-semibold transition-colors hover:bg-brand-600">
-            공고 작성하기
-          </button>
-        </Card>
+            <span className="mt-5 inline-flex h-10 items-center gap-1.5 rounded-lg bg-brand-500 px-4 text-sm font-semibold">
+              추천 시작하기 <ArrowRight className="h-3.5 w-3.5" />
+            </span>
+          </Card>
+        </Link>
 
         {/* 빠른 응답 타일 */}
         <Card className="p-6">

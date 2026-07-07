@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { RatingStars } from "@/components/rating-stars";
+import { getRatingSummary } from "@/lib/mock-data";
 import {
   CATEGORY_LABELS,
   formatBudget,
@@ -10,6 +12,7 @@ import {
 import { BadgeCheck, Zap } from "lucide-react";
 
 export function ArtistCard({ artist }: { artist: Artist }) {
+  const rating = getRatingSummary(artist.id);
   return (
     <Link href={`/artists/${artist.id}`} className="group">
       <Card className="h-full overflow-hidden transition-all group-hover:-translate-y-0.5 group-hover:border-neutral-900 group-hover:shadow-lg group-hover:shadow-neutral-900/5">
@@ -53,12 +56,21 @@ export function ArtistCard({ artist }: { artist: Artist }) {
                 {formatFollowers(artist.followers)}
               </span>
             </div>
-            <div className="text-neutral-500">
-              응답률{" "}
-              <span className="font-semibold text-brand-600">
-                {artist.responseRate}%
-              </span>
-            </div>
+            {rating.count > 0 ? (
+              <div className="flex items-center gap-1">
+                <RatingStars value={rating.avg} size="sm" />
+                <span className="text-xs font-semibold text-neutral-700">
+                  {rating.avg.toFixed(1)}
+                </span>
+              </div>
+            ) : (
+              <div className="text-neutral-500">
+                응답률{" "}
+                <span className="font-semibold text-brand-600">
+                  {artist.responseRate}%
+                </span>
+              </div>
+            )}
           </div>
           <div className="mt-2 text-sm text-neutral-500">
             예산대{" "}

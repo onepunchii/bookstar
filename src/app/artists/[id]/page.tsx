@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
+import { MomentumCard } from "@/components/momentum-card";
+import { RatingStars } from "@/components/rating-stars";
+import { ReviewsSection } from "@/components/reviews-section";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { getArtist, SCHEDULES } from "@/lib/mock-data";
+import { getArtist, getRatingSummary, SCHEDULES } from "@/lib/mock-data";
 import {
   CATEGORY_LABELS,
   formatBudget,
@@ -22,6 +25,7 @@ export default async function ArtistDetailPage({
   const artist = getArtist(id);
   if (!artist) notFound();
   const schedule = SCHEDULES[artist.id] ?? [];
+  const rating = getRatingSummary(artist.id);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
@@ -44,6 +48,17 @@ export default async function ArtistDetailPage({
               <p className="mt-0.5 text-sm text-neutral-500">
                 {artist.agencyName}
               </p>
+              {rating.count > 0 && (
+                <div className="mt-1 flex items-center gap-2">
+                  <RatingStars value={rating.avg} size="sm" />
+                  <span className="text-sm font-bold">
+                    {rating.avg.toFixed(1)}
+                  </span>
+                  <span className="text-xs text-neutral-400">
+                    ({rating.count}건)
+                  </span>
+                </div>
+              )}
               <p className="mt-2 text-neutral-700">{artist.tagline}</p>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {artist.categories.map((c) => (
@@ -85,6 +100,11 @@ export default async function ArtistDetailPage({
             ))}
           </div>
 
+          {/* Momentum */}
+          <section className="mt-10">
+            <MomentumCard artistId={artist.id} />
+          </section>
+
           {/* Recent work */}
           <section className="mt-10">
             <h2 className="text-lg font-bold">최근 활동</h2>
@@ -99,6 +119,11 @@ export default async function ArtistDetailPage({
                 </li>
               ))}
             </ul>
+          </section>
+
+          {/* Reviews */}
+          <section className="mt-10">
+            <ReviewsSection artistId={artist.id} />
           </section>
 
           {/* Calendar */}

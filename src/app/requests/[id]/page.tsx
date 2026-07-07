@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { LeaveReviewCard } from "@/components/leave-review-card";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -102,6 +103,15 @@ export default async function RequestDetailPage({
                 견적 수락 시 전자계약 단계로 넘어갑니다 (2차 오픈 예정)
               </p>
             </Card>
+          )}
+          {(request.status === "accepted" ||
+            request.status === "completed") && (
+            <LeaveReviewCard
+              artistId={request.artistId}
+              artistName={request.artistName}
+              companyName={request.companyName}
+              eventTitle={`${request.eventType} · ${request.date}`}
+            />
           )}
           <Card className="p-5">
             <h3 className="text-sm font-bold">진행 단계</h3>

@@ -1,18 +1,25 @@
+"use client";
+
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { ARTISTS } from "@/lib/mock-data";
 import { profileCompleteness } from "@/lib/profile";
+import { useScopedArtistIds } from "@/lib/scope-store";
 import { CATEGORY_LABELS, formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Camera, Pencil, Plus } from "lucide-react";
 
 export default function AgencyArtistsPage() {
+  const scopedIds = useScopedArtistIds();
+  const visible = scopedIds
+    ? ARTISTS.filter((a) => scopedIds.has(a.id))
+    : ARTISTS;
   return (
     <div>
       <div className="mb-5 flex items-center justify-between">
         <p className="text-sm text-neutral-500">
-          소속 아티스트 {ARTISTS.length}팀 · 프로필과 사진은 여기서 관리해요
+          {scopedIds ? "내 담당" : "소속"} 아티스트 {visible.length}팀 · 프로필과 사진은 여기서 관리해요
         </p>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -24,7 +31,7 @@ export default function AgencyArtistsPage() {
           <span className="text-sm font-semibold">새 아티스트 등록</span>
         </button>
 
-        {ARTISTS.map((artist) => {
+        {visible.map((artist) => {
           const { score } = profileCompleteness(artist);
           return (
             <Card key={artist.id} className="overflow-hidden">

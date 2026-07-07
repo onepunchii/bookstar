@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { ARTISTS, SCHEDULES } from "@/lib/mock-data";
 import { isOnLeave, useLeaveStore } from "@/lib/leave-store";
 import { daysUntil, holdKey, useScheduleStore } from "@/lib/schedule-store";
+import { useScopedArtistIds } from "@/lib/scope-store";
 import {
   AVAILABILITY_LABELS,
   type Availability,
@@ -14,7 +15,10 @@ import {
 import { cn } from "@/lib/utils";
 import {
   CalendarClock,
+  CalendarDays,
+  Check,
   CheckCircle2,
+  Link2,
   MousePointerClick,
   Palmtree,
 } from "lucide-react";
@@ -41,6 +45,14 @@ export function ScheduleManager() {
   const [artistId, setArtistId] = useState(ARTISTS[0].id);
   const [edits, setEdits] = useState<Record<string, Availability>>({});
   const [saved, setSaved] = useState(false);
+  const [copiedFeed, setCopiedFeed] = useState(false);
+
+  const copyFeed = () => {
+    const url = `${window.location.origin}/api/calendar/${artistId}`;
+    navigator.clipboard?.writeText(url).catch(() => {});
+    setCopiedFeed(true);
+    setTimeout(() => setCopiedFeed(false), 1800);
+  };
 
   // 드래그 다중 선택
   const [selection, setSelection] = useState<Set<string>>(new Set());
@@ -48,6 +60,18 @@ export function ScheduleManager() {
   const didDrag = useRef(false);
 
   const { holds, releaseHold } = useScheduleStore();
+  const scopedIds = useScopedArtistIds();
+  const visibleArtists = scopedIds
+    ? ARTISTS.filter((a) => scopedIds.has(a.id))
+    : ARTISTS;
+
+  // 스코프 변경으로 현재 아티스트가 사라졌으면 첫 번째로 스위치
+  useEffect(() => {
+    if (visibleArtists.length > 0 && !visibleArtists.some((a) => a.id === artistId)) {
+      setArtistId(visibleArtists[0].id);
+      setSelection(new Set());
+    }
+  }, [visibleArtists, artistId]);
   const { requests: leaveRequests, decide } = useLeaveStore();
   const pendingLeaves = leaveRequests.filter((r) => r.status === "pending");
   const artistHolds = useMemo(
@@ -137,7 +161,7 @@ export function ScheduleManager() {
       <div className="lg:col-span-2">
         {/* 아티스트 선택 */}
         <div className="mb-4 flex flex-wrap gap-2">
-          {ARTISTS.map((a) => (
+          {visibleArtists.map((a) => (
             <button
               key={a.id}
               onClick={() => selectArtist(a.id)}
@@ -356,6 +380,31 @@ export function ScheduleManager() {
               })}
             </div>
           )}
+        </Card>
+
+        {/* .ics 구독 피드 */}
+        <Card className="p-6">
+          <h3 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
+            <CalendarDays className="h-3.5 w-3.5 text-brand-500" /> 캘린더
+            구독 링크
+          </h3>
+          <p className="mt-1 text-xs text-neutral-400">
+            구글/애플 캘린더에 구독하면 확정 일정이 자동으로 들어와요
+          </p>
+          <button
+            onClick={copyFeed}
+            className="mt-3 flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-neutral-200 text-xs font-semibold text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+          >
+            {copiedFeed ? (
+              <>
+                <Check className="h-3.5 w-3.5 text-brand-500" /> URL 복사됨
+              </>
+            ) : (
+              <>
+                <Link2 className="h-3.5 w-3.5" /> .ics 구독 URL 복사
+              </>
+            )}
+          </button>
         </Card>
 
         <Card className="p-6">
