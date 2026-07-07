@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { NotificationsPanel } from "./notifications-panel";
 import { SampleHint } from "./sample-hint";
 import { SampleLauncher } from "./sample-launcher";
+import { Wordmark } from "./wordmark";
 import {
   Banknote,
   Building2,
@@ -118,11 +119,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-neutral-200 bg-white md:flex">
         <div className="flex h-16 items-center px-6">
-          <Link
-            href={account.home}
-            className="text-lg font-black tracking-tight"
-          >
-            BOOK<span className="text-brand-500">STAR</span>
+          <Link href={account.home} aria-label="xong 홈으로">
+            <Wordmark height={22} priority />
           </Link>
         </div>
         <nav className="flex-1 space-y-1 px-3 py-4">
@@ -194,9 +192,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-neutral-200 bg-white/90 px-4 backdrop-blur sm:px-6">
           <Link
             href={account.home}
-            className="text-lg font-black tracking-tight md:hidden"
+            className="md:hidden"
+            aria-label="xong 홈으로"
           >
-            BOOK<span className="text-brand-500">STAR</span>
+            <Wordmark height={20} priority />
           </Link>
           <div className="hidden items-center gap-2 text-sm text-neutral-400 md:flex">
             {role === "agency" && (

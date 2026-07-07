@@ -3,9 +3,12 @@ import "./globals.css";
 import { AppShell } from "@/components/app-shell";
 
 export const metadata: Metadata = {
-  title: "BOOKSTAR — 연예인 섭외, 가장 빠른 연결",
+  title: "xong — eXperience ON",
   description:
-    "광고주·대행사·행사기획사를 위한 B2B 부킹 플랫폼. 가능 일정 확인부터 섭외 요청, 협의, 계약까지 한 곳에서.",
+    "연예인·인플루언서 섭외를 가장 빠르게 연결하는 B2B 부킹 OS. 가능 일정 확인부터 섭외 요청, 협의, 계약, 정산까지 한 곳에서.",
+  icons: {
+    icon: "/xong1.webp",
+  },
 };
 
 export default function RootLayout({

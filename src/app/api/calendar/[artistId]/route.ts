@@ -43,8 +43,8 @@ export async function GET(
   const lines: string[] = [];
   lines.push("BEGIN:VCALENDAR");
   lines.push("VERSION:2.0");
-  lines.push("PRODID:-//BOOKSTAR//NONSGML BOOKSTAR Schedule//KO");
-  lines.push(`X-WR-CALNAME:${escapeText(`${artist.name} · BOOKSTAR 스케줄`)}`);
+  lines.push("PRODID:-//xong//NONSGML xong Schedule//KO");
+  lines.push(`X-WR-CALNAME:${escapeText(`${artist.name} · xong 스케줄`)}`);
   lines.push("X-WR-TIMEZONE:Asia/Seoul");
   lines.push("CALSCALE:GREGORIAN");
 
@@ -64,7 +64,7 @@ export async function GET(
     const last = s.stops[s.stops.length - 1];
     if (!first || !last) continue;
     lines.push("BEGIN:VEVENT");
-    lines.push(`UID:${s.id}@bookstar.kr`);
+    lines.push(`UID:${s.id}@xong.co.kr`);
     lines.push(`DTSTAMP:${now}`);
     lines.push(`DTSTART;TZID=Asia/Seoul:${formatLocalDT(s.date, first.time)}`);
     lines.push(`DTEND;TZID=Asia/Seoul:${formatLocalDT(s.date, last.time)}`);

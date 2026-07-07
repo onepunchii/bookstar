@@ -265,7 +265,7 @@ export const THREAD_MESSAGES: ThreadMessage[] = [
     id: "m1",
     requestId: "r1",
     sender: "system",
-    senderName: "BOOKSTAR",
+    senderName: "xong",
     body: "섭외 요청이 접수되었습니다. 소속사 응답 예상 시간: 3시간 이내",
     createdAt: "2026-07-03T10:20:00+09:00",
   },

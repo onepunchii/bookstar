@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { WeatherBadge } from "@/components/weather-badge";
+import { Wordmark } from "@/components/wordmark";
 import { DAY_SCHEDULES } from "@/lib/mock-data";
 import { Car, MapPin, UserRound } from "lucide-react";
 
@@ -23,9 +24,7 @@ export default async function SharedDaySheetPage({ params }: Props) {
       {/* 얇은 브랜드 바 */}
       <div className="border-b border-neutral-200 bg-white">
         <div className="mx-auto flex h-12 max-w-xl items-center justify-between px-4">
-          <span className="text-sm font-black tracking-tight">
-            BOOK<span className="text-brand-500">STAR</span>
-          </span>
+          <Wordmark height={18} />
           <span className="text-xs text-neutral-400">데일리 시트</span>
         </div>
       </div>

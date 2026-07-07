@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* BOOKSTAR palette: white / black / gray / orange only */
+  /* xong palette: white / black / gray / orange only */
   --color-brand-50: #fff4ec;
   --color-brand-100: #ffe6d5;
   --color-brand-200: #ffc9a8;

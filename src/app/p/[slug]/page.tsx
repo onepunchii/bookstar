@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
+import { Wordmark } from "@/components/wordmark";
 import { Badge } from "@/components/ui/badge";
 import { getArtistBySlug, SCHEDULES } from "@/lib/mock-data";
 import {
@@ -63,9 +64,9 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const artist = getArtistBySlug(slug);
-  if (!artist) return { title: "BOOKSTAR" };
+  if (!artist) return { title: "xong" };
   return {
-    title: `${artist.name} — BOOKSTAR 섭외`,
+    title: `${artist.name} — xong 섭외`,
     description: artist.tagline,
     openGraph: {
       title: `${artist.name} 섭외 문의`,
@@ -87,11 +88,8 @@ export default async function ArtistPublicPage({ params }: PageProps) {
       {/* 상단 얇은 브랜드 바 */}
       <div className="border-b border-neutral-200 bg-white">
         <div className="mx-auto flex h-12 max-w-4xl items-center justify-between px-4 sm:px-6">
-          <Link
-            href="/"
-            className="text-sm font-black tracking-tight text-neutral-900"
-          >
-            BOOK<span className="text-brand-500">STAR</span>
+          <Link href="/" aria-label="xong 홈으로">
+            <Wordmark height={18} />
           </Link>
           <span className="text-xs text-neutral-400">공개 프로필</span>
         </div>
@@ -284,11 +282,11 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           <p>
             이 페이지는{" "}
             <Link href="/" className="font-semibold text-neutral-900">
-              BOOKSTAR
+              xong
             </Link>
             에서 발행됐어요 · 검증된 소속사의 공식 섭외 창구
           </p>
-          <p>bookstar.kr/@{artist.slug}</p>
+          <p>xong.co.kr/@{artist.slug}</p>
         </div>
       </footer>
     </div>

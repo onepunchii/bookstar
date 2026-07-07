@@ -133,7 +133,7 @@ export function AgencyInbox() {
 
   const copyShareLink = () => {
     navigator.clipboard
-      ?.writeText("https://bookstar.kr/advancing/x8f2k1")
+      ?.writeText("https://xong.co.kr/advancing/x8f2k1")
       .catch(() => {});
     setLinkCopied(true);
     setTimeout(() => setLinkCopied(false), 2000);

@@ -1,7 +1,7 @@
 import { CastingRecommender } from "./recommender";
 
 export const metadata = {
-  title: "AI 캐스팅 추천 · BOOKSTAR",
+  title: "AI 캐스팅 추천 · xong",
 };
 
 export default function RecommendPage() {
