@@ -134,9 +134,17 @@ export function SampleLauncher() {
             </div>
 
             {/* 푸터 */}
-            <div className="border-t border-neutral-100 bg-neutral-50 px-6 py-3 text-xs text-neutral-500">
-              샘플은 실제 데이터가 아니며, 클릭 시 자동으로 해당 역할로 전환된
-              뒤 그 화면으로 이동해요.
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-neutral-100 bg-neutral-50 px-6 py-3 text-xs text-neutral-500">
+              <span>
+                샘플은 실제 데이터가 아니며, 클릭 시 자동으로 해당 역할로 전환된
+                뒤 그 화면으로 이동해요.
+              </span>
+              <a
+                href="/join"
+                className="font-bold text-brand-600 hover:text-brand-700"
+              >
+                당신도 크리에이터라면? 등록 →
+              </a>
             </div>
           </div>
         </div>

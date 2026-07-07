@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArtistCard } from "@/components/artist-card";
+import { SLACounter } from "@/components/sla-counter";
 import { ARTISTS, SCHEDULES } from "@/lib/mock-data";
 import { parseNL } from "@/lib/nl-search";
 import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
@@ -97,7 +98,11 @@ export default async function ArtistsPage({
         가능한 여자 아이돌&rsquo; 같은 자연어로 검색해보세요
       </p>
 
-      <div className="mt-6">
+      <div className="mt-4">
+        <SLACounter variant="inline" />
+      </div>
+
+      <div className="mt-4">
         <SearchBar defaultValue={q} />
       </div>
 

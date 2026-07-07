@@ -151,6 +151,17 @@ export interface DocumentItem {
   date: string;
 }
 
+// ── 라인업 번들 ──
+export interface LineupBundle {
+  id: string;
+  title: string;
+  subtitle: string;
+  artistIds: string[];
+  eventTypes: EventType[];
+  totalBudget: [number, number]; // 만원
+  discountPct?: number; // 세트 할인율
+}
+
 // ── 리뷰 ──
 export interface Review {
   id: string;

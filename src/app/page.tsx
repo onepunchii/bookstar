@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { LineupBundleCard } from "@/components/lineup-bundle";
+import { SLACounter } from "@/components/sla-counter";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
   ARTISTS,
   BOOKING_REQUESTS,
+  BUNDLES,
   SCHEDULES,
   THREAD_MESSAGES,
 } from "@/lib/mock-data";
@@ -62,6 +65,10 @@ export default function HomePage() {
         <p className="mt-1 text-sm text-neutral-500">
           진행 중인 섭외 {inProgress.length}건, 새 메시지 {unread}개가 있어요
         </p>
+      </div>
+
+      <div className="mb-4">
+        <SLACounter variant="inline" />
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -212,6 +219,25 @@ export default function HomePage() {
             </span>
           </Card>
         </Link>
+
+        {/* 라인업 번들 (2컬럼) */}
+        <div className="md:col-span-2 lg:col-span-4">
+          <div className="mb-3 flex items-baseline justify-between">
+            <div>
+              <h2 className="text-lg font-bold tracking-tight">
+                세트 라인업
+              </h2>
+              <p className="mt-0.5 text-xs text-neutral-500">
+                소속사가 큐레이션한 아티스트 조합. 세트가 저렴해요.
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {BUNDLES.map((b) => (
+              <LineupBundleCard key={b.id} bundle={b} />
+            ))}
+          </div>
+        </div>
 
         {/* 빠른 응답 타일 */}
         <Card className="p-6">

@@ -3,6 +3,7 @@ import type {
   BookingRequest,
   DaySchedule,
   DocumentItem,
+  LineupBundle,
   Manager,
   Review,
   ScheduleDay,
@@ -559,6 +560,40 @@ export function getRatingSummary(artistId: string) {
   if (rs.length === 0) return { avg: 0, count: 0 };
   const avg = rs.reduce((sum, r) => sum + r.rating, 0) / rs.length;
   return { avg: Math.round(avg * 10) / 10, count: rs.length };
+}
+
+// ── 라인업 번들 ──
+export const BUNDLES: LineupBundle[] = [
+  {
+    id: "b1",
+    title: "여름 페스티벌 세트",
+    subtitle: "무대 헤드라이너 + 서브 + MC까지 원스톱",
+    artistIds: ["a1", "a2", "a6"],
+    eventTypes: ["축제", "행사"],
+    totalBudget: [8000, 15000],
+    discountPct: 10,
+  },
+  {
+    id: "b2",
+    title: "브랜드 캠페인 A라인",
+    subtitle: "TVC 모델 + 화보 · 프리미엄 이미지 조합",
+    artistIds: ["a3", "a4"],
+    eventTypes: ["광고"],
+    totalBudget: [9500, 24000],
+  },
+  {
+    id: "b3",
+    title: "기업 행사 진행 세트",
+    subtitle: "MC + 특강 연사 조합 · 신년회·시상식 최적",
+    artistIds: ["a6", "a8"],
+    eventTypes: ["행사", "강연"],
+    totalBudget: [1300, 4500],
+    discountPct: 8,
+  },
+];
+
+export function getBundle(id: string): LineupBundle | undefined {
+  return BUNDLES.find((b) => b.id === id);
 }
 
 // ── 매니저 ──

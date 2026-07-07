@@ -90,11 +90,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     useRoleStore.persist.rehydrate();
   }, []);
 
-  // 공개 페이지(/p/, /@, /d/)는 앱 셸을 벗어난 자체 레이아웃 사용
+  // 공개 페이지(/p/, /@, /d/, /join/)는 앱 셸을 벗어난 자체 레이아웃 사용
   if (
     pathname.startsWith("/p/") ||
     pathname.startsWith("/@") ||
-    pathname.startsWith("/d/")
+    pathname.startsWith("/d/") ||
+    pathname.startsWith("/join")
   ) {
     return <>{children}</>;
   }

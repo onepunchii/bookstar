@@ -4,7 +4,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { generateMetrics, recentDelta } from "@/lib/metrics";
-import { ARTISTS, BOOKING_REQUESTS, SCHEDULES } from "@/lib/mock-data";
+import { ARTISTS, BOOKING_REQUESTS, BUNDLES, SCHEDULES } from "@/lib/mock-data";
 import { profileCompleteness } from "@/lib/profile";
 import { AVAILABILITY_LABELS, formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -16,6 +16,8 @@ import {
   Clock,
   Flame,
   Inbox,
+  Package,
+  Plus,
   TrendingUp,
 } from "lucide-react";
 
@@ -192,6 +194,48 @@ export default function AgencyDashboardPage() {
         >
           일정 관리로 이동 →
         </Link>
+      </Card>
+
+      {/* 번들 상품 */}
+      <Card className="p-6 md:col-span-2">
+        <div className="flex items-center justify-between">
+          <h2 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
+            <Package className="h-3.5 w-3.5 text-brand-500" /> 번들 상품{" "}
+            {BUNDLES.length}개
+          </h2>
+          <button className="flex items-center gap-1 text-xs font-semibold text-brand-600 hover:text-brand-700">
+            <Plus className="h-3 w-3" /> 새 번들 만들기
+          </button>
+        </div>
+        <p className="mt-1 text-xs text-neutral-400">
+          아티스트 조합을 세트로 팔면 단건보다 전환율 2배
+        </p>
+        <div className="mt-3 space-y-2">
+          {BUNDLES.map((b) => (
+            <div
+              key={b.id}
+              className="flex items-center gap-3 rounded-xl border border-neutral-100 bg-neutral-50/60 px-4 py-3"
+            >
+              <div className="flex -space-x-1.5">
+                {b.artistIds.slice(0, 3).map((id) => (
+                  <span
+                    key={id}
+                    className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-200 text-[10px] font-black text-neutral-500 ring-2 ring-white"
+                  >
+                    {(ARTISTS.find((a) => a.id === id)?.name || "?").slice(0, 1)}
+                  </span>
+                ))}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-bold">{b.title}</p>
+                <p className="text-xs text-neutral-400">{b.eventTypes.join(" · ")}</p>
+              </div>
+              {b.discountPct && (
+                <Badge variant="solid">-{b.discountPct}%</Badge>
+              )}
+            </div>
+          ))}
+        </div>
       </Card>
 
       {/* 화제성 급증 */}
