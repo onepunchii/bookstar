@@ -1,22 +1,29 @@
+"use client";
+
+import { use } from "react";
 import { notFound } from "next/navigation";
 import { LeaveReviewCard } from "@/components/leave-review-card";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { getRequest, getThread } from "@/lib/mock-data";
+import { allRequests, useBookingsStore } from "@/lib/bookings-store";
+import { getThread } from "@/lib/mock-data";
 import { formatBudget } from "@/lib/types";
 import { MessageComposer } from "./message-composer";
 import { cn } from "@/lib/utils";
 
-export default async function RequestDetailPage({
+export default function RequestDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  const request = getRequest(id);
+  const { id } = use(params);
+  const extra = useBookingsStore((s) => s.extra);
+  const overrides = useBookingsStore((s) => s.overrides);
+  const threads = useBookingsStore((s) => s.threads);
+  const request = allRequests(extra, overrides).find((r) => r.id === id);
   if (!request) notFound();
-  const thread = getThread(id);
+  const thread = [...getThread(id), ...(threads[id] ?? [])];
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
@@ -78,7 +85,7 @@ export default async function RequestDetailPage({
                 )
               )}
             </div>
-            <MessageComposer />
+            <MessageComposer requestId={id} />
           </Card>
         </div>
 

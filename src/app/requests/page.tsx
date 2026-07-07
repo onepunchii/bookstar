@@ -1,21 +1,27 @@
+"use client";
+
 import Link from "next/link";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { BOOKING_REQUESTS } from "@/lib/mock-data";
+import { allRequests, useBookingsStore } from "@/lib/bookings-store";
 import { formatBudget } from "@/lib/types";
 import { ChevronRight } from "lucide-react";
 
 export default function RequestsPage() {
+  const extra = useBookingsStore((s) => s.extra);
+  const overrides = useBookingsStore((s) => s.overrides);
+  const requests = allRequests(extra, overrides);
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
       <h1 className="text-2xl font-bold tracking-tight">섭외 관리</h1>
       <p className="mt-1 text-sm text-neutral-500">
-        보낸 요청의 진행 상황을 한눈에 확인하세요
+        보낸 요청의 진행 상황을 한눈에 확인하세요 · 총 {requests.length}건
       </p>
 
       <div className="mt-8 space-y-3">
-        {BOOKING_REQUESTS.map((req) => (
+        {requests.map((req) => (
           <Link key={req.id} href={`/requests/${req.id}`} className="block">
             <Card className="flex items-center gap-4 p-5 transition-colors hover:border-neutral-900">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-100 to-brand-50 text-lg font-black text-neutral-300">

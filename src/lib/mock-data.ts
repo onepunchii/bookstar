@@ -27,6 +27,7 @@ export const ARTISTS: Artist[] = [
     budgetRange: [3000, 8000],
     tags: ["걸그룹", "10-20대", "뷰티", "패션"],
     verified: true,
+    defaultAgencyRate: 0.3,
     recentWork: ["뷰티 브랜드 A 광고", "대학 축제 12회", "음악방송 출연"],
     quotePreset: {
       baseFee: 4000,
@@ -49,6 +50,7 @@ export const ARTISTS: Artist[] = [
     budgetRange: [5000, 12000],
     tags: ["밴드", "유튜브", "MZ", "축제"],
     verified: true,
+    defaultAgencyRate: 0.3,
     recentWork: ["게임 브랜드 콜라보", "지역 축제 헤드라이너", "예능 고정"],
   },
   {
@@ -66,6 +68,7 @@ export const ARTISTS: Artist[] = [
     budgetRange: [8000, 20000],
     tags: ["3040", "금융", "프리미엄"],
     verified: true,
+    defaultAgencyRate: 0.25,
     recentWork: ["금융사 브랜드 모델", "드라마 주연", "시상식 MC"],
     quotePreset: {
       baseFee: 10000,
@@ -88,6 +91,7 @@ export const ARTISTS: Artist[] = [
     budgetRange: [1500, 4000],
     tags: ["패션", "럭셔리", "화보", "SNS"],
     verified: true,
+    defaultAgencyRate: 0.3,
     recentWork: ["서울패션위크", "명품 브랜드 화보", "SNS 캠페인"],
   },
   {
@@ -105,6 +109,7 @@ export const ARTISTS: Artist[] = [
     budgetRange: [800, 2500],
     tags: ["유튜브", "라이프스타일", "브이로그", "리뷰"],
     verified: true,
+    defaultAgencyRate: 0.2,
     recentWork: ["가전 브랜드 리뷰", "팝업스토어 진행", "브랜드 라이브커머스"],
     quotePreset: {
       baseFee: 1200,
@@ -127,6 +132,7 @@ export const ARTISTS: Artist[] = [
     budgetRange: [300, 1000],
     tags: ["기업행사", "시상식", "컨퍼런스", "베테랑"],
     verified: true,
+    defaultAgencyRate: 0.3,
     recentWork: ["대기업 신년회", "IT 컨퍼런스", "지자체 행사"],
     quotePreset: {
       baseFee: 500,
@@ -149,6 +155,7 @@ export const ARTISTS: Artist[] = [
     budgetRange: [500, 1800],
     tags: ["푸드", "먹방", "F&B", "숏폼"],
     verified: false,
+    defaultAgencyRate: 0.35,
     recentWork: ["식품 브랜드 캠페인", "맛집 프랜차이즈 협업", "숏폼 챌린지"],
   },
   {
@@ -166,6 +173,7 @@ export const ARTISTS: Artist[] = [
     budgetRange: [1000, 3500],
     tags: ["스포츠", "강연", "아웃도어", "건강"],
     verified: true,
+    defaultAgencyRate: 0.3,
     recentWork: ["스포츠 브랜드 앰버서더", "기업 특강", "예능 출연"],
   },
 ];

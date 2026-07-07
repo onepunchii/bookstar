@@ -319,6 +319,37 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                 placeholder="예: 지방 행사 시 이동비 별도, 심야 할증 20%"
               />
             </div>
+            <div className="grid grid-cols-1 gap-4 border-t border-neutral-100 pt-4 sm:grid-cols-2">
+              <div>
+                <Label htmlFor="preset-rate">
+                  소속사 분배율 (%)
+                </Label>
+                <Input
+                  id="preset-rate"
+                  type="number"
+                  min={0}
+                  max={100}
+                  defaultValue={Math.round(
+                    (artist.defaultAgencyRate ?? 0.3) * 100
+                  )}
+                />
+                <p className="mt-1 text-xs text-neutral-400">
+                  정산 등록 시 기본값으로 채워져요
+                </p>
+              </div>
+              <div className="flex items-end">
+                <div className="w-full rounded-xl bg-neutral-50 p-3 text-xs">
+                  <p className="text-neutral-500">현재 설정</p>
+                  <p className="mt-0.5 font-black">
+                    소속사{" "}
+                    {Math.round((artist.defaultAgencyRate ?? 0.3) * 100)}% ·
+                    아티스트{" "}
+                    {100 - Math.round((artist.defaultAgencyRate ?? 0.3) * 100)}
+                    %
+                  </p>
+                </div>
+              </div>
+            </div>
           </Card>
 
           {/* SNS */}

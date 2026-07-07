@@ -6,8 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label, Textarea } from "@/components/ui/input";
+import { allRequests, useBookingsStore } from "@/lib/bookings-store";
 import { useDayStore } from "@/lib/day-store";
-import { BOOKING_REQUESTS, SCHEDULES, getArtist } from "@/lib/mock-data";
+import { SCHEDULES, getArtist } from "@/lib/mock-data";
 import { useNotificationsStore } from "@/lib/notifications-store";
 import { useScopedArtistIds } from "@/lib/scope-store";
 import { holdKey, useScheduleStore } from "@/lib/schedule-store";
@@ -42,12 +43,6 @@ import {
 const TODAY = "2026-07-07";
 const HOLD_DAYS = 7; // 수락 시 홀드 유지 기간
 
-// 소속사 데모 시점: 도착한 요청을 소속사 관점으로 보여준다
-const INBOX: BookingRequest[] = BOOKING_REQUESTS.map((r) =>
-  r.status === "accepted" || r.status === "completed"
-    ? r
-    : { ...r, status: r.status === "negotiating" ? "negotiating" : "pending" }
-);
 
 interface Quote {
   amount: number;
@@ -89,8 +84,11 @@ function addDays(date: string, days: number): string {
 }
 
 export function AgencyInbox() {
-  const [requests, setRequests] = useState(INBOX);
-  const [selectedId, setSelectedId] = useState(INBOX[0]?.id);
+  const extraReqs = useBookingsStore((s) => s.extra);
+  const reqOverrides = useBookingsStore((s) => s.overrides);
+  const updateStatus = useBookingsStore((s) => s.updateStatus);
+  const requests = allRequests(extraReqs, reqOverrides);
+  const [selectedId, setSelectedId] = useState(requests[0]?.id);
   const [quotes, setQuotes] = useState<Record<string, Quote>>({});
   const [holdPlacedFor, setHoldPlacedFor] = useState<string | null>(null);
   const [quoteAmount, setQuoteAmount] = useState("");
@@ -115,13 +113,26 @@ export function AgencyInbox() {
     setTimeout(() => setAiState("done"), 1400);
   };
 
+  const addBookingViaStore = useBookingsStore((s) => s.add);
   const addAiRequest = () => {
-    setRequests((prev) =>
-      prev.some((r) => r.id === AI_EXTRACTED.id)
-        ? prev
-        : [AI_EXTRACTED, ...prev]
-    );
-    setSelectedId(AI_EXTRACTED.id);
+    if (!requests.some((r) => r.id === AI_EXTRACTED.id)) {
+      const created = addBookingViaStore({
+        artistId: AI_EXTRACTED.artistId,
+        artistName: AI_EXTRACTED.artistName,
+        companyName: AI_EXTRACTED.companyName,
+        companyVerified: AI_EXTRACTED.companyVerified,
+        companyEventCount: AI_EXTRACTED.companyEventCount,
+        eventType: AI_EXTRACTED.eventType,
+        budget: AI_EXTRACTED.budget,
+        location: AI_EXTRACTED.location,
+        date: AI_EXTRACTED.date,
+        message: AI_EXTRACTED.message,
+        status: AI_EXTRACTED.status,
+      });
+      setSelectedId(created.id);
+    } else {
+      setSelectedId(AI_EXTRACTED.id);
+    }
     setAiState("idle");
   };
 
@@ -164,10 +175,7 @@ export function AgencyInbox() {
     ((holdOnDate && holdOnDate.requestId !== selected.id) ||
       baseDay?.availability === "busy");
 
-  const setStatus = (id: string, status: BookingStatus) =>
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status } : r))
-    );
+  const setStatus = (id: string, status: BookingStatus) => updateStatus(id, status);
 
   const accept = () => {
     if (!selected) return;

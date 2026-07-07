@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { DayScheduleEditor } from "@/components/day-schedule-editor";
 import { WeatherBadge } from "@/components/weather-badge";
 import { selectDaySchedules, useDayStore } from "@/lib/day-store";
 import { useScopedArtistIds } from "@/lib/scope-store";
 import { cn } from "@/lib/utils";
+import type { DaySchedule } from "@/lib/types";
 import {
   Car,
   Check,
@@ -15,6 +17,8 @@ import {
   Link2,
   MapPin,
   MessageCircle,
+  Pencil,
+  Plus,
   UserRound,
 } from "lucide-react";
 
@@ -39,6 +43,11 @@ export function DaySheet() {
   const [dateIdx, setDateIdx] = useState(0);
   const [sent, setSent] = useState<Record<string, boolean>>({});
   const [copied, setCopied] = useState<string | null>(null);
+  const [editorState, setEditorState] = useState<
+    | { mode: "create"; date: string }
+    | { mode: "edit"; schedule: DaySchedule }
+    | null
+  >(null);
 
   const copyShare = (id: string) => {
     const url = `${window.location.origin}/d/${id}`;
@@ -49,7 +58,15 @@ export function DaySheet() {
   const date = DATES[dateIdx];
   const scopedIds = useScopedArtistIds();
   const extra = useDayStore((s) => s.extra);
-  const schedules = selectDaySchedules(date, extra, scopedIds);
+  const overrides = useDayStore((s) => s.overrides);
+  const removedIds = useDayStore((s) => s.removedIds);
+  const schedules = selectDaySchedules(
+    date,
+    extra,
+    scopedIds,
+    overrides,
+    removedIds
+  );
 
   const sendAll = () =>
     setSent((prev) => ({
@@ -87,20 +104,31 @@ export function DaySheet() {
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
-        {schedules.length > 0 && (
+        <div className="flex gap-2">
           <button
-            onClick={sendAll}
-            className="flex h-10 items-center gap-2 rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
+            onClick={() => setEditorState({ mode: "create", date })}
+            className="flex h-10 items-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 text-sm font-semibold text-neutral-700 transition-colors hover:border-neutral-900"
           >
-            <MessageCircle className="h-4 w-4" /> 전체 카톡 전파
+            <Plus className="h-4 w-4" /> 새 스케줄
           </button>
-        )}
+          {schedules.length > 0 && (
+            <button
+              onClick={sendAll}
+              className="flex h-10 items-center gap-2 rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
+            >
+              <MessageCircle className="h-4 w-4" /> 전체 카톡 전파
+            </button>
+          )}
+        </div>
       </div>
 
       {schedules.length === 0 ? (
         <Card className="flex h-48 flex-col items-center justify-center gap-2 text-neutral-400">
           <p className="font-semibold">이 날은 등록된 스케줄이 없어요</p>
-          <p className="text-sm">확정된 섭외는 자동으로 데일리에 내려옵니다</p>
+          <p className="text-sm">
+            확정된 섭외는 자동으로 데일리에 내려오고, 위의 &lsquo;새
+            스케줄&rsquo; 버튼으로 직접 등록할 수도 있어요
+          </p>
         </Card>
       ) : (
         <div className="space-y-4">
@@ -124,6 +152,15 @@ export function DaySheet() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() =>
+                      setEditorState({ mode: "edit", schedule: s })
+                    }
+                    aria-label="편집"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
                   <button
                     onClick={() => copyShare(s.id)}
                     className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
@@ -218,6 +255,19 @@ export function DaySheet() {
             </Card>
           ))}
         </div>
+      )}
+
+      {editorState && (
+        <DayScheduleEditor
+          mode={editorState.mode}
+          initial={
+            editorState.mode === "edit" ? editorState.schedule : undefined
+          }
+          defaultDate={
+            editorState.mode === "create" ? editorState.date : undefined
+          }
+          onClose={() => setEditorState(null)}
+        />
       )}
     </div>
   );

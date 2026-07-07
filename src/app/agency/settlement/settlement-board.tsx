@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { SettlementEditor } from "@/components/settlement-editor";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { SETTLEMENTS } from "@/lib/mock-data";
 import { useScopedArtistIds } from "@/lib/scope-store";
+import { allSettlements, useSettlementStore } from "@/lib/settlement-store";
 import { formatBudget, settlementBreakdown } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { BellRing, Check, FileText } from "lucide-react";
+import { BellRing, Check, FileText, Plus } from "lucide-react";
 
 const STATUS_LABEL = {
   paid: "지급 완료",
@@ -23,12 +24,16 @@ const STATUS_STYLE = {
 
 export function SettlementBoard() {
   const [reminded, setReminded] = useState<Record<string, boolean>>({});
-  const [invoiced, setInvoiced] = useState<Record<string, boolean>>({});
+  const [editorOpen, setEditorOpen] = useState(false);
 
   const scopedIds = useScopedArtistIds();
+  const extra = useSettlementStore((s) => s.extra);
+  const overrides = useSettlementStore((s) => s.overrides);
+  const markInvoice = useSettlementStore((s) => s.markInvoice);
+  const all = allSettlements(extra, overrides);
   const visible = scopedIds
-    ? SETTLEMENTS.filter((s) => scopedIds.has(s.artistId))
-    : SETTLEMENTS;
+    ? all.filter((s) => scopedIds.has(s.artistId))
+    : all;
 
   const total = visible.reduce((sum, s) => sum + s.gross, 0);
   const pending = visible.filter((s) => s.status === "pending").reduce(
@@ -42,6 +47,21 @@ export function SettlementBoard() {
 
   return (
     <div>
+      <div className="mb-5 flex items-center justify-between">
+        <div>
+          <p className="text-sm text-neutral-500">
+            정산 {visible.length}건 · 아티스트별 분배율은 프로필에서 기본값
+            설정
+          </p>
+        </div>
+        <button
+          onClick={() => setEditorOpen(true)}
+          className="flex h-10 items-center gap-2 rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
+        >
+          <Plus className="h-4 w-4" /> 새 정산 등록
+        </button>
+      </div>
+
       {/* 요약 */}
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
@@ -74,7 +94,7 @@ export function SettlementBoard() {
       <div className="space-y-3">
         {visible.map((s) => {
           const b = settlementBreakdown(s);
-          const hasInvoice = s.taxInvoice || invoiced[s.id];
+          const hasInvoice = s.taxInvoice;
           return (
             <Card key={s.id} className="p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -102,9 +122,7 @@ export function SettlementBoard() {
                 <div className="flex items-center gap-2">
                   {!hasInvoice && (
                     <button
-                      onClick={() =>
-                        setInvoiced((prev) => ({ ...prev, [s.id]: true }))
-                      }
+                      onClick={() => markInvoice(s.id)}
                       className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-neutral-900"
                     >
                       <FileText className="h-3.5 w-3.5" /> 세금계산서 발행
@@ -173,6 +191,8 @@ export function SettlementBoard() {
         분배율은 아티스트별 계약 조건에 따라 설정됩니다. 정산 내역은 아티스트
         계정에도 동일하게 공개돼요.
       </p>
+
+      {editorOpen && <SettlementEditor onClose={() => setEditorOpen(false)} />}
     </div>
   );
 }

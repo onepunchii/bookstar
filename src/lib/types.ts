@@ -51,6 +51,8 @@ export interface Artist {
   verified: boolean;
   recentWork: string[];
   quotePreset?: QuotePreset;
+  // 소속사:아티스트 분배율 (0.3 = 소속사 30%). 정산 생성 시 기본값
+  defaultAgencyRate?: number;
 }
 
 export interface ScheduleDay {

@@ -2,16 +2,25 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useBookingsStore } from "@/lib/bookings-store";
 import { Send } from "lucide-react";
 
-export function MessageComposer() {
+export function MessageComposer({ requestId }: { requestId: string }) {
   const [value, setValue] = useState("");
+  const appendMessage = useBookingsStore((s) => s.appendMessage);
 
   return (
     <form
       className="flex gap-2 border-t border-neutral-100 p-3"
       onSubmit={(e) => {
         e.preventDefault();
+        const text = value.trim();
+        if (!text) return;
+        appendMessage(requestId, {
+          sender: "company",
+          senderName: "브라이트마케팅 이대리",
+          body: text,
+        });
         setValue("");
       }}
     >

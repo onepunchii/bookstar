@@ -1,5 +1,7 @@
+"use client";
+
 import { Card } from "@/components/ui/card";
-import { SETTLEMENTS } from "@/lib/mock-data";
+import { allSettlements, useSettlementStore } from "@/lib/settlement-store";
 import { formatBudget, settlementBreakdown } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +14,11 @@ const STATUS_LABEL = {
 } as const;
 
 export default function MyEarningsPage() {
-  const mine = SETTLEMENTS.filter((s) => s.artistId === ME_ID);
+  const extra = useSettlementStore((s) => s.extra);
+  const overrides = useSettlementStore((s) => s.overrides);
+  const mine = allSettlements(extra, overrides).filter(
+    (s) => s.artistId === ME_ID
+  );
   const totalNet = mine.reduce(
     (sum, s) => sum + settlementBreakdown(s).artistNet,
     0

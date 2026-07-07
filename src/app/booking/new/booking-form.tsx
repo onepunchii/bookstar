@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
+import { useBookingsStore } from "@/lib/bookings-store";
+import { useNotificationsStore } from "@/lib/notifications-store";
 import type { Artist, EventType } from "@/lib/types";
 import { formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -23,6 +25,8 @@ const EVENT_TYPES: EventType[] = [
 export function BookingForm({ artist }: { artist: Artist }) {
   const [submitted, setSubmitted] = useState(false);
   const [eventType, setEventType] = useState<EventType>("행사");
+  const addBooking = useBookingsStore((s) => s.add);
+  const pushNotif = useNotificationsStore((s) => s.push);
 
   if (submitted) {
     return (
@@ -58,6 +62,34 @@ export function BookingForm({ artist }: { artist: Artist }) {
       className="mt-8 space-y-6"
       onSubmit={(e) => {
         e.preventDefault();
+        const form = new FormData(e.currentTarget);
+        const created = addBooking({
+          artistId: artist.id,
+          artistName: artist.name,
+          companyName: "(주)브라이트마케팅",
+          companyVerified: true,
+          companyEventCount: 12,
+          eventType,
+          budget: Number(form.get("budget") ?? 0),
+          location: String(form.get("location") ?? ""),
+          date: String(form.get("date") ?? "2026-07-24"),
+          message: String(form.get("message") ?? ""),
+          status: "pending",
+        });
+        pushNotif({
+          type: "new_request",
+          role: "agency",
+          title: "새 섭외 요청",
+          body: `${artist.name} · ${eventType} · 예산 ${form.get("budget") ?? 0}만원`,
+          link: "/agency/inbox",
+        });
+        pushNotif({
+          type: "new_request",
+          role: "company",
+          title: "섭외 요청 접수 완료",
+          body: `${artist.name} · 소속사 응답 대기 중`,
+          link: `/requests/${created.id}`,
+        });
         setSubmitted(true);
       }}
     >
@@ -99,12 +131,19 @@ export function BookingForm({ artist }: { artist: Artist }) {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="date">희망 날짜</Label>
-          <Input id="date" type="date" required defaultValue="2026-07-24" />
+          <Input
+            id="date"
+            name="date"
+            type="date"
+            required
+            defaultValue="2026-07-24"
+          />
         </div>
         <div>
           <Label htmlFor="budget">예산 (만원)</Label>
           <Input
             id="budget"
+            name="budget"
             type="number"
             required
             placeholder="예: 3000"
@@ -116,7 +155,12 @@ export function BookingForm({ artist }: { artist: Artist }) {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="location">지역 / 장소</Label>
-          <Input id="location" required placeholder="예: 서울 코엑스" />
+          <Input
+            id="location"
+            name="location"
+            required
+            placeholder="예: 서울 코엑스"
+          />
         </div>
         <div>
           <Label htmlFor="duration">소요 시간</Label>
@@ -138,6 +182,7 @@ export function BookingForm({ artist }: { artist: Artist }) {
         <Label htmlFor="message">상세 내용</Label>
         <Textarea
           id="message"
+          name="message"
           rows={5}
           required
           placeholder={
