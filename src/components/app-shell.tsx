@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useRoleStore, type Role } from "@/lib/role-store";
 import { cn } from "@/lib/utils";
+import { SampleHint } from "./sample-hint";
+import { SampleLauncher } from "./sample-launcher";
 import {
   Banknote,
   Bell,
@@ -212,8 +214,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 bg-neutral-50 pb-20 md:pb-0">{children}</main>
+        <main className="flex-1 bg-neutral-50 pb-20 md:pb-0">
+          <SampleHint />
+          {children}
+        </main>
       </div>
+
+      {/* 샘플 시나리오 런처 (전 화면 공용) */}
+      <SampleLauncher />
 
       {/* Mobile bottom tab bar */}
       <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-neutral-200 bg-white/95 backdrop-blur md:hidden">
