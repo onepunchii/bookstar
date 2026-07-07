@@ -35,3 +35,89 @@ body {
   background: var(--color-brand-100);
   color: var(--color-brand-700);
 }
+
+/* ── 광고주 프리미엄 레이어 ─────────────────────────────
+   소속사·아티스트 화면은 기존 유틸리티 그대로. 아래는 광고주 전용. */
+
+/* Supanova 모션 시그니처 — 물리적 질량감 */
+.premium-ease {
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 스크롤 진입: 초기엔 살짝 아래 + 블러, 보이면 제자리 */
+.reveal {
+  opacity: 0;
+  transform: translateY(1.75rem);
+  filter: blur(6px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+}
+
+/* 초확산 앰비언트 섀도우 — 하드 보더 대신 떠 있는 느낌 */
+.ambient {
+  box-shadow:
+    0 1px 2px rgba(17, 17, 17, 0.03),
+    0 8px 24px -12px rgba(17, 17, 17, 0.08),
+    0 24px 60px -24px rgba(17, 17, 17, 0.1);
+}
+.ambient-hover {
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ambient-hover:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 2px 4px rgba(17, 17, 17, 0.04),
+    0 16px 40px -16px rgba(17, 17, 17, 0.12),
+    0 40px 80px -32px rgba(255, 90, 0, 0.1);
+}
+
+/* 브랜드 오렌지 글로우 (CTA·강조 전용) */
+.brand-glow {
+  box-shadow: 0 12px 32px -12px rgba(255, 90, 0, 0.45);
+}
+
+/* 부유하는 배경 오브 */
+@keyframes float-orb {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-18px) scale(1.03);
+  }
+}
+.float-orb {
+  animation: float-orb 8s ease-in-out infinite;
+}
+
+/* 한글 디스플레이 타이포 리듬 */
+.display-kr {
+  word-break: keep-all;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+/* eyebrow 마이크로 라벨 */
+.eyebrow {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+}

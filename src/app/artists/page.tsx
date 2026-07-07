@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { ArtistCard } from "@/components/artist-card";
+import { Eyebrow } from "@/components/premium/eyebrow";
+import { PremiumArtistCard } from "@/components/premium/premium-artist-card";
+import { Reveal } from "@/components/premium/reveal";
 import { SLACounter } from "@/components/sla-counter";
 import { ARTISTS, SCHEDULES } from "@/lib/mock-data";
 import { parseNL } from "@/lib/nl-search";
@@ -91,20 +93,25 @@ export default async function ArtistsPage({
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <h1 className="text-2xl font-bold tracking-tight">아티스트 찾기</h1>
-      <p className="mt-1 text-sm text-neutral-500">
-        {filtered.length}팀의 아티스트가 섭외를 기다리고 있어요 · &lsquo;다음주
-        가능한 여자 아이돌&rsquo; 같은 자연어로 검색해보세요
-      </p>
+    <div className="mx-auto max-w-6xl bg-white px-5 py-12 sm:px-8 sm:py-16">
+      <Reveal>
+        <Eyebrow>Discover</Eyebrow>
+        <h1 className="display-kr mt-3 text-3xl font-black sm:text-4xl">
+          아티스트 찾기
+        </h1>
+        <p className="mt-2 text-sm text-neutral-500 sm:text-base">
+          {filtered.length}팀이 섭외를 기다리고 있어요 · &lsquo;다음주 가능한
+          여자 아이돌&rsquo; 같은 자연어로 검색해보세요
+        </p>
+      </Reveal>
 
-      <div className="mt-4">
+      <Reveal delay={60} className="mt-6">
         <SLACounter variant="inline" />
-      </div>
+      </Reveal>
 
-      <div className="mt-4">
+      <Reveal delay={90} className="mt-4">
         <SearchBar defaultValue={q} />
-      </div>
+      </Reveal>
 
       {/* AI가 이해한 조건 chip strip */}
       {nl && nl.chips.length > 0 && (
@@ -181,9 +188,11 @@ export default async function ArtistsPage({
           </p>
         </div>
       ) : (
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {filtered.map((artist) => (
-            <ArtistCard key={artist.id} artist={artist} />
+        <div className="mt-8 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+          {filtered.map((artist, i) => (
+            <Reveal key={artist.id} delay={(i % 4) * 60}>
+              <PremiumArtistCard artist={artist} />
+            </Reveal>
           ))}
         </div>
       )}

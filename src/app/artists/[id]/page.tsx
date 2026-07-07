@@ -1,20 +1,22 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
 import { MomentumCard } from "@/components/momentum-card";
+import { Eyebrow } from "@/components/premium/eyebrow";
+import { PremiumCTA } from "@/components/premium/premium-cta";
+import { Reveal } from "@/components/premium/reveal";
 import { RatingStars } from "@/components/rating-stars";
 import { ReviewsSection } from "@/components/reviews-section";
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { getArtist, getRatingSummary, SCHEDULES } from "@/lib/mock-data";
+import { CATEGORY_LABELS, formatBudget, formatFollowers } from "@/lib/types";
 import {
-  CATEGORY_LABELS,
-  formatBudget,
-  formatFollowers,
-} from "@/lib/types";
-import { cn } from "@/lib/utils";
-import { BadgeCheck, Clock, TrendingUp, Users } from "lucide-react";
+  BadgeCheck,
+  Clock,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 
 export default async function ArtistDetailPage({
   params,
@@ -28,146 +30,185 @@ export default async function ArtistDetailPage({
   const rating = getRatingSummary(artist.id);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* Left: profile */}
-        <div className="lg:col-span-2">
-          <div className="flex items-start gap-5">
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-neutral-100 to-brand-50 text-4xl font-black text-neutral-300">
-              {artist.name.slice(0, 1)}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-black tracking-tight">
-                  {artist.name}
-                </h1>
-                {artist.verified && (
-                  <BadgeCheck className="h-5 w-5 text-brand-500" />
-                )}
-              </div>
-              <p className="mt-0.5 text-sm text-neutral-500">
-                {artist.agencyName}
-              </p>
-              {rating.count > 0 && (
-                <div className="mt-1 flex items-center gap-2">
-                  <RatingStars value={rating.avg} size="sm" />
-                  <span className="text-sm font-bold">
-                    {rating.avg.toFixed(1)}
-                  </span>
-                  <span className="text-xs text-neutral-400">
-                    ({rating.count}건)
-                  </span>
-                </div>
+    <div className="bg-white">
+      {/* ── HERO ─────────────────────────────── */}
+      <section className="relative overflow-hidden border-b border-neutral-100">
+        <div
+          aria-hidden
+          className="float-orb pointer-events-none absolute -right-24 -top-20 h-80 w-80 rounded-full bg-brand-100/50 blur-3xl"
+        />
+        <div className="relative mx-auto grid max-w-6xl grid-cols-1 gap-8 px-5 py-10 sm:px-8 sm:py-14 lg:grid-cols-[minmax(0,340px)_1fr] lg:gap-12">
+          {/* 포트레이트 */}
+          <Reveal>
+            <div className="ambient relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-gradient-to-br from-neutral-100 via-white to-brand-50">
+              <span className="absolute inset-0 flex items-center justify-center text-[9rem] font-black text-neutral-200">
+                {artist.name.slice(0, 1)}
+              </span>
+              {artist.verified && (
+                <span className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-neutral-950/85 px-3 py-1.5 text-xs font-bold text-white backdrop-blur">
+                  <BadgeCheck className="h-3.5 w-3.5 text-brand-400" /> 인증
+                  소속사
+                </span>
               )}
-              <p className="mt-2 text-neutral-700">{artist.tagline}</p>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {artist.categories.map((c) => (
-                  <Badge key={c} variant="brand">
-                    {CATEGORY_LABELS[c]}
-                  </Badge>
-                ))}
-                {artist.tags.map((t) => (
-                  <Badge key={t}>{t}</Badge>
-                ))}
-              </div>
+              {rating.count > 0 && (
+                <span className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-white/90 px-3 py-1.5 text-xs font-bold text-neutral-900 backdrop-blur">
+                  <Star className="h-3 w-3 fill-brand-500 text-brand-500" />
+                  {rating.avg.toFixed(1)}
+                </span>
+              )}
             </div>
-          </div>
+          </Reveal>
 
-          {/* Stats */}
-          <div className="mt-8 grid grid-cols-3 gap-3">
-            {[
-              {
-                icon: Users,
-                label: "팔로워",
-                value: formatFollowers(artist.followers),
-              },
-              {
-                icon: TrendingUp,
-                label: "응답률",
-                value: `${artist.responseRate}%`,
-              },
-              {
-                icon: Clock,
-                label: "평균 응답",
-                value: `${artist.responseHours}시간`,
-              },
-            ].map((stat) => (
-              <Card key={stat.label} className="p-4">
-                <stat.icon className="h-4 w-4 text-brand-500" />
-                <p className="mt-2 text-lg font-bold">{stat.value}</p>
-                <p className="text-xs text-neutral-500">{stat.label}</p>
-              </Card>
-            ))}
-          </div>
+          {/* 정보 */}
+          <Reveal delay={80} className="flex flex-col justify-center">
+            <Eyebrow>{artist.agencyName}</Eyebrow>
+            <h1 className="display-kr mt-4 text-5xl font-black sm:text-6xl">
+              {artist.name}
+            </h1>
+            <p className="mt-4 max-w-lg text-lg leading-relaxed text-neutral-600">
+              {artist.tagline}
+            </p>
+            <div className="mt-5 flex flex-wrap gap-1.5">
+              {artist.categories.map((c) => (
+                <span
+                  key={c}
+                  className="rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700"
+                >
+                  {CATEGORY_LABELS[c]}
+                </span>
+              ))}
+              {artist.tags.map((t) => (
+                <span
+                  key={t}
+                  className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-600"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
 
-          {/* Momentum */}
-          <section className="mt-10">
+            {/* 스탯 스트립 */}
+            <div className="mt-8 grid max-w-md grid-cols-3 divide-x divide-neutral-100 rounded-2xl bg-neutral-50/70 py-4">
+              {[
+                {
+                  icon: Users,
+                  label: "팔로워",
+                  value: formatFollowers(artist.followers),
+                },
+                {
+                  icon: TrendingUp,
+                  label: "응답률",
+                  value: `${artist.responseRate}%`,
+                  accent: true,
+                },
+                {
+                  icon: Clock,
+                  label: "평균 응답",
+                  value: `${artist.responseHours}h`,
+                },
+              ].map((s) => (
+                <div key={s.label} className="px-5 text-center">
+                  <s.icon className="mx-auto h-3.5 w-3.5 text-neutral-400" />
+                  <p
+                    className={`mt-1.5 text-xl font-black ${s.accent ? "text-brand-600" : ""}`}
+                  >
+                    {s.value}
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-neutral-400">
+                    {s.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── BODY ─────────────────────────────── */}
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[1fr_360px] lg:gap-14">
+        {/* 좌측 콘텐츠 */}
+        <div className="min-w-0 space-y-14">
+          <Reveal>
+            <Eyebrow className="mb-4">Momentum</Eyebrow>
             <MomentumCard artistId={artist.id} />
-          </section>
+          </Reveal>
 
-          {/* Recent work */}
-          <section className="mt-10">
-            <h2 className="text-lg font-bold">최근 활동</h2>
-            <ul className="mt-3 space-y-2">
+          <Reveal>
+            <Eyebrow className="mb-4">Recent Work</Eyebrow>
+            <ul className="space-y-2.5">
               {artist.recentWork.map((work) => (
                 <li
                   key={work}
-                  className="flex items-center gap-3 rounded-xl border border-neutral-200 px-4 py-3 text-sm"
+                  className="ambient flex items-center gap-3 rounded-2xl bg-white px-5 py-4 text-[15px] font-medium"
                 >
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
+                  <Sparkles className="h-4 w-4 shrink-0 text-brand-500" />
                   {work}
                 </li>
               ))}
             </ul>
-          </section>
+          </Reveal>
 
-          {/* Reviews */}
-          <section className="mt-10">
+          <Reveal>
+            <Eyebrow className="mb-4">Reviews</Eyebrow>
             <ReviewsSection artistId={artist.id} />
-          </section>
+          </Reveal>
 
-          {/* Calendar */}
-          <section className="mt-10">
-            <Card className="p-6">
+          <Reveal>
+            <Eyebrow className="mb-4">Availability</Eyebrow>
+            <div className="ambient rounded-[1.75rem] bg-white p-6 sm:p-8">
               <AvailabilityCalendar
                 days={schedule}
                 monthLabel="2026년 7월"
                 firstDayOffset={3}
               />
-            </Card>
-          </section>
+            </div>
+          </Reveal>
         </div>
 
-        {/* Right: booking box */}
+        {/* 우측 섭외 박스 */}
         <div>
-          <Card className="sticky top-24 p-6">
-            <p className="text-sm text-neutral-500">예상 섭외 비용</p>
-            <p className="mt-1 text-2xl font-black">
-              {formatBudget(artist.budgetRange[0])} ~{" "}
+          <div className="ambient sticky top-6 overflow-hidden rounded-[1.75rem] bg-white p-7">
+            <Eyebrow>Booking</Eyebrow>
+            <p className="mt-4 text-3xl font-black tracking-tight">
+              {formatBudget(artist.budgetRange[0])}
+              <span className="text-lg font-bold text-neutral-300"> ~ </span>
               {formatBudget(artist.budgetRange[1])}
             </p>
-            <p className="mt-1 text-xs text-neutral-400">
+            <p className="mt-1.5 text-xs text-neutral-400">
               행사 유형과 조건에 따라 달라질 수 있어요
             </p>
-            <Link
-              href={`/booking/new?artist=${artist.id}`}
-              className={cn(buttonVariants({ size: "lg" }), "mt-5 w-full")}
-            >
-              섭외 요청하기
-            </Link>
-            <div className="mt-4 rounded-xl bg-neutral-50 p-4 text-sm">
-              <p className="font-semibold">
+
+            <div className="mt-6">
+              <PremiumCTA
+                href={`/booking/new?artist=${artist.id}`}
+                variant="solid"
+                className="w-full justify-center"
+              >
+                섭외 요청하기
+              </PremiumCTA>
+            </div>
+
+            <div className="mt-5 rounded-2xl bg-neutral-50 p-4">
+              <p className="flex items-center gap-1.5 text-sm font-bold">
+                <Clock className="h-3.5 w-3.5 text-brand-500" />
                 평균 {artist.responseHours}시간 내 응답
               </p>
-              <p className="mt-1 text-neutral-500">
+              <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-500">
                 {artist.agencyName} 담당자가 요청을 검토한 후 수락·협의·거절로
                 답변드려요.
               </p>
             </div>
-            <p className="mt-4 text-xs text-neutral-400">
-              요청은 무료이며, 견적 확정 전까지 비용이 발생하지 않습니다.
-            </p>
-          </Card>
+
+            <div className="mt-4 flex items-start gap-2 text-[13px] text-neutral-500">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
+              <p>
+                <span className="font-semibold text-neutral-800">
+                  매칭 수수료 0%.
+                </span>{" "}
+                요청은 무료이며, 견적 확정 전까지 비용이 발생하지 않아요.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

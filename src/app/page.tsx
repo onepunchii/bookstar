@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { LineupBundleCard } from "@/components/lineup-bundle";
+import { Eyebrow } from "@/components/premium/eyebrow";
+import { PremiumArtistCard } from "@/components/premium/premium-artist-card";
+import { PremiumCTA } from "@/components/premium/premium-cta";
+import { Reveal } from "@/components/premium/reveal";
 import { SLACounter } from "@/components/sla-counter";
 import { StatusBadge } from "@/components/status-badge";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import {
   ARTISTS,
   BOOKING_REQUESTS,
@@ -11,16 +13,9 @@ import {
   SCHEDULES,
   THREAD_MESSAGES,
 } from "@/lib/mock-data";
+import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
 import {
-  CATEGORY_LABELS,
-  formatBudget,
-  formatFollowers,
-  type ArtistCategory,
-} from "@/lib/types";
-import {
-  ArrowRight,
   ArrowUpRight,
-  BadgeCheck,
   CalendarCheck,
   MessageSquare,
   Search,
@@ -42,11 +37,10 @@ export default function HomePage() {
   const latestRequest = latestMessage
     ? BOOKING_REQUESTS.find((r) => r.id === latestMessage.requestId)
     : undefined;
-  const recommended = ARTISTS.slice(0, 4);
+  const featured = ARTISTS.slice(0, 4);
   const fastResponders = [...ARTISTS]
     .sort((a, b) => a.responseHours - b.responseHours)
-    .slice(0, 3);
-  // 이번 주(7/7~7/13) 가능일이 많은 순
+    .slice(0, 4);
   const availableThisWeek = ARTISTS.map((a) => ({
     artist: a,
     days: (SCHEDULES[a.id] ?? [])
@@ -54,234 +48,304 @@ export default function HomePage() {
       .filter((d) => d.availability === "available").length,
   }))
     .sort((x, y) => y.days - x.days)
-    .slice(0, 3);
+    .slice(0, 4);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-black tracking-tight">
-          안녕하세요, 브라이트마케팅님
-        </h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          진행 중인 섭외 {inProgress.length}건, 새 메시지 {unread}개가 있어요
-        </p>
-      </div>
-
-      <div className="mb-4">
-        <SLACounter variant="inline" />
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {/* 검색 타일 */}
-        <Card className="p-6 md:col-span-2">
-          <h2 className="text-lg font-bold">어떤 아티스트를 찾으세요?</h2>
-          <form action="/artists" className="relative mt-4">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-            <input
-              name="q"
-              placeholder="아티스트, 소속사, 키워드 검색"
-              className="h-11 w-full rounded-xl border border-neutral-200 bg-neutral-50 pl-10 pr-4 text-sm placeholder:text-neutral-400 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-100"
-            />
-          </form>
-          <div className="mt-4 flex flex-wrap gap-1.5">
-            {(Object.keys(CATEGORY_LABELS) as ArtistCategory[]).map((c) => (
-              <Link
-                key={c}
-                href={`/artists?category=${c}`}
-                className="rounded-full border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-600 transition-colors hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700"
-              >
-                {CATEGORY_LABELS[c]}
-              </Link>
-            ))}
-          </div>
-        </Card>
-
-        {/* 섭외 현황 타일 */}
-        <Link href="/requests" className="group">
-          <Card className="flex h-full flex-col p-6 transition-colors group-hover:border-neutral-900">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-neutral-500">섭외 현황</h2>
-              <ArrowUpRight className="h-4 w-4 text-neutral-300 transition-colors group-hover:text-neutral-900" />
-            </div>
-            <p className="mt-3 text-4xl font-black">
-              {inProgress.length}
-              <span className="ml-1 text-base font-semibold text-neutral-400">
-                건 진행 중
-              </span>
+    <div className="bg-white">
+      {/* ── HERO ─────────────────────────────── */}
+      <section className="relative overflow-hidden">
+        {/* 배경 오브 */}
+        <div
+          aria-hidden
+          className="float-orb pointer-events-none absolute -right-32 -top-24 h-96 w-96 rounded-full bg-brand-100/50 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-24 top-40 h-72 w-72 rounded-full bg-neutral-100/70 blur-3xl"
+        />
+        <div className="relative mx-auto max-w-6xl px-5 pb-10 pt-14 sm:px-8 sm:pb-14 sm:pt-20">
+          <Reveal>
+            <Eyebrow>Booking OS · 광고주 콘솔</Eyebrow>
+            <h1 className="display-kr mt-5 max-w-3xl text-4xl font-black sm:text-[3.4rem]">
+              안녕하세요, 브라이트마케팅님
+              <br />
+              <span className="text-neutral-400">오늘도 완벽한 캐스팅을.</span>
+            </h1>
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-neutral-500 sm:text-lg">
+              진행 중인 섭외 {inProgress.length}건, 새 메시지 {unread}개.
+              대행사를 거치지 않고 소속사와 직접, 매칭 수수료 0%로 연결됩니다.
             </p>
-            <div className="mt-auto space-y-2 pt-4">
-              {inProgress.slice(0, 2).map((r) => (
-                <div
-                  key={r.id}
-                  className="flex items-center justify-between text-sm"
+          </Reveal>
+
+          {/* 프리미엄 검색 */}
+          <Reveal delay={80} className="mt-9 max-w-2xl">
+            <form action="/artists" className="group relative">
+              <Search className="pointer-events-none absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400" />
+              <input
+                name="q"
+                placeholder="아티스트, 소속사, 키워드로 검색하세요"
+                className="ambient premium-ease h-16 w-full rounded-full bg-white pl-14 pr-40 text-base outline-none placeholder:text-neutral-400 focus:ring-2 focus:ring-brand-200"
+              />
+              <button
+                type="submit"
+                className="premium-ease absolute right-2.5 top-1/2 flex h-11 -translate-y-1/2 items-center gap-2 rounded-full bg-neutral-950 px-6 text-sm font-semibold text-white hover:bg-brand-500"
+              >
+                검색
+              </button>
+            </form>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {(Object.keys(CATEGORY_LABELS) as ArtistCategory[]).map((c) => (
+                <Link
+                  key={c}
+                  href={`/artists?category=${c}`}
+                  className="premium-ease rounded-full bg-neutral-50 px-4 py-2 text-sm font-medium text-neutral-600 ring-1 ring-neutral-100 hover:bg-brand-50 hover:text-brand-700 hover:ring-brand-200"
                 >
-                  <span className="truncate font-medium">{r.artistName}</span>
-                  <StatusBadge status={r.status} />
-                </div>
+                  {CATEGORY_LABELS[c]}
+                </Link>
               ))}
             </div>
-          </Card>
-        </Link>
+          </Reveal>
 
-        {/* 새 메시지 타일 */}
-        <Link
-          href={latestRequest ? `/requests/${latestRequest.id}` : "/requests"}
-          className="group"
-        >
-          <Card className="flex h-full flex-col p-6 transition-colors group-hover:border-neutral-900">
-            <div className="flex items-center justify-between">
-              <h2 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
-                <MessageSquare className="h-3.5 w-3.5" /> 새 메시지
-              </h2>
-              {unread > 0 && <Badge variant="solid">{unread}</Badge>}
-            </div>
-            {latestMessage ? (
-              <>
-                <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-neutral-700">
-                  {latestMessage.body}
-                </p>
-                <p className="mt-auto pt-3 text-xs text-neutral-400">
-                  {latestMessage.senderName}
-                </p>
-              </>
-            ) : (
-              <p className="mt-3 text-sm text-neutral-400">
-                아직 메시지가 없어요
-              </p>
-            )}
-          </Card>
-        </Link>
+          {/* SLA 라이브 */}
+          <Reveal delay={140} className="mt-8 max-w-2xl">
+            <SLACounter variant="inline" />
+          </Reveal>
+        </div>
+      </section>
 
-        {/* 추천 아티스트 타일 */}
-        <Card className="p-6 md:col-span-2 lg:row-span-2">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold">추천 아티스트</h2>
-            <Link
-              href="/artists"
-              className="flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700"
-            >
-              전체 보기 <ArrowRight className="h-3.5 w-3.5" />
+      {/* ── FEATURED ─────────────────────────── */}
+      <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24">
+        <Reveal className="flex items-end justify-between">
+          <div>
+            <Eyebrow>Featured</Eyebrow>
+            <h2 className="display-kr mt-3 text-2xl font-black sm:text-3xl">
+              지금 섭외 가능한 아티스트
+            </h2>
+            <p className="mt-2 text-sm text-neutral-500">
+              응답률과 가능 일정이 검증된 프로필만 큐레이션했어요
+            </p>
+          </div>
+          <Link
+            href="/artists"
+            className="premium-ease hidden items-center gap-1.5 text-sm font-semibold text-neutral-900 hover:text-brand-600 sm:flex"
+          >
+            전체 보기
+            <ArrowUpRight className="h-4 w-4" />
+          </Link>
+        </Reveal>
+
+        <div className="mt-8 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+          {featured.map((artist, i) => (
+            <Reveal key={artist.id} delay={i * 70}>
+              <PremiumArtistCard artist={artist} />
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 콘솔 위젯 ─────────────────────────── */}
+      <section className="mx-auto max-w-6xl px-5 pb-16 sm:px-8 sm:pb-24">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
+          {/* 섭외 현황 */}
+          <Reveal className="lg:col-span-1">
+            <Link href="/requests" className="group block h-full">
+              <div className="ambient ambient-hover flex h-full flex-col rounded-[1.75rem] bg-white p-7">
+                <div className="flex items-center justify-between">
+                  <Eyebrow>In Progress</Eyebrow>
+                  <ArrowUpRight className="premium-ease h-4 w-4 text-neutral-300 group-hover:text-neutral-900" />
+                </div>
+                <p className="mt-5 text-5xl font-black tracking-tight">
+                  {inProgress.length}
+                  <span className="ml-2 text-base font-semibold text-neutral-400">
+                    건 진행 중
+                  </span>
+                </p>
+                <div className="mt-auto space-y-2.5 pt-6">
+                  {inProgress.slice(0, 3).map((r) => (
+                    <div
+                      key={r.id}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="truncate font-medium">
+                        {r.artistName}
+                      </span>
+                      <StatusBadge status={r.status} />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </Link>
-          </div>
-          <div className="mt-4 divide-y divide-neutral-100">
-            {recommended.map((a) => (
-              <Link
-                key={a.id}
-                href={`/artists/${a.id}`}
-                className="group flex items-center gap-4 py-3.5 first:pt-0 last:pb-0"
-              >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-100 to-brand-50 text-lg font-black text-neutral-300">
-                  {a.name.slice(0, 1)}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold group-hover:text-brand-600">
-                      {a.name}
-                    </span>
-                    {a.verified && (
-                      <BadgeCheck className="h-4 w-4 text-brand-500" />
-                    )}
-                  </div>
-                  <p className="truncate text-xs text-neutral-500">
-                    {CATEGORY_LABELS[a.category]} · 팔로워{" "}
-                    {formatFollowers(a.followers)} · 응답률 {a.responseRate}%
-                  </p>
-                </div>
-                <span className="shrink-0 text-sm font-semibold text-neutral-700">
-                  {formatBudget(a.budgetRange[0])}~
-                </span>
-              </Link>
-            ))}
-          </div>
-        </Card>
+          </Reveal>
 
-        {/* AI 캐스팅 추천 타일 */}
-        <Link href="/recommend" className="group md:col-span-2">
-          <Card className="h-full border-neutral-900 bg-neutral-950 p-6 text-white transition-colors group-hover:bg-neutral-800">
-            <div className="flex items-start justify-between">
-              <div>
-                <h2 className="flex items-center gap-2 text-lg font-bold">
-                  <Sparkles className="h-4 w-4 text-brand-500" /> AI 캐스팅
-                  추천
-                  <span className="ml-1 rounded bg-brand-500 px-1.5 py-0.5 text-[10px] font-bold">
+          {/* 새 메시지 */}
+          <Reveal delay={80} className="lg:col-span-1">
+            <Link
+              href={
+                latestRequest ? `/requests/${latestRequest.id}` : "/requests"
+              }
+              className="group block h-full"
+            >
+              <div className="ambient ambient-hover flex h-full flex-col rounded-[1.75rem] bg-white p-7">
+                <div className="flex items-center justify-between">
+                  <Eyebrow>Messages</Eyebrow>
+                  {unread > 0 && (
+                    <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-brand-500 px-2 text-xs font-bold text-white">
+                      {unread}
+                    </span>
+                  )}
+                </div>
+                {latestMessage ? (
+                  <>
+                    <MessageSquare className="mt-5 h-5 w-5 text-brand-500" />
+                    <p className="mt-3 line-clamp-3 text-[15px] font-medium leading-relaxed text-neutral-800">
+                      &ldquo;{latestMessage.body}&rdquo;
+                    </p>
+                    <p className="mt-auto pt-5 text-xs text-neutral-400">
+                      {latestMessage.senderName}
+                    </p>
+                  </>
+                ) : (
+                  <p className="mt-5 text-sm text-neutral-400">
+                    아직 메시지가 없어요
+                  </p>
+                )}
+              </div>
+            </Link>
+          </Reveal>
+
+          {/* AI 캐스팅 (다크 프리미엄) */}
+          <Reveal delay={160} className="lg:col-span-1">
+            <Link href="/recommend" className="group block h-full">
+              <div className="premium-ease relative flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-neutral-950 p-7 text-white group-hover:-translate-y-[3px]">
+                <div
+                  aria-hidden
+                  className="float-orb pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-brand-500/25 blur-2xl"
+                />
+                <div className="relative flex items-center justify-between">
+                  <Eyebrow tone="light">AI Casting</Eyebrow>
+                  <span className="rounded-full bg-brand-500 px-2 py-0.5 text-[10px] font-bold">
                     BETA
                   </span>
-                </h2>
-                <p className="mt-2 max-w-sm text-sm leading-relaxed text-neutral-400">
-                  예산·카테고리·이미지 태그로 매칭도 높은 아티스트를 5초 만에
-                  찾아드려요.
+                </div>
+                <Sparkles className="relative mt-5 h-6 w-6 text-brand-400" />
+                <h3 className="display-kr relative mt-3 text-xl font-black">
+                  예산만 넣으면
+                  <br />딱 맞는 캐스팅을
+                </h3>
+                <p className="relative mt-2 text-sm leading-relaxed text-neutral-400">
+                  예산·카테고리·이미지 태그로 5초 만에 추천받으세요.
                 </p>
+                <span className="relative mt-auto flex items-center gap-1.5 pt-6 text-sm font-bold text-brand-400">
+                  추천 시작하기
+                  <ArrowUpRight className="premium-ease h-4 w-4 group-hover:translate-x-0.5" />
+                </span>
               </div>
-              <ArrowUpRight className="h-5 w-5 text-neutral-400 transition-colors group-hover:text-white" />
-            </div>
-            <span className="mt-5 inline-flex h-10 items-center gap-1.5 rounded-lg bg-brand-500 px-4 text-sm font-semibold">
-              추천 시작하기 <ArrowRight className="h-3.5 w-3.5" />
-            </span>
-          </Card>
-        </Link>
+            </Link>
+          </Reveal>
+        </div>
+      </section>
 
-        {/* 라인업 번들 (2컬럼) */}
-        <div className="md:col-span-2 lg:col-span-4">
-          <div className="mb-3 flex items-baseline justify-between">
-            <div>
-              <h2 className="text-lg font-bold tracking-tight">
-                세트 라인업
-              </h2>
-              <p className="mt-0.5 text-xs text-neutral-500">
-                소속사가 큐레이션한 아티스트 조합. 세트가 저렴해요.
-              </p>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {BUNDLES.map((b) => (
-              <LineupBundleCard key={b.id} bundle={b} />
+      {/* ── 세트 라인업 ───────────────────────── */}
+      <section className="border-t border-neutral-100 bg-neutral-50/60">
+        <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24">
+          <Reveal>
+            <Eyebrow>Curated Sets</Eyebrow>
+            <h2 className="display-kr mt-3 text-2xl font-black sm:text-3xl">
+              세트로 섭외하면 더 완성도 높게
+            </h2>
+            <p className="mt-2 text-sm text-neutral-500">
+              소속사가 직접 큐레이션한 조합. 세트 할인까지.
+            </p>
+          </Reveal>
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
+            {BUNDLES.map((b, i) => (
+              <Reveal key={b.id} delay={i * 70}>
+                <LineupBundleCard bundle={b} />
+              </Reveal>
             ))}
           </div>
         </div>
+      </section>
 
-        {/* 빠른 응답 타일 */}
-        <Card className="p-6">
-          <h2 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
-            <Zap className="h-3.5 w-3.5 text-brand-500" /> 빠른 응답
-          </h2>
-          <div className="mt-3 space-y-3">
-            {fastResponders.map((a) => (
-              <Link
-                key={a.id}
-                href={`/artists/${a.id}`}
-                className="flex items-center justify-between text-sm hover:text-brand-600"
-              >
-                <span className="font-medium">{a.name}</span>
-                <span className="text-xs text-neutral-400">
-                  평균 {a.responseHours}시간
-                </span>
-              </Link>
-            ))}
-          </div>
-        </Card>
+      {/* ── 인사이트 2열 ──────────────────────── */}
+      <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
+          <Reveal>
+            <div className="ambient h-full rounded-[1.75rem] bg-white p-7">
+              <Eyebrow>
+                <Zap className="h-3 w-3" /> Fast Response
+              </Eyebrow>
+              <h3 className="mt-3 text-lg font-black">빠른 응답 아티스트</h3>
+              <div className="mt-5 divide-y divide-neutral-100">
+                {fastResponders.map((a) => (
+                  <Link
+                    key={a.id}
+                    href={`/artists/${a.id}`}
+                    className="premium-ease flex items-center justify-between py-3 first:pt-0 last:pb-0 hover:text-brand-600"
+                  >
+                    <span className="font-semibold">{a.name}</span>
+                    <span className="text-sm text-neutral-400">
+                      평균 {a.responseHours}시간
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </Reveal>
 
-        {/* 이번 주 가능 타일 */}
-        <Card className="p-6">
-          <h2 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
-            <CalendarCheck className="h-3.5 w-3.5 text-brand-500" /> 이번 주
-            섭외 가능
-          </h2>
-          <div className="mt-3 space-y-3">
-            {availableThisWeek.map(({ artist, days }) => (
-              <Link
-                key={artist.id}
-                href={`/artists/${artist.id}`}
-                className="flex items-center justify-between text-sm hover:text-brand-600"
-              >
-                <span className="font-medium">{artist.name}</span>
-                <span className="text-xs font-semibold text-brand-600">
-                  {days}일 가능
-                </span>
-              </Link>
-            ))}
+          <Reveal delay={80}>
+            <div className="ambient h-full rounded-[1.75rem] bg-white p-7">
+              <Eyebrow>
+                <CalendarCheck className="h-3 w-3" /> This Week
+              </Eyebrow>
+              <h3 className="mt-3 text-lg font-black">이번 주 섭외 가능</h3>
+              <div className="mt-5 divide-y divide-neutral-100">
+                {availableThisWeek.map(({ artist, days }) => (
+                  <Link
+                    key={artist.id}
+                    href={`/artists/${artist.id}`}
+                    className="premium-ease flex items-center justify-between py-3 first:pt-0 last:pb-0 hover:text-brand-600"
+                  >
+                    <span className="font-semibold">{artist.name}</span>
+                    <span className="text-sm font-bold text-brand-600">
+                      {days}일 가능
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── CTA 밴드 ──────────────────────────── */}
+      <section className="mx-auto max-w-6xl px-5 pb-20 sm:px-8 sm:pb-28">
+        <Reveal>
+          <div className="relative overflow-hidden rounded-[2.5rem] bg-neutral-950 px-8 py-16 text-center sm:px-16 sm:py-24">
+            <div
+              aria-hidden
+              className="float-orb pointer-events-none absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-brand-500/20 blur-3xl"
+            />
+            <div className="relative">
+              <Eyebrow tone="light" className="justify-center">
+                수수료 0%
+              </Eyebrow>
+              <h2 className="display-kr mx-auto mt-4 max-w-2xl text-3xl font-black text-white sm:text-4xl">
+                첫 섭외 요청까지{" "}
+                <span className="text-brand-500">5분</span>이면 충분합니다
+              </h2>
+              <p className="mx-auto mt-4 max-w-lg text-neutral-400">
+                대행사 거품 없이, 검증된 소속사와 직접. 요청은 언제나 무료예요.
+              </p>
+              <div className="mt-9 flex justify-center">
+                <PremiumCTA href="/artists" variant="solid">
+                  아티스트 둘러보기
+                </PremiumCTA>
+              </div>
+            </div>
           </div>
-        </Card>
-      </div>
+        </Reveal>
+      </section>
     </div>
   );
 }
