@@ -282,12 +282,25 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <main
           className={cn(
-            "flex-1 pb-20 md:pb-0",
+            "relative flex-1 pb-20 md:pb-0",
             dark ? "adv-dark" : "bg-neutral-50"
           )}
         >
-          <SampleHint />
-          {children}
+          {/* 공용 오렌지 앰비언트 조명 (유리 뒤) — 광고주 다크 전용 */}
+          {dark && (
+            <div
+              aria-hidden
+              className="pointer-events-none fixed inset-0 z-0 md:pl-60"
+            >
+              <div className="glow-orange float-orb absolute -top-16 right-[6%] h-96 w-96 rounded-full blur-2xl opacity-80" />
+              <div className="glow-soft absolute left-[2%] top-[45%] h-80 w-80 rounded-full blur-2xl opacity-70" />
+              <div className="glow-orange absolute bottom-[4%] right-[24%] h-80 w-80 rounded-full blur-2xl opacity-60" />
+            </div>
+          )}
+          <div className="relative z-10">
+            <SampleHint />
+            {children}
+          </div>
         </main>
       </div>
 

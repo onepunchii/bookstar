@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/input";
 import { useNotificationsStore } from "@/lib/notifications-store";
 import { useReviewsStore } from "@/lib/reviews-store";
+import { cn } from "@/lib/utils";
 import { CheckCircle2, Star } from "lucide-react";
 import { RatingStars } from "./rating-stars";
 
@@ -14,6 +15,7 @@ interface Props {
   artistName: string;
   companyName: string;
   eventTitle: string;
+  dark?: boolean;
 }
 
 export function LeaveReviewCard({
@@ -21,6 +23,7 @@ export function LeaveReviewCard({
   artistName,
   companyName,
   eventTitle,
+  dark = false,
 }: Props) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -43,37 +46,51 @@ export function LeaveReviewCard({
 
   if (submitted) {
     return (
-      <Card className="border-brand-200 bg-brand-50/40 p-5">
-        <div className="flex items-center gap-2 text-brand-700">
+      <div
+        className={cn(
+          "rounded-2xl p-5",
+          dark
+            ? "adv-card ring-1 ring-brand-500/30"
+            : "border border-brand-200 bg-brand-50/40"
+        )}
+      >
+        <div
+          className={cn(
+            "flex items-center gap-2",
+            dark ? "text-brand-300" : "text-brand-700"
+          )}
+        >
           <CheckCircle2 className="h-4 w-4" />
           <p className="text-sm font-bold">리뷰 등록 완료</p>
         </div>
-        <p className="mt-1 text-xs text-neutral-500">
+        <p className={cn("mt-1 text-xs", dark ? "text-white/50" : "text-neutral-500")}>
           공개 프로필에 즉시 반영되고, 소속사에게도 알림이 갔어요.
         </p>
-      </Card>
+      </div>
     );
   }
 
-  return (
-    <Card className="p-5">
+  const inner = (
+    <>
       <div className="flex items-center gap-1.5">
         <Star className="h-4 w-4 text-brand-500" />
-        <h3 className="text-sm font-bold">이번 섭외는 어떠셨나요?</h3>
+        <h3 className={cn("text-sm font-bold", dark && "text-white")}>
+          이번 섭외는 어떠셨나요?
+        </h3>
       </div>
-      <p className="mt-1 text-xs text-neutral-500">
+      <p className={cn("mt-1 text-xs", dark ? "text-white/50" : "text-neutral-500")}>
         {artistName} · {eventTitle}
       </p>
       <div className="mt-4">
-        <RatingStars
-          value={rating}
-          size="lg"
-          interactive
-          onChange={setRating}
-        />
+        <RatingStars value={rating} size="lg" interactive onChange={setRating} />
       </div>
-      <Textarea
-        className="mt-3"
+      <textarea
+        className={cn(
+          "mt-3 w-full rounded-lg px-3 py-2 text-sm outline-none",
+          dark
+            ? "bg-white/[0.06] text-white placeholder:text-white/35 focus:bg-white/[0.09]"
+            : "border border-neutral-300 placeholder:text-neutral-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+        )}
         rows={3}
         placeholder="현장 매너, 커뮤니케이션, 결과물 만족도 등을 남겨주세요"
         value={comment}
@@ -86,6 +103,12 @@ export function LeaveReviewCard({
       >
         리뷰 남기기
       </Button>
-    </Card>
+    </>
+  );
+
+  return dark ? (
+    <div className="adv-card rounded-2xl p-5">{inner}</div>
+  ) : (
+    <Card className="p-5">{inner}</Card>
   );
 }

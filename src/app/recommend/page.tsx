@@ -38,11 +38,8 @@ export default function RecommendPage() {
       </section>
 
       <div className="mx-auto max-w-4xl px-5 py-10 sm:px-8">
-        {/* 입력·결과는 라이트 워킹 시트 (폼은 라이트가 명료) */}
         <Reveal>
-          <div className="rounded-[2rem] bg-white p-5 shadow-2xl shadow-black/40 sm:p-8">
-            <CastingRecommender />
-          </div>
+          <CastingRecommender />
         </Reveal>
       </div>
     </div>

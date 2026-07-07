@@ -22,10 +22,7 @@ export default async function NewBookingPage({
         <p className="mt-2 text-sm text-white/50">
           표준 브리프로 작성하면 소속사가 더 빠르게 답변할 수 있어요
         </p>
-        {/* 폼은 라이트 워킹 시트 (입력은 라이트가 명료) */}
-        <div className="mt-6 rounded-[2rem] bg-white p-5 shadow-2xl shadow-black/40 sm:p-8">
-          <BookingForm artist={artist} />
-        </div>
+        <BookingForm artist={artist} />
       </div>
     </div>
   );

@@ -3,10 +3,6 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { RatingStars } from "@/components/rating-stars";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input, Label } from "@/components/ui/input";
 import { getRatingSummary } from "@/lib/mock-data";
 import { recommend } from "@/lib/recommend";
 import {
@@ -61,13 +57,17 @@ export function CastingRecommender() {
     });
   }, [submitted, budget, categories, gender, tags]);
 
+  const label = "mb-1.5 block text-sm font-medium text-white/70";
+
   return (
     <div className="space-y-6">
       {/* 폼 */}
-      <Card className="space-y-5 p-6">
+      <div className="adv-card space-y-5 rounded-[1.75rem] p-6 sm:p-7">
         <div>
-          <Label htmlFor="rec-budget">예산 (만원)</Label>
-          <Input
+          <label htmlFor="rec-budget" className={label}>
+            예산 (만원)
+          </label>
+          <input
             id="rec-budget"
             type="number"
             value={budget}
@@ -76,11 +76,12 @@ export function CastingRecommender() {
               setSubmitted(false);
             }}
             placeholder="예: 3000"
+            className="adv-glass h-11 w-full rounded-xl px-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-brand-500/50"
           />
         </div>
 
         <div>
-          <Label>카테고리 (복수 선택 가능)</Label>
+          <p className={label}>카테고리 (복수 선택 가능)</p>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(CATEGORY_LABELS) as ArtistCategory[]).map((c) => (
               <button
@@ -91,10 +92,10 @@ export function CastingRecommender() {
                   setSubmitted(false);
                 }}
                 className={cn(
-                  "flex items-center gap-1 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
+                  "premium-ease flex items-center gap-1 rounded-full px-3.5 py-1.5 text-sm font-medium",
                   categories.includes(c)
                     ? "bg-brand-500 text-white"
-                    : "border border-neutral-200 text-neutral-600 hover:border-brand-500"
+                    : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-white"
                 )}
               >
                 {categories.includes(c) && <Check className="h-3 w-3" />}
@@ -105,7 +106,7 @@ export function CastingRecommender() {
         </div>
 
         <div>
-          <Label>성별</Label>
+          <p className={label}>성별</p>
           <div className="flex flex-wrap gap-2">
             {(
               [
@@ -114,7 +115,7 @@ export function CastingRecommender() {
                 ["male", "남성"],
                 ["group", "그룹"],
               ] as const
-            ).map(([v, label]) => (
+            ).map(([v, txt]) => (
               <button
                 key={v}
                 type="button"
@@ -123,20 +124,20 @@ export function CastingRecommender() {
                   setSubmitted(false);
                 }}
                 className={cn(
-                  "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                  "premium-ease rounded-full px-4 py-1.5 text-sm font-medium",
                   gender === v
-                    ? "bg-neutral-900 text-white"
-                    : "border border-neutral-200 text-neutral-600 hover:border-neutral-900"
+                    ? "bg-white text-neutral-900"
+                    : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-white"
                 )}
               >
-                {label}
+                {txt}
               </button>
             ))}
           </div>
         </div>
 
         <div>
-          <Label>이미지 · 브랜드 태그 (복수 선택)</Label>
+          <p className={label}>이미지 · 브랜드 태그 (복수 선택)</p>
           <div className="flex flex-wrap gap-1.5">
             {TAG_SUGGESTIONS.map((t) => (
               <button
@@ -147,10 +148,10 @@ export function CastingRecommender() {
                   setSubmitted(false);
                 }}
                 className={cn(
-                  "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                  "premium-ease rounded-full px-3 py-1 text-xs font-medium",
                   tags.includes(t)
-                    ? "border-brand-500 bg-brand-50 text-brand-700"
-                    : "border-neutral-200 text-neutral-600 hover:border-brand-500"
+                    ? "bg-brand-500/20 text-brand-300 ring-1 ring-brand-500/40"
+                    : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-white"
                 )}
               >
                 {t}
@@ -159,99 +160,104 @@ export function CastingRecommender() {
           </div>
         </div>
 
-        <Button
-          size="lg"
+        <button
           onClick={() => setSubmitted(true)}
-          className="w-full"
+          className="premium-ease flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-500 text-sm font-bold text-white hover:bg-brand-600 hover:brand-glow"
         >
           <Sparkles className="h-4 w-4" />
           매칭 아티스트 찾기
-        </Button>
-      </Card>
+        </button>
+      </div>
 
       {/* 결과 */}
       {submitted && (
         <section>
-          <h2 className="mb-3 text-sm font-bold text-neutral-500">
+          <h2 className="mb-3 text-sm font-bold text-white/50">
             추천 결과 ({results.length}팀)
           </h2>
           {results.length === 0 ? (
-            <Card className="py-12 text-center">
-              <p className="font-semibold">조건에 맞는 아티스트가 없어요</p>
-              <p className="mt-1 text-sm text-neutral-400">
+            <div className="adv-card rounded-2xl py-12 text-center">
+              <p className="font-semibold text-white">
+                조건에 맞는 아티스트가 없어요
+              </p>
+              <p className="mt-1 text-sm text-white/45">
                 카테고리·태그를 조정하거나 예산 범위를 넓혀보세요
               </p>
-            </Card>
+            </div>
           ) : (
             <div className="space-y-3">
               {results.map((r, i) => {
                 const rating = getRatingSummary(r.artist.id);
                 return (
-                  <Card
+                  <div
                     key={r.artist.id}
                     className={cn(
-                      "p-5 transition-colors hover:border-neutral-900",
-                      i === 0 && "border-brand-500 ring-1 ring-brand-500/20"
+                      "adv-card adv-card-hover rounded-2xl p-5",
+                      i === 0 && "ring-1 ring-brand-500/40"
                     )}
                   >
                     <div className="flex items-start gap-4">
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-100 to-brand-50 text-xl font-black text-neutral-300">
+                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/[0.06] text-xl font-black text-white/40">
                         {r.artist.name.slice(0, 1)}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           {i === 0 && (
-                            <Badge variant="solid">Best Match</Badge>
+                            <span className="rounded-full bg-brand-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                              Best Match
+                            </span>
                           )}
-                          <span className="font-bold">{r.artist.name}</span>
-                          <span className="text-xs text-neutral-400">
+                          <span className="font-bold text-white">
+                            {r.artist.name}
+                          </span>
+                          <span className="text-xs text-white/40">
                             {r.artist.agencyName}
                           </span>
                           {rating.count > 0 && (
                             <span className="flex items-center gap-1">
                               <RatingStars value={rating.avg} size="sm" />
-                              <span className="text-xs font-semibold">
+                              <span className="text-xs font-semibold text-white/70">
                                 {rating.avg.toFixed(1)}
                               </span>
                             </span>
                           )}
                         </div>
-                        <p className="mt-0.5 line-clamp-1 text-sm text-neutral-500">
+                        <p className="mt-0.5 line-clamp-1 text-sm text-white/50">
                           {r.artist.tagline}
                         </p>
                         <ul className="mt-2 space-y-1">
                           {r.reasons.slice(0, 3).map((reason) => (
                             <li
                               key={reason}
-                              className="flex items-center gap-1.5 text-xs text-neutral-600"
+                              className="flex items-center gap-1.5 text-xs text-white/65"
                             >
                               <Check className="h-3 w-3 text-brand-500" />
                               {reason}
                             </li>
                           ))}
                         </ul>
-                        <p className="mt-2 text-xs text-neutral-400">
+                        <p className="mt-2 text-xs text-white/40">
                           팔로워 {formatFollowers(r.artist.followers)} · 예산대{" "}
                           {formatBudget(r.artist.budgetRange[0])}~
                           {formatBudget(r.artist.budgetRange[1])}
                         </p>
                       </div>
                       <div className="flex flex-col items-end gap-2">
-                        <span className="text-2xl font-black text-brand-600">
+                        <span className="text-2xl font-black text-brand-400">
                           {r.score}
-                          <span className="ml-0.5 text-xs font-bold text-neutral-400">
+                          <span className="ml-0.5 text-xs font-bold text-white/40">
                             점
                           </span>
                         </span>
                         <Link
                           href={`/artists/${r.artist.id}`}
-                          className="flex items-center gap-1 text-xs font-semibold text-neutral-600 hover:text-neutral-900"
+                          className="flex items-center gap-1 text-xs font-semibold text-white/60 hover:text-white"
                         >
                           프로필 <ArrowRight className="h-3 w-3" />
                         </Link>
                       </div>
                     </div>
-                  </Card>
+                  </div>
                 );
               })}
             </div>

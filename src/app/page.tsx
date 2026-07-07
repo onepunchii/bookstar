@@ -58,13 +58,6 @@ export default function HomePage() {
 
   return (
     <div className="adv-dark relative overflow-hidden">
-      {/* ── 오렌지 조명 레이어 (유리 뒤) ─────────── */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="glow-orange float-orb absolute -top-10 left-[8%] h-72 w-72 rounded-full blur-2xl sm:h-96 sm:w-96" />
-        <div className="glow-soft absolute right-[4%] top-[38%] h-72 w-72 rounded-full blur-2xl" />
-        <div className="glow-orange absolute bottom-[6%] left-1/2 h-80 w-80 -translate-x-1/2 rounded-full blur-2xl opacity-70" />
-      </div>
-
       <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10">
         {/* ── HERO 벤토 ─────────────────────────── */}
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
