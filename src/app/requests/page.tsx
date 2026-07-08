@@ -4,13 +4,15 @@ import { Reveal } from "@/components/premium/reveal";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { getBookingRequests } from "@/lib/data/booking-requests";
+import { getSessionUser } from "@/lib/data/session";
 import { getLastSenderMap } from "@/lib/data/messages";
 import { formatBudget } from "@/lib/types";
 import { ChevronRight } from "lucide-react";
 
 export default async function RequestsPage() {
+  const user = await getSessionUser();
   const [requests, lastSender] = await Promise.all([
-    getBookingRequests(),
+    getBookingRequests(user ? { companyUserId: user.id } : undefined),
     getLastSenderMap(),
   ]);
 

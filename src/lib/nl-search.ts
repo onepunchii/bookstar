@@ -1,7 +1,8 @@
 import type { ArtistCategory } from "./types";
+import { todayKST } from "@/lib/date";
 
 // 데모 오늘: 2026-07-07 (화)
-const TODAY = "2026-07-07";
+const TODAY = todayKST();
 
 export interface ParsedQuery {
   keywords: string[];

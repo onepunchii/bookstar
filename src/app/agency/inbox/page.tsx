@@ -7,7 +7,7 @@ import { AgencyInbox } from "../agency-inbox";
 export default async function AgencyInboxPage() {
   const agency = await getSessionAgency();
   const [requests, artists, scheduleMap, quotesMap] = await Promise.all([
-    getBookingRequests(),
+    getBookingRequests(agency ? { agencyId: agency.id } : undefined),
     getAgencyArtists(agency?.id),
     getPublicScheduleMap(),
     getLatestQuotesMap(),

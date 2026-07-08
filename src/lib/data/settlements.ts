@@ -45,17 +45,22 @@ function rowToSettlement(r: Row): Settlement {
   };
 }
 
-export async function getSettlements(): Promise<Settlement[]> {
+/** agencyId 주면 그 소속사 아티스트의 정산만 (실 소속사 격리, 빈 목록 그대로) */
+export async function getSettlements(agencyId?: string): Promise<Settlement[]> {
   try {
     const db = getDb();
-    const rows = await db
+    const q = db
       .select(cols)
       .from(schema.settlements)
-      .leftJoin(schema.artists, eq(schema.settlements.artistId, schema.artists.id))
-      .orderBy(desc(schema.settlements.createdAt));
+      .leftJoin(schema.artists, eq(schema.settlements.artistId, schema.artists.id));
+    const rows = await (agencyId
+      ? q.where(eq(schema.artists.agencyId, agencyId))
+      : q
+    ).orderBy(desc(schema.settlements.createdAt));
+    if (agencyId) return (rows as Row[]).map(rowToSettlement);
     if (rows.length > 0) return (rows as Row[]).map(rowToSettlement);
   } catch {
     /* 폴백 */
   }
-  return MOCK;
+  return agencyId ? [] : MOCK;
 }

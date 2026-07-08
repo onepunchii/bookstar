@@ -22,9 +22,9 @@ interface PendingReply {
 }
 
 const SEGMENT_LABEL: Record<string, string> = {
-  agency: "엔터 기획사",
-  creator: "유튜버·크리에이터",
-  company: "기업·광고주",
+  agency: "기획사",
+  creator: "1인기획사 (유튜버·인플루언서)",
+  company: "광고주 (기업)",
 };
 const STATUS_LABEL: Record<string, string> = {
   queued: "대기",

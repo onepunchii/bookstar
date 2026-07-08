@@ -8,6 +8,7 @@ import { PremiumCTA } from "@/components/premium/premium-cta";
 import { Reveal } from "@/components/premium/reveal";
 import { getPublicArtists, getPublicScheduleMap } from "@/lib/data/artists";
 import { getBookingRequests } from "@/lib/data/booking-requests";
+import { getSessionUser } from "@/lib/data/session";
 import { getMessages } from "@/lib/data/messages";
 import { BUNDLES } from "@/lib/mock-data";
 import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
@@ -20,10 +21,11 @@ import {
 } from "lucide-react";
 
 export default async function HomePage() {
+  const user = await getSessionUser();
   const [ARTISTS, scheduleMap, BOOKING_REQUESTS] = await Promise.all([
     getPublicArtists(),
     getPublicScheduleMap(),
-    getBookingRequests(),
+    getBookingRequests(user ? { companyUserId: user.id } : undefined),
   ]);
   const inProgress = BOOKING_REQUESTS.filter((r) =>
     ["pending", "reviewing", "negotiating"].includes(r.status)
@@ -86,7 +88,7 @@ export default async function HomePage() {
             <Eyebrow>광고주 콘솔</Eyebrow>
             <h1 className="display-kr mt-3 text-3xl font-black text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] sm:text-5xl">
               안녕하세요,
-              <br /> 브라이트마케팅님
+              <br /> {user?.name ?? "브라이트마케팅"}님
             </h1>
             <div className="mt-5 flex flex-wrap gap-2">
               <span className="rounded-full bg-brand-500 px-3 py-1.5 text-xs font-bold text-white">

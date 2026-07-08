@@ -24,7 +24,8 @@ export async function MomentumCard({
   const searchLast = searchSeries[searchSeries.length - 1];
   const searchDelta = recentDelta(searchSeries, 7);
   const newsSum = real ? real.newsCount : recentSum(m.news, 30);
-  const newsSeries = real ? real.searchSeries : m.news;
+  // 실측 기사 수는 총건수만 제공(일별 추이 없음) → 곡선 미표시
+  const newsSeries = real ? [] : m.news;
   // 팔로워: 유튜브 실 구독자 있으면 그 값(만 단위), 없으면 mock
   const hasYt = typeof youtubeSubscribers === "number";
   const followersLast = hasYt

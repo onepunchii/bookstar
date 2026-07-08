@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { todayKST } from "@/lib/date";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { WeatherBadge } from "@/components/weather-badge";
@@ -16,7 +17,13 @@ import {
   UserRound,
 } from "lucide-react";
 
-const TODAY = "2026-07-07";
+const TODAY = todayKST();
+
+function formatToday(iso: string) {
+  const d = new Date(iso);
+  const dow = ["일", "월", "화", "수", "목", "금", "토"][d.getDay()];
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${dow})`;
+}
 
 export function MySchedule({
   schedules,
@@ -37,7 +44,7 @@ export function MySchedule({
       <h1 className="text-2xl font-black tracking-tight">
         안녕하세요, {artistName}님
       </h1>
-      <p className="mt-1 text-sm text-neutral-500">7월 7일 (화) · 오늘</p>
+      <p className="mt-1 text-sm text-neutral-500">{formatToday(TODAY)} · 오늘</p>
 
       {/* 오늘의 콜타임 */}
       {today && callTime ? (

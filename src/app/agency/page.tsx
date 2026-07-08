@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { todayKST } from "@/lib/date";
 import { Sparkline } from "@/components/sparkline";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
@@ -24,13 +25,13 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-const TODAY = "2026-07-07";
+const TODAY = todayKST();
 
 export default async function AgencyDashboardPage() {
   const agency = await getSessionAgency();
   const [ARTISTS, BOOKING_REQUESTS, scheduleMap] = await Promise.all([
     getAgencyArtists(agency?.id),
-    getBookingRequests(),
+    getBookingRequests(agency ? { agencyId: agency.id } : undefined),
     getPublicScheduleMap(),
   ]);
   const pending = BOOKING_REQUESTS.filter((r) => r.status === "pending");
@@ -173,7 +174,7 @@ export default async function AgencyDashboardPage() {
       {/* 오늘 일정 */}
       <Card className="p-6">
         <h2 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
-          <CalendarDays className="h-3.5 w-3.5 text-brand-500" /> 오늘 (7/7)
+          <CalendarDays className="h-3.5 w-3.5 text-brand-500" /> 오늘 ({Number(TODAY.slice(5, 7))}/{Number(TODAY.slice(8))})
         </h2>
         <div className="mt-3 space-y-2.5">
           {todaySchedule.slice(0, 5).map(({ artist, day }) => (

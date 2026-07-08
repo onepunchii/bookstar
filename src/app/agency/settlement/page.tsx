@@ -6,7 +6,7 @@ import { SettlementBoard } from "./settlement-board";
 export default async function AgencySettlementPage() {
   const agency = await getSessionAgency();
   const [settlements, artists] = await Promise.all([
-    getSettlements(),
+    getSettlements(agency?.id),
     getAgencyArtists(agency?.id),
   ]);
   return <SettlementBoard initialSettlements={settlements} artists={artists} />;

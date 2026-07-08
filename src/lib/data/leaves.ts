@@ -7,10 +7,11 @@ function ymd(v: string | Date): string {
   return typeof v === "string" ? v.slice(0, 10) : v.toISOString().slice(0, 10);
 }
 
-export async function getLeaves(): Promise<LeaveRequest[]> {
+/** agencyId 주면 그 소속사 아티스트의 휴가만 */
+export async function getLeaves(agencyId?: string): Promise<LeaveRequest[]> {
   try {
     const db = getDb();
-    const rows = await db
+    const q = db
       .select({
         id: schema.leaves.id,
         artistId: schema.leaves.artistId,
@@ -21,8 +22,11 @@ export async function getLeaves(): Promise<LeaveRequest[]> {
         artistName: schema.artists.name,
       })
       .from(schema.leaves)
-      .leftJoin(schema.artists, eq(schema.leaves.artistId, schema.artists.id))
-      .orderBy(desc(schema.leaves.createdAt));
+      .leftJoin(schema.artists, eq(schema.leaves.artistId, schema.artists.id));
+    const rows = await (agencyId
+      ? q.where(eq(schema.artists.agencyId, agencyId))
+      : q
+    ).orderBy(desc(schema.leaves.createdAt));
     return rows.map((r) => ({
       id: r.id,
       artistId: r.artistId,

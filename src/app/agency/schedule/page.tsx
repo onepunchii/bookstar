@@ -10,8 +10,8 @@ export default async function AgencySchedulePage() {
   const [artists, schedulesByArtist, holds, leaves] = await Promise.all([
     getAgencyArtists(agency?.id),
     getPublicScheduleMap(),
-    getHolds(),
-    getLeaves(),
+    getHolds(agency?.id),
+    getLeaves(agency?.id),
   ]);
   return (
     <ScheduleManager

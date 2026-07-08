@@ -60,17 +60,46 @@ function rowToRequest(r: Row): BookingRequest {
   };
 }
 
-export async function getBookingRequests(): Promise<BookingRequest[]> {
+/**
+ * 섭외 요청 목록.
+ * scope.agencyId → 그 소속사 아티스트의 요청만 (실 소속사 격리, 빈 목록 그대로)
+ * scope.companyUserId → 그 광고주가 보낸 요청만 (본인 요청 있을 때만, 없으면 데모)
+ * scope 없음 → 전체 (데모/테스터)
+ */
+export async function getBookingRequests(scope?: {
+  agencyId?: string;
+  companyUserId?: string;
+}): Promise<BookingRequest[]> {
   try {
     const db = getDb();
-    const rows = await db
-      .select(cols)
-      .from(schema.bookingRequests)
-      .leftJoin(
-        schema.artists,
-        eq(schema.bookingRequests.artistId, schema.artists.id)
-      )
-      .orderBy(desc(schema.bookingRequests.createdAt));
+    const buildQuery = (where?: ReturnType<typeof eq>) => {
+      const q = db
+        .select(cols)
+        .from(schema.bookingRequests)
+        .leftJoin(
+          schema.artists,
+          eq(schema.bookingRequests.artistId, schema.artists.id)
+        );
+      return (where ? q.where(where) : q).orderBy(
+        desc(schema.bookingRequests.createdAt)
+      );
+    };
+
+    if (scope?.agencyId) {
+      const rows = await buildQuery(
+        eq(schema.artists.agencyId, scope.agencyId)
+      );
+      return (rows as Row[]).map(rowToRequest);
+    }
+    if (scope?.companyUserId) {
+      const rows = await buildQuery(
+        eq(schema.bookingRequests.companyUserId, scope.companyUserId)
+      );
+      if (rows.length > 0) return (rows as Row[]).map(rowToRequest);
+      // 본인 요청이 아직 없으면 데모 전체
+      return getBookingRequests();
+    }
+    const rows = await buildQuery();
     if (rows.length > 0) return (rows as Row[]).map(rowToRequest);
   } catch {
     /* 폴백 */

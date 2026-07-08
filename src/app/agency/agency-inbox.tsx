@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { todayKST } from "@/lib/date";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -38,7 +39,7 @@ import {
   X,
 } from "lucide-react";
 
-const TODAY = "2026-07-07";
+const TODAY = todayKST();
 const HOLD_DAYS = 7; // 수락 시 홀드 유지 기간
 
 

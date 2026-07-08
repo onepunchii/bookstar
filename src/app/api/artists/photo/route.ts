@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       gallery[slot - 1] = blob.url;
       await db
         .update(schema.artists)
-        .set({ galleryUrls: gallery.filter(Boolean) })
+        .set({ galleryUrls: gallery })
         .where(eq(schema.artists.id, artist.id));
     }
 

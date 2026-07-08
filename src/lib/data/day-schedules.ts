@@ -48,19 +48,24 @@ function rowToDay(r: Row): DaySchedule {
   };
 }
 
-export async function getDaySchedules(): Promise<DaySchedule[]> {
+/** agencyId 주면 그 소속사 아티스트의 시트만 (실 소속사 격리, 빈 목록 그대로) */
+export async function getDaySchedules(agencyId?: string): Promise<DaySchedule[]> {
   try {
     const db = getDb();
-    const rows = await db
+    const q = db
       .select(cols)
       .from(schema.daySchedules)
-      .leftJoin(schema.artists, eq(schema.daySchedules.artistId, schema.artists.id))
-      .orderBy(asc(schema.daySchedules.date));
+      .leftJoin(schema.artists, eq(schema.daySchedules.artistId, schema.artists.id));
+    const rows = await (agencyId
+      ? q.where(eq(schema.artists.agencyId, agencyId))
+      : q
+    ).orderBy(asc(schema.daySchedules.date));
+    if (agencyId) return (rows as Row[]).map(rowToDay);
     if (rows.length > 0) return (rows as Row[]).map(rowToDay);
   } catch {
     /* 폴백 */
   }
-  return MOCK_DAY;
+  return agencyId ? [] : MOCK_DAY;
 }
 
 export async function getDayScheduleById(

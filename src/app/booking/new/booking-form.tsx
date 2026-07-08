@@ -74,7 +74,8 @@ export function BookingForm({ artist }: { artist: Artist }) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               artistId: artist.id,
-              companyName: "(주)브라이트마케팅",
+              companyName:
+                String(form.get("companyName") ?? "").trim() || undefined,
               companyVerified: true,
               companyEventCount: 12,
               eventType,
@@ -203,6 +204,7 @@ export function BookingForm({ artist }: { artist: Artist }) {
         </label>
         <input
           id="brand"
+          name="companyName"
           placeholder="예: (주)브라이트마케팅"
           className={FIELD}
         />

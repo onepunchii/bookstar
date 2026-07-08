@@ -1,7 +1,8 @@
+import { todayKST } from "@/lib/date";
 // Mock 날씨 — 실 데이터 붙기 전까지 규칙 기반으로 재현.
 // 실 연동 시 이 함수만 갈아치우면 UI는 그대로.
 
-const TODAY = "2026-07-07";
+const TODAY = todayKST();
 
 export type WeatherCondition = "sun" | "cloud" | "rain" | "storm" | "snow";
 

@@ -303,13 +303,13 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           </section>
 
           {/* 갤러리 */}
-          {artist.galleryUrls && artist.galleryUrls.length > 0 && (
+          {artist.galleryUrls && artist.galleryUrls.some(Boolean) && (
             <section>
               <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
                 Photos
               </h2>
               <div className="grid grid-cols-3 gap-2">
-                {artist.galleryUrls.map((url) => (
+                {artist.galleryUrls.filter(Boolean).map((url) => (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     key={url}

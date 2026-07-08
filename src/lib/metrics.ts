@@ -1,7 +1,8 @@
 import { ARTISTS } from "./mock-data";
+import { todayKST } from "@/lib/date";
 
 // 데모 오늘: 2026-07-07
-const TODAY = "2026-07-07";
+const TODAY = todayKST();
 const DAYS = 30;
 
 // id 문자열 → 결정적 시드

@@ -26,21 +26,43 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "필수 항목 누락" }, { status: 400 });
     }
     const db = getDb();
-    // 데모: 시드된 광고주 유저를 요청자로 사용
-    const [companyUser] = await db
-      .select({ id: schema.users.id })
-      .from(schema.users)
-      .where(eq(schema.users.role, "company"))
-      .limit(1);
-    if (!companyUser) {
-      return NextResponse.json({ error: "광고주 계정 없음" }, { status: 400 });
+    // 로그인 광고주면 본인 계정으로, 아니면 데모 시드 광고주로 요청 생성
+    const session = await auth();
+    const uid = session?.user?.id;
+    let companyUserId: string | null = null;
+    let companyName = b.companyName || null;
+    if (uid && /^[0-9a-f-]{36}$/.test(uid)) {
+      const [me] = await db
+        .select({
+          id: schema.users.id,
+          name: schema.users.name,
+          company: schema.users.company,
+        })
+        .from(schema.users)
+        .where(eq(schema.users.id, uid))
+        .limit(1);
+      if (me) {
+        companyUserId = me.id;
+        companyName = companyName ?? me.company ?? me.name;
+      }
+    }
+    if (!companyUserId) {
+      const [demoUser] = await db
+        .select({ id: schema.users.id })
+        .from(schema.users)
+        .where(eq(schema.users.role, "company"))
+        .limit(1);
+      if (!demoUser) {
+        return NextResponse.json({ error: "광고주 계정 없음" }, { status: 400 });
+      }
+      companyUserId = demoUser.id;
     }
     const [row] = await db
       .insert(schema.bookingRequests)
       .values({
-        companyUserId: companyUser.id,
+        companyUserId,
         artistId: b.artistId,
-        companyName: b.companyName || null,
+        companyName,
         companyVerified: b.companyVerified ?? false,
         companyEventCount: b.companyEventCount ?? null,
         eventType: b.eventType,

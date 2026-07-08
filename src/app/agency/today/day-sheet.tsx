@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { todayKST } from "@/lib/date";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { DayScheduleEditor } from "@/components/day-schedule-editor";
@@ -26,7 +27,7 @@ function formatDate(date: string): string {
   return `${d.getMonth() + 1}월 ${d.getDate()}일 (${dow})`;
 }
 
-const TODAY = "2026-07-07";
+const TODAY = todayKST();
 
 export function DaySheet({
   initialSchedules,

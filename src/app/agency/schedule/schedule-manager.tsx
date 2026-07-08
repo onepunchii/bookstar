@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { todayKST } from "@/lib/date";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { WeatherBadge } from "@/components/weather-badge";
@@ -24,7 +25,7 @@ import {
   Palmtree,
 } from "lucide-react";
 
-const TODAY = "2026-07-07";
+const TODAY = todayKST();
 const DOW = ["일", "월", "화", "수", "목", "금", "토"];
 const CYCLE: Availability[] = ["available", "partial", "hold", "busy"];
 
@@ -127,8 +128,11 @@ export function ScheduleManager({
     [holds, artistId]
   );
 
-  // 월 이동 — 데모 데이터 기준월(2026-07)에서 시작
-  const [month, setMonth] = useState({ y: 2026, m: 7 });
+  // 월 이동 — 오늘 기준월에서 시작
+  const [month, setMonth] = useState(() => {
+    const t = todayKST();
+    return { y: Number(t.slice(0, 4)), m: Number(t.slice(5, 7)) };
+  });
   const monthKey = `${month.y}-${String(month.m).padStart(2, "0")}`;
   const daysInMonth = new Date(month.y, month.m, 0).getDate();
   const firstOffset = new Date(`${monthKey}-01T00:00:00`).getDay();

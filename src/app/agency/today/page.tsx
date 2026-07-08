@@ -8,7 +8,7 @@ import { DaySheet } from "./day-sheet";
 export default async function AgencyTodayPage() {
   const agency = await getSessionAgency();
   const [schedules, artists, managers] = await Promise.all([
-    getDaySchedules(),
+    getDaySchedules(agency?.id),
     getAgencyArtists(agency?.id),
     getManagers(),
   ]);
