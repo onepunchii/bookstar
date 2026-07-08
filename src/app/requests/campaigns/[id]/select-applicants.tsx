@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import type { Applicant } from "@/lib/data/campaigns";
 import { CATEGORY_LABELS, formatBudget, formatFollowers } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { BadgeCheck, Check, Loader2, Users } from "lucide-react";
+import { BadgeCheck, Check, Loader2, Sparkles, Users } from "lucide-react";
 
 export function SelectApplicants({
   campaignId,
@@ -83,6 +83,11 @@ export function SelectApplicants({
                   {selected && (
                     <span className="flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-bold text-emerald-300">
                       <BadgeCheck className="h-3 w-3" /> 선정됨
+                    </span>
+                  )}
+                  {a.recommended && !selected && !rejected && (
+                    <span className="flex items-center gap-1 rounded-full bg-brand-500/15 px-2 py-0.5 text-[11px] font-bold text-brand-300">
+                      <Sparkles className="h-3 w-3" /> 적합 1순위
                     </span>
                   )}
                 </div>

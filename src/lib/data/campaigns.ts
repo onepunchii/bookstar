@@ -53,6 +53,25 @@ export interface Applicant {
   status: string;
   requestId: string | null;
   createdAt: string;
+  recommended?: boolean; // 적합도 최상위 후보
+}
+
+// 캠페인 대비 지원자 적합도 점수 — 카테고리 매칭·팔로워·예산 적합
+function fitScore(
+  a: Applicant,
+  campaign: { categories: string[]; budgetMin: number | null; budgetMax: number | null }
+): number {
+  let s = 0;
+  const camCats = new Set(campaign.categories);
+  s += a.categories.filter((c) => camCats.has(c)).length * 100; // 카테고리 매칭 최우선
+  s += Math.min(a.followers / 10000, 50); // 팔로워 규모(상한)
+  if (
+    a.proposedFee != null &&
+    (campaign.budgetMin == null || a.proposedFee >= campaign.budgetMin) &&
+    (campaign.budgetMax == null || a.proposedFee <= campaign.budgetMax)
+  )
+    s += 30; // 예산 범위 안
+  return s;
 }
 
 // 마감 지난 open 캠페인은 표시상 closed로 취급
@@ -116,6 +135,15 @@ export async function getCompanyCampaign(
     .limit(1);
   if (!c || c.companyUserId !== companyUserId) return null;
   const applicants = await loadApplicants(id);
+  // 적합도순 정렬 + 최상위 후보 추천 배지 (지원 2명 이상, 미선정 상태일 때만)
+  const cam = {
+    categories: (c.categories as string[]) ?? [],
+    budgetMin: c.budgetMin,
+    budgetMax: c.budgetMax,
+  };
+  applicants.sort((x, y) => fitScore(y, cam) - fitScore(x, cam));
+  if (applicants.length > 1 && c.status !== "awarded" && applicants[0])
+    applicants[0].recommended = true;
   return { campaign: toCard(c, applicants.length), applicants };
 }
 
@@ -158,7 +186,7 @@ export async function getAgencyFeed(
   }
   const appByCampaign = new Map(myApps.map((a) => [a.campaignId, a]));
 
-  return open.map((c) => {
+  const items = open.map((c) => {
     const cats = (c.categories as string[]) ?? [];
     const matched = cats.some((x) => myCats.has(x));
     const mine = appByCampaign.get(c.id);
@@ -168,6 +196,8 @@ export async function getAgencyFeed(
       myApplication: mine ? { artistId: mine.artistId, status: mine.status } : null,
     };
   });
+  // 우리 라인업 카테고리에 맞는 캠페인을 위로 (마감 임박순은 그룹 내 유지 — 안정 정렬)
+  return items.sort((a, b) => Number(b.matched) - Number(a.matched));
 }
 
 // 소속사 지원용 캠페인 단건
