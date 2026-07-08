@@ -132,7 +132,7 @@ export default async function ArtistDetailPage({
         <div className="min-w-0 space-y-14">
           <Reveal>
             <Eyebrow className="mb-4">Momentum</Eyebrow>
-            <MomentumCard artistId={artist.id} dark />
+            <MomentumCard artistId={artist.id} artistName={artist.name} dark />
           </Reveal>
 
           <Reveal>

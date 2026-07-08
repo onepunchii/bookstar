@@ -1,27 +1,39 @@
 import { Sparkline } from "@/components/sparkline";
 import { Card } from "@/components/ui/card";
 import { generateMetrics, recentDelta, recentSum } from "@/lib/metrics";
+import { fetchNaverMomentum } from "@/lib/naver";
 import { cn } from "@/lib/utils";
 import { ArrowDownRight, ArrowUpRight, TrendingUp } from "lucide-react";
 
-export function MomentumCard({
+export async function MomentumCard({
   artistId,
+  artistName,
   dark = false,
 }: {
   artistId: string;
+  artistName?: string;
   dark?: boolean;
 }) {
   const m = generateMetrics(artistId);
-  const newsSum = recentSum(m.news, 30);
-  const newsDelta = recentDelta(m.news, 7);
-  const searchLast = m.search[m.search.length - 1];
-  const searchDelta = recentDelta(m.search, 7);
+  // 네이버 실데이터 (검색 트렌드·기사 수). 실패/저노출이면 mock.
+  const real = artistName ? await fetchNaverMomentum(artistName) : null;
+
+  const searchSeries = real ? real.searchSeries : m.search;
+  const searchLast = searchSeries[searchSeries.length - 1];
+  const searchDelta = recentDelta(searchSeries, 7);
+  const newsSum = real ? real.newsCount : recentSum(m.news, 30);
+  const newsSeries = real ? real.searchSeries : m.news;
   const followersLast = m.followers[m.followers.length - 1];
   const followersDelta = recentDelta(m.followers, 15);
 
   const items = [
-    { label: "최근 30일 기사", value: `${newsSum}건`, delta: newsDelta, series: m.news },
-    { label: "검색 트렌드", value: `${searchLast}`, delta: searchDelta, series: m.search },
+    {
+      label: real ? "네이버 기사" : "최근 30일 기사",
+      value: real ? `${newsSum.toLocaleString()}건` : `${newsSum}건`,
+      delta: real ? 0 : recentDelta(m.news, 7),
+      series: newsSeries,
+    },
+    { label: "검색 트렌드", value: `${searchLast}`, delta: searchDelta, series: searchSeries },
     {
       label: "팔로워 (만)",
       value: `${followersLast.toLocaleString()}`,
@@ -53,7 +65,9 @@ export function MomentumCard({
             화제성 · 팬덤
           </h2>
           <p className={cn("mt-0.5 text-xs", dark ? "text-white/40" : "text-neutral-400")}>
-            지난 30일 · 데모 데이터 (실데이터는 네이버/YouTube 연동 시 자동 반영)
+            {real
+              ? "지난 30일 · 네이버 실데이터 (팔로워는 YouTube 연동 시 반영)"
+              : "지난 30일 · 데모 데이터 (실데이터는 네이버/YouTube 연동 시 반영)"}
           </p>
         </div>
       </div>
