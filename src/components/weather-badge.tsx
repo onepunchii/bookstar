@@ -1,4 +1,11 @@
-import { getForecast, type WeatherCondition } from "@/lib/weather";
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  getForecast,
+  type WeatherCondition,
+  type WeatherForecast,
+} from "@/lib/weather";
 import { cn } from "@/lib/utils";
 import {
   Cloud,
@@ -29,7 +36,24 @@ export function WeatherBadge({
   compact = false,
   className,
 }: WeatherBadgeProps) {
-  const f = getForecast(date, location);
+  // mock을 즉시 표시(폴백) → 근접일이면 실 기상청 데이터로 업그레이드
+  const [f, setF] = useState<WeatherForecast>(() => getForecast(date, location));
+
+  useEffect(() => {
+    let alive = true;
+    const params = new URLSearchParams({ date });
+    if (location) params.set("location", location);
+    fetch(`/api/weather?${params}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: WeatherForecast | null) => {
+        if (alive && data) setF(data);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [date, location]);
+
   const Icon = ICON_BY_CONDITION[f.condition];
   const risky = f.rainProb >= 60;
 
