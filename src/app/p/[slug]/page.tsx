@@ -5,6 +5,7 @@ import { Wordmark } from "@/components/wordmark";
 import { Badge } from "@/components/ui/badge";
 import { getPublicArtistBySlug, getPublicSchedule } from "@/lib/data/artists";
 import { getRatingSummaryBySlug } from "@/lib/mock-data";
+import { fetchYoutubeSubscribers } from "@/lib/youtube";
 import { artistPublicUrl, SITE } from "@/lib/site";
 import {
   CATEGORY_LABELS,
@@ -107,6 +108,12 @@ export default async function ArtistPublicPage({ params }: PageProps) {
 
   const schedule = await getPublicSchedule(artist.id);
   const rating = getRatingSummaryBySlug(slug);
+  // 유튜브 채널이 있으면 실 구독자 수, 없으면 저장된 팔로워
+  const ytSubs = artist.youtube
+    ? await fetchYoutubeSubscribers(artist.youtube)
+    : null;
+  const followerValue = ytSubs ?? artist.followers;
+  const followerLabel = ytSubs ? "구독자" : "팔로워";
 
   // 구조화 데이터 (Schema.org) — 검색 리치결과
   const isGroup = artist.gender === "group";
@@ -198,10 +205,10 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           <div className="mt-10 grid grid-cols-3 gap-4 border-t border-white/10 pt-8 sm:gap-8">
             <div>
               <p className="flex items-center gap-1.5 text-xs text-neutral-400">
-                <Users className="h-3 w-3" /> 팔로워
+                <Users className="h-3 w-3" /> {followerLabel}
               </p>
               <p className="mt-1 text-2xl font-black sm:text-3xl">
-                {formatFollowers(artist.followers)}
+                {formatFollowers(followerValue)}
               </p>
             </div>
             <div>
