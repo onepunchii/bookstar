@@ -1,14 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { DayScheduleEditor } from "@/components/day-schedule-editor";
 import { WeatherBadge } from "@/components/weather-badge";
-import { selectDaySchedules, useDayStore } from "@/lib/day-store";
-import { useScopedArtistIds } from "@/lib/scope-store";
 import { cn } from "@/lib/utils";
-import type { DaySchedule } from "@/lib/types";
+import type { Artist, DaySchedule } from "@/lib/types";
 import {
   Car,
   Check,
@@ -22,24 +20,22 @@ import {
   UserRound,
 } from "lucide-react";
 
-const DATES = [
-  "2026-07-07",
-  "2026-07-08",
-  "2026-07-09",
-  "2026-07-18",
-  "2026-07-24",
-  "2026-08-15",
-  "2026-08-22",
-  "2026-09-02",
-];
-
 function formatDate(date: string): string {
   const d = new Date(date);
   const dow = ["일", "월", "화", "수", "목", "금", "토"][d.getDay()];
   return `${d.getMonth() + 1}월 ${d.getDate()}일 (${dow})`;
 }
 
-export function DaySheet() {
+const TODAY = "2026-07-07";
+
+export function DaySheet({
+  initialSchedules,
+  artists,
+}: {
+  initialSchedules: DaySchedule[];
+  artists: Artist[];
+}) {
+  const [schedules, setSchedules] = useState<DaySchedule[]>(initialSchedules);
   const [dateIdx, setDateIdx] = useState(0);
   const [sent, setSent] = useState<Record<string, boolean>>({});
   const [copied, setCopied] = useState<string | null>(null);
@@ -49,30 +45,54 @@ export function DaySheet() {
     | null
   >(null);
 
+  // 데이터에서 날짜 목록 파생 (없으면 오늘)
+  const dates = useMemo(() => {
+    const uniq = Array.from(new Set(schedules.map((s) => s.date))).sort();
+    return uniq.length > 0 ? uniq : [TODAY];
+  }, [schedules]);
+
+  const safeIdx = Math.min(dateIdx, dates.length - 1);
+  const date = dates[safeIdx];
+
   const copyShare = (id: string) => {
     const url = `${window.location.origin}/d/${id}`;
     navigator.clipboard?.writeText(url).catch(() => {});
     setCopied(id);
     setTimeout(() => setCopied((c) => (c === id ? null : c)), 1600);
   };
-  const date = DATES[dateIdx];
-  const scopedIds = useScopedArtistIds();
-  const extra = useDayStore((s) => s.extra);
-  const overrides = useDayStore((s) => s.overrides);
-  const removedIds = useDayStore((s) => s.removedIds);
-  const schedules = selectDaySchedules(
-    date,
-    extra,
-    scopedIds,
-    overrides,
-    removedIds
-  );
+
+  const daySchedules = schedules.filter((s) => s.date === date);
+
+  const broadcast = (id: string) => {
+    setSent((prev) => ({ ...prev, [id]: true }));
+    // DB에 전파 시각 기록 (fire-and-forget)
+    fetch("/api/day-schedules", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, broadcast: true }),
+    }).catch(() => {});
+  };
 
   const sendAll = () =>
-    setSent((prev) => ({
-      ...prev,
-      ...Object.fromEntries(schedules.map((s) => [s.id, true])),
-    }));
+    daySchedules.forEach((s) => broadcast(s.id));
+
+  // 에디터 콜백 — 로컬 목록 갱신 + 필요 시 해당 날짜로 이동
+  const handleSaved = (saved: DaySchedule) => {
+    setSchedules((prev) => {
+      const idx = prev.findIndex((d) => d.id === saved.id);
+      if (idx >= 0) return prev.map((d) => (d.id === saved.id ? saved : d));
+      return [...prev, saved];
+    });
+    const targetDates = Array.from(
+      new Set([...schedules.map((s) => s.date), saved.date])
+    ).sort();
+    const newIdx = targetDates.indexOf(saved.date);
+    if (newIdx >= 0) setDateIdx(newIdx);
+  };
+
+  const handleDeleted = (id: string) => {
+    setSchedules((prev) => prev.filter((d) => d.id !== id));
+  };
 
   return (
     <div>
@@ -81,7 +101,7 @@ export function DaySheet() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setDateIdx((i) => Math.max(0, i - 1))}
-            disabled={dateIdx === 0}
+            disabled={safeIdx === 0}
             aria-label="이전 날짜"
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 transition-colors hover:border-neutral-900 disabled:opacity-30"
           >
@@ -89,15 +109,15 @@ export function DaySheet() {
           </button>
           <h2 className="min-w-36 text-center text-lg font-black">
             {formatDate(date)}
-            {dateIdx === 0 && (
+            {date === TODAY && (
               <span className="ml-1.5 align-middle text-xs font-bold text-brand-500">
                 오늘
               </span>
             )}
           </h2>
           <button
-            onClick={() => setDateIdx((i) => Math.min(DATES.length - 1, i + 1))}
-            disabled={dateIdx === DATES.length - 1}
+            onClick={() => setDateIdx((i) => Math.min(dates.length - 1, i + 1))}
+            disabled={safeIdx === dates.length - 1}
             aria-label="다음 날짜"
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 transition-colors hover:border-neutral-900 disabled:opacity-30"
           >
@@ -111,7 +131,7 @@ export function DaySheet() {
           >
             <Plus className="h-4 w-4" /> 새 스케줄
           </button>
-          {schedules.length > 0 && (
+          {daySchedules.length > 0 && (
             <button
               onClick={sendAll}
               className="flex h-10 items-center gap-2 rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
@@ -122,7 +142,7 @@ export function DaySheet() {
         </div>
       </div>
 
-      {schedules.length === 0 ? (
+      {daySchedules.length === 0 ? (
         <Card className="flex h-48 flex-col items-center justify-center gap-2 text-neutral-400">
           <p className="font-semibold">이 날은 등록된 스케줄이 없어요</p>
           <p className="text-sm">
@@ -132,7 +152,7 @@ export function DaySheet() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {schedules.map((s) => (
+          {daySchedules.map((s) => (
             <Card key={s.id} className="p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
@@ -182,9 +202,7 @@ export function DaySheet() {
                     </span>
                   ) : (
                     <button
-                      onClick={() =>
-                        setSent((prev) => ({ ...prev, [s.id]: true }))
-                      }
+                      onClick={() => broadcast(s.id)}
                       className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-brand-500 hover:text-brand-600"
                     >
                       <MessageCircle className="h-3.5 w-3.5" /> 카톡 전파
@@ -266,7 +284,10 @@ export function DaySheet() {
           defaultDate={
             editorState.mode === "create" ? editorState.date : undefined
           }
+          artists={artists}
           onClose={() => setEditorState(null)}
+          onSaved={handleSaved}
+          onDeleted={handleDeleted}
         />
       )}
     </div>

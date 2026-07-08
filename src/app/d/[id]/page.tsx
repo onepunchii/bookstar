@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { WeatherBadge } from "@/components/weather-badge";
 import { Wordmark } from "@/components/wordmark";
-import { DAY_SCHEDULES } from "@/lib/mock-data";
+import { getDayScheduleById } from "@/lib/data/day-schedules";
 import { Car, MapPin, UserRound } from "lucide-react";
 
 interface Props {
@@ -22,7 +22,7 @@ function formatDate(iso: string) {
 
 export default async function SharedDaySheetPage({ params }: Props) {
   const { id } = await params;
-  const schedule = DAY_SCHEDULES.find((s) => s.id === id);
+  const schedule = await getDayScheduleById(id);
   if (!schedule) notFound();
 
   return (

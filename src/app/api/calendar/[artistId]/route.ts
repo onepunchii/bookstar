@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { ARTISTS, DAY_SCHEDULES } from "@/lib/mock-data";
+import { getPublicArtistBySlug } from "@/lib/data/artists";
+import { getDaySchedulesByArtist } from "@/lib/data/day-schedules";
 
 function escapeText(s: string) {
   return s.replace(/[,;\\]/g, "\\$&").replace(/\n/g, "\\n");
@@ -30,10 +31,13 @@ export async function GET(
   { params }: { params: Promise<{ artistId: string }> }
 ) {
   const { artistId } = await params;
-  const artist = ARTISTS.find((a) => a.id === artistId || a.slug === artistId);
-  if (!artist) return NextResponse.json({ error: "not found" }, { status: 404 });
-
-  const schedules = DAY_SCHEDULES.filter((s) => s.artistId === artist.id);
+  // param은 uuid 또는 slug — slug면 DB에서 uuid로 해석
+  const bySlug = await getPublicArtistBySlug(artistId);
+  const resolvedId = bySlug?.id ?? artistId;
+  const schedules = await getDaySchedulesByArtist(resolvedId);
+  const artistName =
+    bySlug?.name ?? schedules[0]?.artistName ?? "xong 아티스트";
+  const slugForFile = bySlug?.slug ?? artistId;
 
   const now = new Date()
     .toISOString()
@@ -44,7 +48,7 @@ export async function GET(
   lines.push("BEGIN:VCALENDAR");
   lines.push("VERSION:2.0");
   lines.push("PRODID:-//xong//NONSGML xong Schedule//KO");
-  lines.push(`X-WR-CALNAME:${escapeText(`${artist.name} · xong 스케줄`)}`);
+  lines.push(`X-WR-CALNAME:${escapeText(`${artistName} · xong 스케줄`)}`);
   lines.push("X-WR-TIMEZONE:Asia/Seoul");
   lines.push("CALSCALE:GREGORIAN");
 
@@ -96,7 +100,7 @@ export async function GET(
     status: 200,
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
-      "Content-Disposition": `inline; filename="${artist.slug || artist.id}.ics"`,
+      "Content-Disposition": `inline; filename="${slugForFile}.ics"`,
       "Cache-Control": "public, max-age=300",
     },
   });

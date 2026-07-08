@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
-import { useDayStore } from "@/lib/day-store";
-import { ARTISTS, MANAGERS } from "@/lib/mock-data";
+import { MANAGERS } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
-import type { DaySchedule, DayStop } from "@/lib/types";
+import type { Artist, DaySchedule, DayStop } from "@/lib/types";
 import { Car, Clock, MapPin, Plus, Trash2, UserRound, X } from "lucide-react";
 
 const EVENT_TYPES = ["방송", "예능", "광고", "축제", "행사", "유튜브", "강연"];
@@ -18,21 +17,26 @@ interface Props {
   mode: "create" | "edit";
   initial?: DaySchedule;
   defaultDate?: string;
+  artists: Artist[];
   onClose: () => void;
+  onSaved: (schedule: DaySchedule) => void;
+  onDeleted: (id: string) => void;
 }
 
 export function DayScheduleEditor({
   mode,
   initial,
   defaultDate,
+  artists,
   onClose,
+  onSaved,
+  onDeleted,
 }: Props) {
-  const create = useDayStore((s) => s.create);
-  const update = useDayStore((s) => s.update);
-  const remove = useDayStore((s) => s.remove);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [artistId, setArtistId] = useState(
-    initial?.artistId ?? ARTISTS[0].id
+    initial?.artistId ?? artists[0]?.id ?? ""
   );
   const [date, setDate] = useState(
     initial?.date ?? defaultDate ?? "2026-07-08"
@@ -57,43 +61,74 @@ export function DayScheduleEditor({
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const artistName = ARTISTS.find((a) => a.id === artistId)?.name ?? "";
-  const canSave = title.trim().length > 0 && stops.length > 0;
+  const artistName = artists.find((a) => a.id === artistId)?.name ?? "";
+  const canSave = title.trim().length > 0 && stops.length > 0 && !!artistId;
 
-  const save = () => {
+  const save = async () => {
     const sorted = [...stops].sort((a, b) => a.time.localeCompare(b.time));
-    if (mode === "create") {
-      create({
-        artistId,
-        artistName,
-        date,
-        title,
-        eventType,
-        manager,
-        vehicle: vehicle || undefined,
-        memo: memo || undefined,
-        stops: sorted,
-      });
-    } else if (initial) {
-      update(initial.id, {
-        artistId,
-        artistName,
-        date,
-        title,
-        eventType,
-        manager,
-        vehicle: vehicle || undefined,
-        memo: memo || undefined,
-        stops: sorted,
-      });
+    const common = {
+      artistId,
+      date,
+      title,
+      eventType,
+      manager,
+      vehicle: vehicle || null,
+      memo: memo || null,
+      stops: sorted,
+    };
+    setSaving(true);
+    setError(null);
+    try {
+      if (mode === "create") {
+        const res = await fetch("/api/day-schedules", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(common),
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const { id } = (await res.json()) as { id: string };
+        onSaved({ id, artistName, ...common, vehicle: vehicle || undefined, memo: memo || undefined });
+      } else if (initial) {
+        const res = await fetch("/api/day-schedules", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: initial.id, ...common }),
+        });
+        if (!res.ok) throw new Error(await res.text());
+        onSaved({
+          id: initial.id,
+          artistName,
+          ...common,
+          vehicle: vehicle || undefined,
+          memo: memo || undefined,
+        });
+      }
+      onClose();
+    } catch {
+      setError("저장에 실패했어요. 다시 시도해주세요.");
+    } finally {
+      setSaving(false);
     }
-    onClose();
   };
 
-  const del = () => {
-    if (initial && confirm(`${initial.title} 스케줄을 삭제할까요?`)) {
-      remove(initial.id);
+  const del = async () => {
+    if (!initial) return;
+    if (!confirm(`${initial.title} 스케줄을 삭제할까요?`)) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/day-schedules", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: initial.id }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      onDeleted(initial.id);
       onClose();
+    } catch {
+      setError("삭제에 실패했어요. 다시 시도해주세요.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -152,7 +187,7 @@ export function DayScheduleEditor({
                 value={artistId}
                 onChange={(e) => setArtistId(e.target.value)}
               >
-                {ARTISTS.map((a) => (
+                {artists.map((a) => (
                   <option key={a.id} value={a.id}>
                     {a.name}
                     {a.groupName ? ` (${a.groupName})` : ""}
@@ -328,12 +363,17 @@ export function DayScheduleEditor({
           ) : (
             <span />
           )}
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            {error && (
+              <span className="text-xs font-semibold text-red-600">
+                {error}
+              </span>
+            )}
             <Button variant="ghost" size="md" onClick={onClose}>
               취소
             </Button>
-            <Button size="md" disabled={!canSave} onClick={save}>
-              저장
+            <Button size="md" disabled={!canSave || saving} onClick={save}>
+              {saving ? "저장 중…" : "저장"}
             </Button>
           </div>
         </div>
