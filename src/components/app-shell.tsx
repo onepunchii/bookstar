@@ -232,7 +232,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <main
           className={cn(
-            "relative flex-1 pb-28 md:pb-0",
+            "relative flex-1 pb-20 md:pb-0",
             dark ? "adv-dark" : "bg-neutral-50"
           )}
         >
@@ -257,43 +257,50 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* 샘플 시나리오 런처 (전 화면 공용) */}
       <SampleLauncher />
 
-      {/* Mobile floating pill nav — 아이콘 전용 + 오렌지 스포트라이트 */}
-      <nav className="fixed bottom-5 left-1/2 z-40 -translate-x-1/2 md:hidden">
-        <div className="relative flex items-center gap-1 rounded-full bg-neutral-950/92 p-1.5 shadow-2xl shadow-black/50 ring-1 ring-white/10 backdrop-blur-xl">
-          {nav.map((item) => {
-            const active = isActive(pathname, item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-label={item.label}
-                className="relative flex h-12 w-12 items-center justify-center rounded-full"
-              >
-                {active && (
-                  <>
-                    {/* 스포트라이트 콘 */}
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute -top-5 left-1/2 h-9 w-9 -translate-x-1/2 bg-gradient-to-b from-brand-500/80 via-brand-500/25 to-transparent blur-md [clip-path:polygon(38%_0,62%_0,100%_100%,0%_100%)]"
-                    />
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute top-0 left-1/2 h-[3px] w-6 -translate-x-1/2 rounded-full bg-brand-500 blur-[1.5px]"
-                    />
-                  </>
+      {/* Mobile bottom nav — 하단 밀착 · 아이콘 전용 + 오렌지 스포트라이트 */}
+      <nav
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-40 flex items-stretch border-t md:hidden",
+          dark
+            ? "border-white/8 bg-[#0a0a0b]/95 backdrop-blur-xl"
+            : "border-neutral-200 bg-white/95 backdrop-blur"
+        )}
+      >
+        {nav.map((item) => {
+          const active = isActive(pathname, item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-label={item.label}
+              className="relative flex flex-1 items-center justify-center py-3.5"
+            >
+              {active && (
+                <>
+                  {/* 상단 밀착 스포트라이트 빔 */}
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute top-0 left-1/2 h-8 w-10 -translate-x-1/2 bg-gradient-to-b from-brand-500/85 via-brand-500/25 to-transparent blur-md [clip-path:polygon(40%_0,60%_0,100%_100%,0%_100%)]"
+                  />
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute top-0 left-1/2 h-[3px] w-7 -translate-x-1/2 rounded-full bg-brand-500 blur-[1.5px]"
+                  />
+                </>
+              )}
+              <item.icon
+                className={cn(
+                  "relative h-5.5 w-5.5 transition-colors",
+                  active
+                    ? "text-brand-500 drop-shadow-[0_0_6px_rgba(255,90,0,0.7)]"
+                    : dark
+                      ? "text-white/45"
+                      : "text-neutral-400"
                 )}
-                <item.icon
-                  className={cn(
-                    "relative h-5.5 w-5.5 transition-colors",
-                    active
-                      ? "text-brand-500 drop-shadow-[0_0_6px_rgba(255,90,0,0.7)]"
-                      : "text-white/45"
-                  )}
-                />
-              </Link>
-            );
-          })}
-        </div>
+              />
+            </Link>
+          );
+        })}
       </nav>
     </div>
   );
