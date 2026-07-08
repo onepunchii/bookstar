@@ -3,33 +3,36 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/input";
-import { ARTISTS, getArtist } from "@/lib/mock-data";
-import { useSettlementStore } from "@/lib/settlement-store";
-import type { Settlement } from "@/lib/types";
+import type { Artist, Settlement } from "@/lib/types";
 import { settlementBreakdown } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 
 interface Props {
+  artists: Artist[];
+  onCreated: (settlement: Settlement) => void;
   onClose: () => void;
 }
 
-export function SettlementEditor({ onClose }: Props) {
-  const add = useSettlementStore((s) => s.add);
-  const [artistId, setArtistId] = useState(ARTISTS[0].id);
+export function SettlementEditor({ artists, onCreated, onClose }: Props) {
+  const findArtist = (id: string) => artists.find((a) => a.id === id);
+  const [artistId, setArtistId] = useState(artists[0]?.id ?? "");
   const [eventTitle, setEventTitle] = useState("");
   const [date, setDate] = useState("2026-07-30");
   const [gross, setGross] = useState<string>("");
   const [rateBp, setRateBp] = useState<string>(
-    String(Math.round((ARTISTS[0].defaultAgencyRate ?? 0.3) * 100))
+    String(Math.round((artists[0]?.defaultAgencyRate ?? 0.3) * 100))
   );
   const [taxInvoice, setTaxInvoice] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const artist = getArtist(artistId);
+    const artist = findArtist(artistId);
     if (artist?.defaultAgencyRate !== undefined) {
       setRateBp(String(Math.round(artist.defaultAgencyRate * 100)));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [artistId]);
 
   useEffect(() => {
@@ -40,10 +43,11 @@ export function SettlementEditor({ onClose }: Props) {
 
   const rate = Math.min(100, Math.max(0, Number(rateBp) || 0)) / 100;
   const grossN = Math.max(0, Number(gross) || 0);
+  const artistName = findArtist(artistId)?.name ?? "";
   const preview: Settlement = {
     id: "preview",
     artistId,
-    artistName: getArtist(artistId)?.name ?? "",
+    artistName,
     eventTitle: eventTitle || "미입력",
     date,
     gross: grossN,
@@ -53,20 +57,44 @@ export function SettlementEditor({ onClose }: Props) {
   };
   const b = settlementBreakdown(preview);
 
-  const canSave = eventTitle.trim().length > 0 && grossN > 0;
+  const canSave = eventTitle.trim().length > 0 && grossN > 0 && !!artistId;
 
-  const save = () => {
-    add({
-      artistId,
-      artistName: getArtist(artistId)?.name ?? "",
-      eventTitle,
-      date,
-      gross: grossN,
-      agencyRate: rate,
-      status: "pending",
-      taxInvoice,
-    });
-    onClose();
+  const save = async () => {
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/settlements", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          artistId,
+          eventTitle,
+          eventDate: date,
+          gross: grossN,
+          agencyRateBp: Math.round(rate * 10000),
+          status: "pending",
+          taxInvoice,
+        }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const { id } = (await res.json()) as { id: string };
+      onCreated({
+        id,
+        artistId,
+        artistName,
+        eventTitle,
+        date,
+        gross: grossN,
+        agencyRate: rate,
+        status: "pending",
+        taxInvoice,
+      });
+      onClose();
+    } catch {
+      setError("등록에 실패했어요. 다시 시도해주세요.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -103,7 +131,7 @@ export function SettlementEditor({ onClose }: Props) {
                 value={artistId}
                 onChange={(e) => setArtistId(e.target.value)}
               >
-                {ARTISTS.map((a) => (
+                {artists.map((a) => (
                   <option key={a.id} value={a.id}>
                     {a.name}
                   </option>
@@ -154,8 +182,8 @@ export function SettlementEditor({ onClose }: Props) {
                 onChange={(e) => setRateBp(e.target.value)}
               />
               <p className="mt-1 text-xs text-neutral-400">
-                아티스트 기본값: {(getArtist(artistId)?.defaultAgencyRate ?? 0.3) *
-                  100}
+                아티스트 기본값:{" "}
+                {Math.round((findArtist(artistId)?.defaultAgencyRate ?? 0.3) * 100)}
                 %
               </p>
             </div>
@@ -212,12 +240,17 @@ export function SettlementEditor({ onClose }: Props) {
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 border-t border-neutral-100 bg-neutral-50 px-6 py-3">
+        <div className="flex items-center justify-end gap-2 border-t border-neutral-100 bg-neutral-50 px-6 py-3">
+          {error && (
+            <span className="mr-auto text-xs font-semibold text-red-600">
+              {error}
+            </span>
+          )}
           <Button variant="ghost" size="md" onClick={onClose}>
             취소
           </Button>
-          <Button size="md" disabled={!canSave} onClick={save}>
-            정산 등록
+          <Button size="md" disabled={!canSave || saving} onClick={save}>
+            {saving ? "등록 중…" : "정산 등록"}
           </Button>
         </div>
       </div>

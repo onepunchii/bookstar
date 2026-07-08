@@ -4,9 +4,12 @@ import { useState } from "react";
 import { SettlementEditor } from "@/components/settlement-editor";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { useScopedArtistIds } from "@/lib/scope-store";
-import { allSettlements, useSettlementStore } from "@/lib/settlement-store";
-import { formatBudget, settlementBreakdown } from "@/lib/types";
+import {
+  formatBudget,
+  settlementBreakdown,
+  type Artist,
+  type Settlement,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { BellRing, Check, FileText, Plus } from "lucide-react";
 
@@ -22,18 +25,32 @@ const STATUS_STYLE = {
   overdue: "bg-brand-500 text-white",
 } as const;
 
-export function SettlementBoard() {
+export function SettlementBoard({
+  initialSettlements,
+  artists,
+}: {
+  initialSettlements: Settlement[];
+  artists: Artist[];
+}) {
   const [reminded, setReminded] = useState<Record<string, boolean>>({});
   const [editorOpen, setEditorOpen] = useState(false);
+  const [visible, setVisible] = useState<Settlement[]>(initialSettlements);
 
-  const scopedIds = useScopedArtistIds();
-  const extra = useSettlementStore((s) => s.extra);
-  const overrides = useSettlementStore((s) => s.overrides);
-  const markInvoice = useSettlementStore((s) => s.markInvoice);
-  const all = allSettlements(extra, overrides);
-  const visible = scopedIds
-    ? all.filter((s) => scopedIds.has(s.artistId))
-    : all;
+  // 세금계산서 발행 → DB PATCH + 로컬 반영
+  const markInvoice = (id: string) => {
+    setVisible((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, taxInvoice: true } : s))
+    );
+    fetch("/api/settlements", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, taxInvoice: true }),
+    }).catch(() => {});
+  };
+
+  const handleCreated = (created: Settlement) => {
+    setVisible((prev) => [created, ...prev]);
+  };
 
   const total = visible.reduce((sum, s) => sum + s.gross, 0);
   const pending = visible.filter((s) => s.status === "pending").reduce(
@@ -192,7 +209,13 @@ export function SettlementBoard() {
         계정에도 동일하게 공개돼요.
       </p>
 
-      {editorOpen && <SettlementEditor onClose={() => setEditorOpen(false)} />}
+      {editorOpen && (
+        <SettlementEditor
+          artists={artists}
+          onCreated={handleCreated}
+          onClose={() => setEditorOpen(false)}
+        />
+      )}
     </div>
   );
 }
