@@ -47,6 +47,20 @@ const SCHEMA = {
   additionalProperties: false as const,
 };
 
+// 세그먼트별 톤·금지어 — 콜드메일 포지셔닝을 답장에서도 유지.
+const SEGMENT_GUIDE: Record<string, string> = {
+  agency:
+    "상대는 기획사/소속사다. 앵글은 '흩어진 문의를 한 화면에, 마진 구조는 그대로'. " +
+    "절대 금지어: '중간 마진 제거', '대행 마진', '중간에서 떼이지 말고' 등 기획사의 수익 구조를 위협하는 표현. " +
+    "수수료 0%는 '기획사 마진을 건드리지 않는다'는 뜻으로만 설명한다.",
+  creator:
+    "상대는 1인 크리에이터(유튜버·인플루언서)다. 앵글은 '섭외 수익을 중간에서 떼이지 말고 전부'. " +
+    "수수료 0%·평생 무료를 강조하되, 우리 수익모델(유료 구독·요금제)은 먼저 언급하지 않는다.",
+  company:
+    "상대는 광고주(행사·브랜드 담당자)다. 앵글은 '섭외가를 먼저 보고 직접, 투명하게, 빠르게'. " +
+    "광고주는 완전 무료임을 강조한다.",
+};
+
 export async function classifyAndDraft(input: {
   segment: string | null;
   org: string | null;
@@ -56,12 +70,13 @@ export async function classifyAndDraft(input: {
 }): Promise<ReplyDraft | null> {
   if (!process.env.ANTHROPIC_API_KEY) return null;
   const client = new Anthropic();
+  const guide = input.segment ? SEGMENT_GUIDE[input.segment] : undefined;
 
   const response = await client.messages.create({
     model: "claude-opus-4-8",
     max_tokens: 16000,
     thinking: { type: "adaptive" },
-    system: SYSTEM,
+    system: guide ? `${SYSTEM}\n\n[이번 상대 세그먼트 가이드]\n${guide}` : SYSTEM,
     output_config: {
       format: { type: "json_schema", schema: SCHEMA },
     },

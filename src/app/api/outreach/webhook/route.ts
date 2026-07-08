@@ -25,12 +25,13 @@ export async function POST(req: Request) {
     .limit(1);
   if (!contact) return NextResponse.json({ ok: true });
 
-  // replied/unsubscribed는 최종 상태 — 이벤트로 되돌리지 않는다
+  // replied/unsubscribed/bounced는 최종 상태 — 늦게 온 이벤트로 되돌리지 않는다.
+  // 단 complained(스팸 신고)는 항상 최우선 — 무조건 영구 제외로 승격.
   const terminal = ["replied", "unsubscribed", "bounced"];
   let next: "opened" | "bounced" | "unsubscribed" | null = null;
   if (event.type === "email.opened" && !terminal.includes(contact.status)) next = "opened";
-  if (event.type === "email.bounced") next = "bounced";
-  if (event.type === "email.complained") next = "unsubscribed"; // 스팸 신고 = 영구 제외
+  if (event.type === "email.bounced" && !terminal.includes(contact.status)) next = "bounced";
+  if (event.type === "email.complained") next = "unsubscribed"; // 스팸 신고 = 영구 제외(최우선)
 
   if (next) {
     await db

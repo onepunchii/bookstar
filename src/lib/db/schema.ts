@@ -322,6 +322,7 @@ export const outreachSegment = pgEnum("outreach_segment", [
 
 export const outreachStatus = pgEnum("outreach_status", [
   "queued", // 발송 대기
+  "sending", // 선점됨(발송 중) — 동시 발송 방지용 원자적 클레임 상태
   "sent", // 1차 발송됨
   "opened", // 열람 확인
   "replied", // 답장 옴 → 더 이상 자동발송 없음
