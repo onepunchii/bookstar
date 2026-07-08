@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { auth, signOut } from "@/auth";
 import { ScopeToggle } from "@/components/scope-toggle";
 import { AgencyTabs } from "./agency-tabs";
 
@@ -7,11 +8,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AgencyLayout({
+export default async function AgencyLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <div className="mb-1 flex items-center justify-between gap-3">
@@ -19,8 +22,21 @@ export default function AgencyLayout({
         <div className="flex items-center gap-3">
           <ScopeToggle />
           <span className="hidden text-sm text-neutral-400 sm:inline">
-            스타원엔터테인먼트
+            {session?.user?.name ?? session?.user?.email ?? "스타원엔터테인먼트"}
           </span>
+          <form
+            action={async () => {
+              "use server";
+              await signOut({ redirectTo: "/login" });
+            }}
+          >
+            <button
+              type="submit"
+              className="rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-semibold text-neutral-500 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+            >
+              로그아웃
+            </button>
+          </form>
         </div>
       </div>
       <p className="mb-5 text-sm text-neutral-500">

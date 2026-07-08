@@ -1,12 +1,18 @@
 import { put } from "@vercel/blob";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { getDb, schema } from "@/lib/db";
 
 // 소속사 아티스트 대표 사진 업로드 → Vercel Blob 저장 → artists.image_url 갱신.
 // 클라이언트에서 이미 WebP로 변환한 Blob을 FormData(file)로 전송한다.
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+    }
+
     const form = await req.formData();
     const slug = form.get("slug");
     const file = form.get("file");

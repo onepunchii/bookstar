@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { getDb, schema } from "@/lib/db";
 import type { ArtistCategory } from "@/lib/types";
 
@@ -26,6 +27,11 @@ interface Payload {
 
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+    }
+
     const body = (await req.json()) as Payload;
     if (!body.slug) {
       return NextResponse.json({ error: "slug 누락" }, { status: 400 });
