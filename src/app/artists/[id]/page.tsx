@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { AvailabilityCalendar } from "@/components/availability-calendar";
+import { MonthAvailability } from "@/components/month-availability";
 import { MomentumCard } from "@/components/momentum-card";
 import { YoutubeVideos } from "@/components/youtube-videos";
 import { Eyebrow } from "@/components/premium/eyebrow";
@@ -194,12 +194,7 @@ export default async function ArtistDetailPage({
           <Reveal>
             <Eyebrow className="mb-4">Availability</Eyebrow>
             <div className="adv-card rounded-[1.75rem] p-6 sm:p-8">
-              <AvailabilityCalendar
-                days={schedule}
-                monthLabel="2026년 7월"
-                firstDayOffset={3}
-                dark
-              />
+              <MonthAvailability schedule={schedule} dark />
             </div>
           </Reveal>
         </div>

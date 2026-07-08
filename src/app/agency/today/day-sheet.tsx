@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import type { Artist, DaySchedule, Manager } from "@/lib/types";
 import {
   Car,
+  CalendarDays,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -56,6 +57,33 @@ export function DaySheet({
 
   const safeIdx = Math.min(dateIdx, dates.length - 1);
   const date = dates[safeIdx];
+
+  // 월 전체 보기 (캘린더 오버뷰)
+  const [calOpen, setCalOpen] = useState(false);
+  const [calOffset, setCalOffset] = useState(0); // 이번달 기준 ±
+  const countByDate = useMemo(() => {
+    const m: Record<string, number> = {};
+    for (const s of schedules) m[s.date] = (m[s.date] ?? 0) + 1;
+    return m;
+  }, [schedules]);
+  const calBase = new Date(
+    Number(TODAY.slice(0, 4)),
+    Number(TODAY.slice(5, 7)) - 1 + calOffset,
+    1
+  );
+  const calY = calBase.getFullYear();
+  const calM = calBase.getMonth() + 1;
+  const calKey = `${calY}-${String(calM).padStart(2, "0")}`;
+  const calDays = new Date(calY, calM, 0).getDate();
+  const calFirst = new Date(`${calKey}-01T00:00:00`).getDay();
+
+  const jumpTo = (d: string) => {
+    const idx = dates.indexOf(d);
+    if (idx >= 0) {
+      setDateIdx(idx);
+      setCalOpen(false);
+    }
+  };
 
   const copyShare = (id: string) => {
     const url = `${window.location.origin}/d/${id}`;
@@ -126,6 +154,18 @@ export function DaySheet({
           >
             <ChevronRight className="h-4 w-4" />
           </button>
+          <button
+            onClick={() => setCalOpen((v) => !v)}
+            aria-label="캘린더로 보기"
+            className={cn(
+              "flex h-9 w-9 items-center justify-center rounded-lg border transition-colors",
+              calOpen
+                ? "border-brand-500 bg-brand-50 text-brand-600"
+                : "border-neutral-200 text-neutral-500 hover:border-neutral-900"
+            )}
+          >
+            <CalendarDays className="h-4 w-4" />
+          </button>
         </div>
         <div className="flex gap-2">
           <button
@@ -144,6 +184,77 @@ export function DaySheet({
           )}
         </div>
       </div>
+
+      {/* 월 전체 오버뷰 — 시트 있는 날짜는 개수 배지, 클릭으로 이동 */}
+      {calOpen && (
+        <Card className="mb-5 p-5">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-base font-bold">
+              {calY}년 {calM}월
+            </h3>
+            <div className="flex gap-1">
+              <button
+                onClick={() => setCalOffset((v) => v - 1)}
+                aria-label="이전 달"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 hover:border-neutral-900"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </button>
+              <button
+                onClick={() => setCalOffset((v) => v + 1)}
+                aria-label="다음 달"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 hover:border-neutral-900"
+              >
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-7 gap-1.5">
+            {["일", "월", "화", "수", "목", "금", "토"].map((d) => (
+              <div
+                key={d}
+                className="pb-1 text-center text-xs font-medium text-neutral-400"
+              >
+                {d}
+              </div>
+            ))}
+            {Array.from({ length: calFirst }).map((_, i) => (
+              <div key={`e-${i}`} />
+            ))}
+            {Array.from({ length: calDays }).map((_, i) => {
+              const d = `${calKey}-${String(i + 1).padStart(2, "0")}`;
+              const count = countByDate[d] ?? 0;
+              const isToday = d === TODAY;
+              const isSelected = d === date;
+              return (
+                <button
+                  key={d}
+                  onClick={() => count > 0 && jumpTo(d)}
+                  disabled={count === 0}
+                  className={cn(
+                    "relative flex h-12 flex-col items-center justify-center rounded-lg text-sm font-medium transition-colors",
+                    count > 0
+                      ? "bg-brand-500 text-white hover:bg-brand-600"
+                      : "bg-neutral-50 text-neutral-300",
+                    isSelected && "ring-2 ring-neutral-900 ring-offset-1",
+                    isToday && count === 0 && "text-neutral-500 ring-1 ring-brand-300"
+                  )}
+                >
+                  {i + 1}
+                  {count > 0 && (
+                    <span className="text-[9px] font-bold leading-none opacity-90">
+                      {count}건
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-xs text-neutral-400">
+            색칠된 날짜를 누르면 해당 날짜 시트로 이동해요
+          </p>
+        </Card>
+      )}
 
       {daySchedules.length === 0 ? (
         <Card className="flex h-48 flex-col items-center justify-center gap-2 text-neutral-400">

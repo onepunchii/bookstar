@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AvailabilityCalendar } from "@/components/availability-calendar";
+import { MonthAvailability } from "@/components/month-availability";
 import { Wordmark } from "@/components/wordmark";
 import { getPublicArtistBySlug, getPublicSchedule } from "@/lib/data/artists";
 import { getRatingSummaryBySlug } from "@/lib/mock-data";
@@ -338,12 +338,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
               Availability
             </h2>
             <div className="rounded-2xl bg-white/[0.04] p-6 ring-1 ring-white/10">
-              <AvailabilityCalendar
-                days={schedule}
-                monthLabel="2026년 7월"
-                firstDayOffset={3}
-                dark
-              />
+              <MonthAvailability schedule={schedule} dark />
             </div>
           </section>
         </div>
