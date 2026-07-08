@@ -59,27 +59,27 @@ export default function HomePage() {
   return (
     <div className="adv-dark relative overflow-hidden">
       <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10">
-        {/* ── HERO ─────────────────────────────── */}
-        <Reveal className="relative">
-          {/* 콘서트 이미지 — 오른쪽에서 배경으로 번짐 */}
-          <div className="pointer-events-none absolute right-[-1rem] top-[-1.5rem] h-[calc(100%+3rem)] w-[68%] overflow-hidden sm:right-[-2rem] sm:w-[54%]">
+        {/* ── HERO (이미지 배경이 인사말+검색바까지 덮음) ── */}
+        <div className="relative">
+          {/* 콘서트 이미지 — 오른쪽에서 크게 번지고, 검색바 아래까지 세로로 */}
+          <div className="pointer-events-none absolute bottom-0 right-[-1rem] top-[-1.5rem] w-[72%] overflow-hidden sm:right-[-2rem] sm:w-[56%]">
             <Image
               src="/hero-concert.webp"
               alt=""
               fill
               priority
-              sizes="(max-width: 640px) 68vw, 640px"
-              className="object-cover object-[center_35%]"
+              sizes="(max-width: 640px) 72vw, 680px"
+              className="object-cover object-[center_30%]"
             />
             {/* 좌→우 다크 그라디언트 (왼쪽 텍스트 가독성) */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0b] via-[#0a0a0b]/75 to-[#0a0a0b]/5" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0b] via-[#0a0a0b]/70 to-[#0a0a0b]/5" />
             {/* 상·하 페이드 */}
             <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[#0a0a0b] to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0a0a0b] to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#0a0a0b] via-[#0a0a0b]/50 to-transparent" />
           </div>
 
           {/* 텍스트 */}
-          <div className="relative max-w-[70%] px-1 pb-6 pt-6 sm:max-w-md sm:pt-10">
+          <Reveal className="relative max-w-[70%] px-1 pb-6 pt-6 sm:max-w-md sm:pt-12">
             <Eyebrow>광고주 콘솔</Eyebrow>
             <h1 className="display-kr mt-3 text-3xl font-black text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] sm:text-5xl">
               안녕하세요,
@@ -96,13 +96,13 @@ export default function HomePage() {
                 매칭 수수료 0%
               </span>
             </div>
-          </div>
-        </Reveal>
+          </Reveal>
 
-        {/* 검색 + AI 캐스팅 */}
-        <Reveal delay={60} className="relative z-40 mt-7">
-          <HomeSearch />
-        </Reveal>
+          {/* 검색 + AI 캐스팅 — 사진 위에 뜨는 유리바 */}
+          <Reveal delay={60} className="relative z-40 mt-8 pb-2 sm:mt-10">
+            <HomeSearch />
+          </Reveal>
+        </div>
 
         {/* ── 벤토 위젯 ─────────────────────────── */}
         <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4">
