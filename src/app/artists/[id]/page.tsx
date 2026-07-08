@@ -55,9 +55,21 @@ export default async function ArtistDetailPage({
                 aria-hidden
                 className="adv-orb pointer-events-none absolute -right-6 top-1/3 h-48 w-48 rounded-full blur-2xl"
               />
-              <span className="absolute inset-0 flex items-center justify-center text-[9rem] font-black text-white/10">
-                {artist.name.slice(0, 1)}
-              </span>
+              {artist.imageUrl ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={artist.imageUrl}
+                    alt={artist.name}
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                </>
+              ) : (
+                <span className="absolute inset-0 flex items-center justify-center text-[9rem] font-black text-white/10">
+                  {artist.name.slice(0, 1)}
+                </span>
+              )}
               {artist.verified && (
                 <span className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-black/50 px-3 py-1.5 text-xs font-bold text-white backdrop-blur">
                   <BadgeCheck className="h-3.5 w-3.5 text-brand-400" /> 인증
@@ -142,7 +154,12 @@ export default async function ArtistDetailPage({
         <div className="min-w-0 space-y-14">
           <Reveal>
             <Eyebrow className="mb-4">Momentum</Eyebrow>
-            <MomentumCard artistId={bridgeId} artistName={artist.name} dark />
+            <MomentumCard
+              artistId={bridgeId}
+              artistName={artist.name}
+              youtubeSubscribers={ytSubs}
+              dark
+            />
           </Reveal>
 
           <Reveal>

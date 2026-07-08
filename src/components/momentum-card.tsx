@@ -8,10 +8,12 @@ import { ArrowDownRight, ArrowUpRight, TrendingUp } from "lucide-react";
 export async function MomentumCard({
   artistId,
   artistName,
+  youtubeSubscribers,
   dark = false,
 }: {
   artistId: string;
   artistName?: string;
+  youtubeSubscribers?: number | null;
   dark?: boolean;
 }) {
   const m = generateMetrics(artistId);
@@ -23,8 +25,12 @@ export async function MomentumCard({
   const searchDelta = recentDelta(searchSeries, 7);
   const newsSum = real ? real.newsCount : recentSum(m.news, 30);
   const newsSeries = real ? real.searchSeries : m.news;
-  const followersLast = m.followers[m.followers.length - 1];
-  const followersDelta = recentDelta(m.followers, 15);
+  // 팔로워: 유튜브 실 구독자 있으면 그 값(만 단위), 없으면 mock
+  const hasYt = typeof youtubeSubscribers === "number";
+  const followersLast = hasYt
+    ? Math.round(youtubeSubscribers! / 10000)
+    : m.followers[m.followers.length - 1];
+  const followersDelta = hasYt ? 0 : recentDelta(m.followers, 15);
 
   const items = [
     {
@@ -35,7 +41,7 @@ export async function MomentumCard({
     },
     { label: "검색 트렌드", value: `${searchLast}`, delta: searchDelta, series: searchSeries },
     {
-      label: "팔로워 (만)",
+      label: hasYt ? "유튜브 구독자 (만)" : "팔로워 (만)",
       value: `${followersLast.toLocaleString()}`,
       delta: followersDelta,
       series: m.followers,
@@ -65,9 +71,13 @@ export async function MomentumCard({
             화제성 · 팬덤
           </h2>
           <p className={cn("mt-0.5 text-xs", dark ? "text-white/40" : "text-neutral-400")}>
-            {real
-              ? "지난 30일 · 네이버 실데이터 (팔로워는 YouTube 연동 시 반영)"
-              : "지난 30일 · 데모 데이터 (실데이터는 네이버/YouTube 연동 시 반영)"}
+            {real && hasYt
+              ? "지난 30일 · 네이버 검색·기사 + YouTube 구독자 실데이터"
+              : real
+                ? "지난 30일 · 네이버 실데이터 (구독자는 YouTube 연동 시 반영)"
+                : hasYt
+                  ? "검색·기사는 데모, 구독자는 YouTube 실데이터"
+                  : "지난 30일 · 데모 데이터 (실데이터는 네이버/YouTube 연동 시 반영)"}
           </p>
         </div>
       </div>
