@@ -88,11 +88,23 @@ function isActive(pathname: string, href: string) {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { role } = useRoleStore();
+  const { role: storedRole, setRole } = useRoleStore();
 
   useEffect(() => {
     useRoleStore.persist.rehydrate();
   }, []);
+
+  // 역할은 URL이 진실 — 로그인 리다이렉트·직접 링크로 진입해도
+  // 크롬(다크/라이트)·토글이 화면과 항상 일치하게 한다.
+  const role: Role = pathname.startsWith("/agency")
+    ? "agency"
+    : pathname.startsWith("/me")
+      ? "artist"
+      : "company";
+
+  useEffect(() => {
+    if (storedRole !== role) setRole(role);
+  }, [role, storedRole, setRole]);
 
   // 공개 페이지(/p/, /@, /d/, /join/, /login)와 관리자(/admin)는 앱 셸 밖 자체 레이아웃
   if (
