@@ -2,10 +2,11 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useRoleStore, type Role } from "@/lib/role-store";
 import { cn } from "@/lib/utils";
 import { NotificationsPanel } from "./notifications-panel";
+import { RoleSwitcher } from "./role-switcher";
 import { SampleHint } from "./sample-hint";
 import { SampleLauncher } from "./sample-launcher";
 import { Wordmark } from "./wordmark";
@@ -69,12 +70,6 @@ const ACCOUNT: Record<
   },
 };
 
-const ROLE_LABELS: Record<Role, string> = {
-  company: "광고주",
-  agency: "소속사",
-  artist: "아티스트",
-};
-
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
   if (href === "/agency") return pathname === "/agency";
@@ -83,8 +78,7 @@ function isActive(pathname: string, href: string) {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { role, setRole } = useRoleStore();
+  const { role } = useRoleStore();
 
   useEffect(() => {
     useRoleStore.persist.rehydrate();
@@ -102,18 +96,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const nav = NAV_BY_ROLE[role];
   const account = ACCOUNT[role];
-
-  const switchRole = (next: Role) => {
-    if (next === role) return;
-    setRole(next);
-    router.push(ACCOUNT[next].home);
-  };
-
-  // 모바일 아바타 탭: 다음 역할로 순환
-  const cycleRole = () => {
-    const order: Role[] = ["company", "agency", "artist"];
-    switchRole(order[(order.indexOf(role) + 1) % order.length]);
-  };
 
   // 광고주는 다크 럭셔리 크롬, 소속사·아티스트는 라이트
   const dark = role === "company";
@@ -209,29 +191,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </p>
               </div>
             </div>
-            <div
-              className={cn(
-                "mt-3 grid grid-cols-3 gap-1 rounded-lg p-1",
-                dark ? "bg-black/40" : "bg-white"
-              )}
-            >
-              {(Object.keys(ROLE_LABELS) as Role[]).map((r) => (
-                <button
-                  key={r}
-                  onClick={() => switchRole(r)}
-                  className={cn(
-                    "premium-ease rounded-md py-1.5 text-[11px] font-semibold",
-                    role === r
-                      ? "bg-brand-500 text-white"
-                      : dark
-                        ? "text-white/45 hover:text-white"
-                        : "text-neutral-400 hover:text-neutral-900"
-                  )}
-                >
-                  {ROLE_LABELS[r]}
-                </button>
-              ))}
-            </div>
           </div>
         </div>
       </aside>
@@ -267,16 +226,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex items-center gap-2">
             <NotificationsPanel dark={dark} />
-            <button
-              onClick={cycleRole}
-              aria-label="계정 전환"
-              className={cn(
-                "flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold text-white md:hidden",
-                role === "company" ? "bg-brand-500" : "bg-neutral-900"
-              )}
-            >
-              {account.initial}
-            </button>
+            <RoleSwitcher dark={dark} />
           </div>
         </header>
 
