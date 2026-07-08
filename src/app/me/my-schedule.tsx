@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { WeatherBadge } from "@/components/weather-badge";
 import { useLeaveStore } from "@/lib/leave-store";
-import { DAY_SCHEDULES } from "@/lib/mock-data";
+import type { DaySchedule } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
   Car,
@@ -17,24 +17,26 @@ import {
   UserRound,
 } from "lucide-react";
 
-const ME_ID = "a5"; // 정하늘
+const ME_ID = "a5"; // 정하늘 (휴가 목데이터 브릿지용)
 const TODAY = "2026-07-07";
 
-export function MySchedule() {
+export function MySchedule({
+  schedules,
+  artistName,
+}: {
+  schedules: DaySchedule[];
+  artistName: string;
+}) {
   const { requests } = useLeaveStore();
   const myLeaves = requests.filter((r) => r.artistId === ME_ID);
-  const today = DAY_SCHEDULES.find(
-    (s) => s.artistId === ME_ID && s.date === TODAY
-  );
-  const upcoming = DAY_SCHEDULES.filter(
-    (s) => s.artistId === ME_ID && s.date > TODAY
-  );
+  const today = schedules.find((s) => s.date === TODAY);
+  const upcoming = schedules.filter((s) => s.date > TODAY);
   const callTime = today?.stops[0];
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
       <h1 className="text-2xl font-black tracking-tight">
-        안녕하세요, 정하늘님
+        안녕하세요, {artistName}님
       </h1>
       <p className="mt-1 text-sm text-neutral-500">7월 7일 (화) · 오늘</p>
 

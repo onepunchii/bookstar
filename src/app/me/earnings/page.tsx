@@ -1,11 +1,8 @@
-"use client";
-
 import { Card } from "@/components/ui/card";
-import { allSettlements, useSettlementStore } from "@/lib/settlement-store";
+import { getPublicArtistBySlug } from "@/lib/data/artists";
+import { getSettlements } from "@/lib/data/settlements";
 import { formatBudget, settlementBreakdown } from "@/lib/types";
 import { cn } from "@/lib/utils";
-
-const ME_ID = "a5"; // 정하늘
 
 const STATUS_LABEL = {
   paid: "지급 완료",
@@ -13,12 +10,11 @@ const STATUS_LABEL = {
   overdue: "지연",
 } as const;
 
-export default function MyEarningsPage() {
-  const extra = useSettlementStore((s) => s.extra);
-  const overrides = useSettlementStore((s) => s.overrides);
-  const mine = allSettlements(extra, overrides).filter(
-    (s) => s.artistId === ME_ID
-  );
+// 데모 아티스트(정하늘) 기준 — DB 정산에서 본인 건만.
+export default async function MyEarningsPage() {
+  const artist = await getPublicArtistBySlug("haneul");
+  const all = await getSettlements();
+  const mine = artist ? all.filter((s) => s.artistId === artist.id) : [];
   const totalNet = mine.reduce(
     (sum, s) => sum + settlementBreakdown(s).artistNet,
     0

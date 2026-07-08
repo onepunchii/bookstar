@@ -3,8 +3,10 @@ import { Sparkline } from "@/components/sparkline";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { getAgencyArtists, getPublicScheduleMap } from "@/lib/data/artists";
+import { getBookingRequests } from "@/lib/data/booking-requests";
 import { generateMetrics, recentDelta } from "@/lib/metrics";
-import { ARTISTS, BOOKING_REQUESTS, BUNDLES, SCHEDULES } from "@/lib/mock-data";
+import { ARTISTS as MOCK_ARTISTS, BUNDLES, mockIdForSlug } from "@/lib/mock-data";
 import { profileCompleteness } from "@/lib/profile";
 import { AVAILABILITY_LABELS, formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -23,7 +25,12 @@ import {
 
 const TODAY = "2026-07-07";
 
-export default function AgencyDashboardPage() {
+export default async function AgencyDashboardPage() {
+  const [ARTISTS, BOOKING_REQUESTS, scheduleMap] = await Promise.all([
+    getAgencyArtists(),
+    getBookingRequests(),
+    getPublicScheduleMap(),
+  ]);
   const pending = BOOKING_REQUESTS.filter((r) => r.status === "pending");
   const negotiating = BOOKING_REQUESTS.filter(
     (r) => r.status === "negotiating"
@@ -33,7 +40,7 @@ export default function AgencyDashboardPage() {
 
   const todaySchedule = ARTISTS.map((a) => ({
     artist: a,
-    day: (SCHEDULES[a.id] ?? []).find((d) => d.date === TODAY),
+    day: (scheduleMap[a.id] ?? []).find((d) => d.date === TODAY),
   })).filter((x) => x.day);
 
   const incomplete = ARTISTS.map((a) => ({
@@ -45,7 +52,7 @@ export default function AgencyDashboardPage() {
     .slice(0, 3);
 
   const trending = ARTISTS.map((a) => {
-    const m = generateMetrics(a.id);
+    const m = generateMetrics(mockIdForSlug(a.slug) ?? a.id);
     return { artist: a, delta: recentDelta(m.news, 7), series: m.news };
   })
     .sort((x, y) => y.delta - x.delta)
@@ -222,7 +229,7 @@ export default function AgencyDashboardPage() {
                     key={id}
                     className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-200 text-[10px] font-black text-neutral-500 ring-2 ring-white"
                   >
-                    {(ARTISTS.find((a) => a.id === id)?.name || "?").slice(0, 1)}
+                    {(MOCK_ARTISTS.find((a) => a.id === id)?.name || "?").slice(0, 1)}
                   </span>
                 ))}
               </div>
@@ -250,7 +257,7 @@ export default function AgencyDashboardPage() {
           {trending.map(({ artist, delta, series }) => (
             <Link
               key={artist.id}
-              href={`/artists/${artist.id}`}
+              href={`/artists/${artist.slug}`}
               className="flex items-center gap-3 text-sm hover:text-brand-600"
             >
               <span className="min-w-0 flex-1 truncate font-medium">
@@ -293,7 +300,7 @@ export default function AgencyDashboardPage() {
           {incomplete.map(({ artist, score }) => (
             <Link
               key={artist.id}
-              href={`/agency/artists/${artist.id}`}
+              href={`/agency/artists/${artist.slug}`}
               className="block"
             >
               <div className="flex items-center justify-between text-sm">
