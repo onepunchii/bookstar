@@ -1,0 +1,76 @@
+/**
+ * 섭외 요청(인박스) 읽기 레이어 — Neon booking_requests를 UI의 BookingRequest 모양으로.
+ * artistName은 artists 조인. company 정보는 비정규화 컬럼.
+ */
+import { desc, eq } from "drizzle-orm";
+import { getDb, schema } from "@/lib/db";
+import { BOOKING_REQUESTS as MOCK } from "@/lib/mock-data";
+import type { BookingRequest, BookingStatus, EventType } from "@/lib/types";
+
+const cols = {
+  id: schema.bookingRequests.id,
+  artistId: schema.bookingRequests.artistId,
+  companyName: schema.bookingRequests.companyName,
+  companyVerified: schema.bookingRequests.companyVerified,
+  companyEventCount: schema.bookingRequests.companyEventCount,
+  eventType: schema.bookingRequests.eventType,
+  budget: schema.bookingRequests.budget,
+  location: schema.bookingRequests.location,
+  eventDate: schema.bookingRequests.eventDate,
+  message: schema.bookingRequests.message,
+  status: schema.bookingRequests.status,
+  createdAt: schema.bookingRequests.createdAt,
+  artistName: schema.artists.name,
+};
+
+type Row = {
+  id: string;
+  artistId: string;
+  companyName: string | null;
+  companyVerified: boolean;
+  companyEventCount: number | null;
+  eventType: string;
+  budget: number;
+  location: string | null;
+  eventDate: string | null;
+  message: string | null;
+  status: BookingStatus;
+  createdAt: Date;
+  artistName: string | null;
+};
+
+function rowToRequest(r: Row): BookingRequest {
+  return {
+    id: r.id,
+    artistId: r.artistId,
+    artistName: r.artistName ?? "",
+    companyName: r.companyName ?? "주최자",
+    companyVerified: r.companyVerified,
+    companyEventCount: r.companyEventCount ?? undefined,
+    eventType: r.eventType as EventType,
+    budget: r.budget,
+    location: r.location ?? "",
+    date: r.eventDate ?? "",
+    message: r.message ?? "",
+    status: r.status,
+    createdAt: r.createdAt.toISOString(),
+  };
+}
+
+export async function getBookingRequests(): Promise<BookingRequest[]> {
+  try {
+    const db = getDb();
+    const rows = await db
+      .select(cols)
+      .from(schema.bookingRequests)
+      .leftJoin(
+        schema.artists,
+        eq(schema.bookingRequests.artistId, schema.artists.id)
+      )
+      .orderBy(desc(schema.bookingRequests.createdAt));
+    if (rows.length > 0) return (rows as Row[]).map(rowToRequest);
+  } catch {
+    /* 폴백 */
+  }
+  return MOCK;
+}

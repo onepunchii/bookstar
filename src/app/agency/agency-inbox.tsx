@@ -6,18 +6,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label, Textarea } from "@/components/ui/input";
-import { allRequests, useBookingsStore } from "@/lib/bookings-store";
-import { useDayStore } from "@/lib/day-store";
-import { SCHEDULES, getArtist } from "@/lib/mock-data";
 import { useNotificationsStore } from "@/lib/notifications-store";
-import { useScopedArtistIds } from "@/lib/scope-store";
 import { holdKey, useScheduleStore } from "@/lib/schedule-store";
 import { getForecast, isRainRisky } from "@/lib/weather";
 import {
   AVAILABILITY_LABELS,
   formatBudget,
+  type Artist,
   type BookingRequest,
   type BookingStatus,
+  type ScheduleDay,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
@@ -83,11 +81,27 @@ function addDays(date: string, days: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-export function AgencyInbox() {
-  const extraReqs = useBookingsStore((s) => s.extra);
-  const reqOverrides = useBookingsStore((s) => s.overrides);
-  const updateStatus = useBookingsStore((s) => s.updateStatus);
-  const requests = allRequests(extraReqs, reqOverrides);
+export function AgencyInbox({
+  initialRequests,
+  artists,
+  scheduleMap,
+}: {
+  initialRequests: BookingRequest[];
+  artists: Artist[];
+  scheduleMap: Record<string, ScheduleDay[]>;
+}) {
+  const [requests, setRequests] = useState<BookingRequest[]>(initialRequests);
+  // 상태 변경 → DB PATCH + 로컬 반영
+  const updateStatus = (id: string, status: BookingStatus) => {
+    setRequests((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, status } : r))
+    );
+    fetch("/api/booking-requests", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, status }),
+    }).catch(() => {});
+  };
   const [selectedId, setSelectedId] = useState(requests[0]?.id);
   const [quotes, setQuotes] = useState<Record<string, Quote>>({});
   const [holdPlacedFor, setHoldPlacedFor] = useState<string | null>(null);
@@ -101,38 +115,20 @@ export function AgencyInbox() {
   const [linkCopied, setLinkCopied] = useState(false);
 
   const { holds, placeHold } = useScheduleStore();
-  const addFromBooking = useDayStore((s) => s.addFromBooking);
   const pushNotif = useNotificationsStore((s) => s.push);
-  const scopedIds = useScopedArtistIds();
-  const visibleRequests = scopedIds
-    ? requests.filter((r) => scopedIds.has(r.artistId))
-    : requests;
+  const visibleRequests = requests;
 
   const runAiIntake = () => {
     setAiState("processing");
     setTimeout(() => setAiState("done"), 1400);
   };
 
-  const addBookingViaStore = useBookingsStore((s) => s.add);
+  // AI 공문 인식 데모 — 로컬 요청 카드로 추가(데모, 미저장)
   const addAiRequest = () => {
     if (!requests.some((r) => r.id === AI_EXTRACTED.id)) {
-      const created = addBookingViaStore({
-        artistId: AI_EXTRACTED.artistId,
-        artistName: AI_EXTRACTED.artistName,
-        companyName: AI_EXTRACTED.companyName,
-        companyVerified: AI_EXTRACTED.companyVerified,
-        companyEventCount: AI_EXTRACTED.companyEventCount,
-        eventType: AI_EXTRACTED.eventType,
-        budget: AI_EXTRACTED.budget,
-        location: AI_EXTRACTED.location,
-        date: AI_EXTRACTED.date,
-        message: AI_EXTRACTED.message,
-        status: AI_EXTRACTED.status,
-      });
-      setSelectedId(created.id);
-    } else {
-      setSelectedId(AI_EXTRACTED.id);
+      setRequests((prev) => [AI_EXTRACTED, ...prev]);
     }
+    setSelectedId(AI_EXTRACTED.id);
     setAiState("idle");
   };
 
@@ -158,12 +154,14 @@ export function AgencyInbox() {
     : undefined;
   const rainRisk =
     selected && outdoorEvent && forecast && isRainRisky(forecast);
-  const artist = selected ? getArtist(selected.artistId) : undefined;
+  const artist = selected
+    ? artists.find((a) => a.id === selected.artistId)
+    : undefined;
   const preset = artist?.quotePreset;
 
   // 요청일의 현재 상태 (기본 일정 + 홀드)
   const baseDay = selected
-    ? (SCHEDULES[selected.artistId] ?? []).find(
+    ? (scheduleMap[selected.artistId] ?? []).find(
         (d) => d.date === selected.date
       )
     : undefined;
@@ -187,15 +185,24 @@ export function AgencyInbox() {
       companyName: selected.companyName,
       expiresAt: addDays(TODAY, HOLD_DAYS),
     });
-    // 데일리 시트 자동 생성 (OS 흐름의 마지막 조각)
-    addFromBooking({
-      artistId: selected.artistId,
-      artistName: selected.artistName,
-      date: selected.date,
-      title: `${selected.eventType} · ${selected.companyName}`,
-      eventType: selected.eventType,
-      location: selected.location,
-    });
+    // 데일리 시트 자동 생성 → DB(day_schedules)에 실제 생성
+    fetch("/api/day-schedules", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        artistId: selected.artistId,
+        date: selected.date,
+        title: `${selected.eventType} · ${selected.companyName}`,
+        eventType: selected.eventType,
+        manager: "자동 배정 대기",
+        memo: "인박스 수락 · 자동 생성됨. 담당 매니저·차량을 배정해주세요.",
+        stops: [
+          { time: "08:00", label: "현장 도착", location: selected.location },
+          { time: "10:00", label: "행사 진행" },
+          { time: "17:00", label: "종료" },
+        ],
+      }),
+    }).catch(() => {});
     pushNotif({
       type: "booking_accepted",
       role: "agency",

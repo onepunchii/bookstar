@@ -125,6 +125,10 @@ export const bookingRequests = pgTable("booking_requests", {
   artistId: uuid("artist_id")
     .notNull()
     .references(() => artists.id),
+  // 표시용 주최자 정보(비정규화) — 다중 광고주 정식 모델링 전까지 원본 유지
+  companyName: text("company_name"),
+  companyVerified: boolean("company_verified").notNull().default(false),
+  companyEventCount: integer("company_event_count"),
   eventType: text("event_type").notNull(),
   budget: integer("budget").notNull(), // 만원
   location: text("location"),
