@@ -8,6 +8,7 @@ import { PremiumCTA } from "@/components/premium/premium-cta";
 import { Reveal } from "@/components/premium/reveal";
 import { getPublicArtists, getPublicScheduleMap } from "@/lib/data/artists";
 import { getBookingRequests } from "@/lib/data/booking-requests";
+import { getCompanyCampaigns } from "@/lib/data/campaigns";
 import { getSessionUser } from "@/lib/data/session";
 import { getMessages } from "@/lib/data/messages";
 import { BUNDLES } from "@/lib/mock-data";
@@ -16,6 +17,7 @@ import {
   ArrowUpRight,
   CalendarCheck,
   Clock,
+  Megaphone,
   MessageSquare,
   TrendingUp,
 } from "lucide-react";
@@ -60,6 +62,10 @@ export default async function HomePage() {
   const avgRate = Math.round(
     ARTISTS.reduce((s, a) => s + a.responseRate, 0) / ARTISTS.length
   );
+  // 내 오픈 캠페인 요약 (로그인 광고주)
+  const myCampaigns = user ? await getCompanyCampaigns(user.id) : [];
+  const openMine = myCampaigns.filter((c) => c.status === "open").length;
+  const myApplicants = myCampaigns.reduce((s, c) => s + c.applicantCount, 0);
 
   return (
     <div className="adv-dark relative overflow-hidden">
@@ -102,6 +108,29 @@ export default async function HomePage() {
             <HomeSearch artists={ARTISTS} />
           </Reveal>
         </div>
+
+        {/* 내 오픈 캠페인 바로가기 — 진행 중일 때만 */}
+        {myCampaigns.length > 0 && (
+          <Reveal delay={90} className="mt-6">
+            <Link
+              href="/requests/campaigns"
+              className="adv-card adv-card-hover flex items-center gap-4 rounded-2xl p-5"
+            >
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/15 text-brand-300">
+                <Megaphone className="h-5 w-5" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="font-black text-white">
+                  내 오픈 캠페인 {openMine}건 모집 중
+                </p>
+                <p className="text-sm text-white/50">
+                  지원 {myApplicants}명 · 지원자를 확인하고 선정하세요
+                </p>
+              </div>
+              <ArrowUpRight className="h-4 w-4 shrink-0 text-white/30" />
+            </Link>
+          </Reveal>
+        )}
 
         {/* ── 벤토 위젯 ─────────────────────────── */}
         <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4">

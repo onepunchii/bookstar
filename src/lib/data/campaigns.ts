@@ -103,6 +103,21 @@ export async function createCampaign(input: CampaignInput): Promise<string> {
   return row.id;
 }
 
+// 모집 중(open·마감 전) 오픈 캠페인 수 — 소속사 대시보드 훅.
+export async function countOpenCampaigns(): Promise<number> {
+  const db = getDb();
+  const [r] = await db
+    .select({ c: sql<number>`count(*)::int` })
+    .from(schema.campaigns)
+    .where(
+      and(
+        eq(schema.campaigns.status, "open"),
+        gte(schema.campaigns.deadline, todayKST())
+      )
+    );
+  return Number(r?.c ?? 0);
+}
+
 // ── 광고주: 내 캠페인 목록 ────────────
 export async function getCompanyCampaigns(
   companyUserId: string

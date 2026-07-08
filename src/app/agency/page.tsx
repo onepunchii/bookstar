@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { getAgencyArtists, getPublicScheduleMap } from "@/lib/data/artists";
 import { getBookingRequests } from "@/lib/data/booking-requests";
+import { countOpenCampaigns } from "@/lib/data/campaigns";
 import { getSessionAgency } from "@/lib/data/session";
 import { generateMetrics, recentDelta } from "@/lib/metrics";
 import { ARTISTS as MOCK_ARTISTS, BUNDLES, mockIdForSlug } from "@/lib/mock-data";
@@ -29,11 +30,13 @@ const TODAY = todayKST();
 
 export default async function AgencyDashboardPage() {
   const agency = await getSessionAgency();
-  const [ARTISTS, BOOKING_REQUESTS, scheduleMap] = await Promise.all([
-    getAgencyArtists(agency?.id),
-    getBookingRequests(agency ? { agencyId: agency.id } : undefined),
-    getPublicScheduleMap(),
-  ]);
+  const [ARTISTS, BOOKING_REQUESTS, scheduleMap, openCampaigns] =
+    await Promise.all([
+      getAgencyArtists(agency?.id),
+      getBookingRequests(agency ? { agencyId: agency.id } : undefined),
+      getPublicScheduleMap(),
+      countOpenCampaigns(),
+    ]);
   const pending = BOOKING_REQUESTS.filter((r) => r.status === "pending");
   const negotiating = BOOKING_REQUESTS.filter(
     (r) => r.status === "negotiating"
@@ -62,8 +65,29 @@ export default async function AgencyDashboardPage() {
     .slice(0, 3);
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {/* KPI */}
+    <>
+      {/* 오픈 캠페인 발견 훅 — 모집 중일 때만 */}
+      {openCampaigns > 0 && (
+        <Link
+          href="/agency/campaigns"
+          className="mb-4 flex items-center gap-3 rounded-2xl border border-brand-200 bg-gradient-to-r from-brand-50 to-white p-4 transition-colors hover:border-brand-500"
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500 text-white">
+            <Flame className="h-5 w-5" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-black text-neutral-900">
+              오픈 캠페인 {openCampaigns}건 모집 중
+            </p>
+            <p className="text-xs text-neutral-500">
+              광고주가 올린 섭외 건에 우리 아티스트로 직접 지원하세요
+            </p>
+          </div>
+          <ArrowRight className="h-4 w-4 shrink-0 text-brand-500" />
+        </Link>
+      )}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {/* KPI */}
       {[
         {
           icon: Inbox,
@@ -324,6 +348,7 @@ export default async function AgencyDashboardPage() {
           ))}
         </div>
       </Card>
-    </div>
+      </div>
+    </>
   );
 }
