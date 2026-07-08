@@ -50,8 +50,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const dbUser = await upsertKakaoUser(kakaoId, name);
           token.uid = dbUser.id;
           token.role = dbUser.role;
-        } catch {
-          /* DB 실패해도 로그인은 유지 */
+        } catch (e) {
+          // DB 실패해도 로그인은 유지하되, 원인은 로그로 남긴다(무음 실패 방지)
+          console.error("[auth] upsertKakaoUser 실패", {
+            kakaoId,
+            name,
+            error: e instanceof Error ? e.message : String(e),
+          });
         }
       }
       return token;
