@@ -42,7 +42,25 @@ function rowToArtist(row: ArtistRow): Artist {
           note: row.presetNote ?? undefined,
         }
       : undefined,
+    defaultAgencyRate: row.defaultAgencyRateBp / 10000,
+    instagram: row.instagram ?? undefined,
+    youtube: row.youtube ?? undefined,
   };
+}
+
+/** 소속사 콘솔용 아티스트 전체 (상태 무관) */
+export async function getAgencyArtists(): Promise<Artist[]> {
+  try {
+    const db = getDb();
+    const rows = await db
+      .select()
+      .from(schema.artists)
+      .orderBy(asc(schema.artists.createdAt));
+    if (rows.length > 0) return rows.map(rowToArtist);
+  } catch {
+    /* 폴백 */
+  }
+  return MOCK_ARTISTS;
 }
 
 /** 공개 아티스트 전체 — 브라우즈·사이트맵용 */

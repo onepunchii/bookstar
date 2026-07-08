@@ -1,25 +1,20 @@
-"use client";
-
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { ARTISTS } from "@/lib/mock-data";
+import { getAgencyArtists } from "@/lib/data/artists";
 import { profileCompleteness } from "@/lib/profile";
-import { useScopedArtistIds } from "@/lib/scope-store";
 import { CATEGORY_LABELS, formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Camera, Pencil, Plus } from "lucide-react";
 
-export default function AgencyArtistsPage() {
-  const scopedIds = useScopedArtistIds();
-  const visible = scopedIds
-    ? ARTISTS.filter((a) => scopedIds.has(a.id))
-    : ARTISTS;
+// 매니저 스코프 필터는 매니저 DB 연동(Phase 5) 후 복원 예정.
+export default async function AgencyArtistsPage() {
+  const visible = await getAgencyArtists();
   return (
     <div>
       <div className="mb-5 flex items-center justify-between">
         <p className="text-sm text-neutral-500">
-          {scopedIds ? "내 담당" : "소속"} 아티스트 {visible.length}팀 · 프로필과 사진은 여기서 관리해요
+          소속 아티스트 {visible.length}팀 · 프로필과 사진은 여기서 관리해요
         </p>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -83,7 +78,7 @@ export default function AgencyArtistsPage() {
                   </div>
                 </div>
                 <Link
-                  href={`/agency/artists/${artist.id}`}
+                  href={`/agency/artists/${artist.slug}`}
                   className="mt-4 flex h-9 items-center justify-center gap-1.5 rounded-lg border border-neutral-200 text-sm font-semibold transition-colors hover:border-neutral-900"
                 >
                   <Pencil className="h-3.5 w-3.5" /> 프로필 관리

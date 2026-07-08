@@ -30,6 +30,8 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
   const [tags, setTags] = useState<string[]>(artist.tags);
   const [tagInput, setTagInput] = useState("");
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [photos, setPhotos] = useState<(WebPResult | null)[]>([
     null,
     null,
@@ -88,6 +90,53 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
     setTagInput("");
   };
 
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const str = (k: string) => String(fd.get(k) ?? "").trim();
+    const num = (k: string) => {
+      const n = parseInt(str(k).replace(/[^0-9]/g, ""), 10);
+      return Number.isNaN(n) ? undefined : n;
+    };
+    const rate = num("agencyRate");
+    const payload = {
+      slug: artist.slug,
+      name: str("name") || undefined,
+      groupName: str("groupName") || null,
+      tagline: str("tagline"),
+      categories,
+      tags,
+      budgetMin: num("budgetMin"),
+      budgetMax: num("budgetMax"),
+      recentWork: str("recentWork")
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      presetFee: num("presetFee") ?? null,
+      presetIncludes: str("presetIncludes") || null,
+      presetNote: str("presetNote") || null,
+      defaultAgencyRateBp: rate === undefined ? undefined : Math.round(rate * 100),
+      instagram: str("instagram") || null,
+      youtube: str("youtube") || null,
+    };
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const res = await fetch("/api/artists/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setSaved(true);
+      setTimeout(() => setSaved(false), 4000);
+    } catch {
+      setSaveError("저장에 실패했어요. 다시 시도해주세요.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div>
       <Link
@@ -106,7 +155,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Left: form */}
-        <div className="space-y-6 lg:col-span-2">
+        <form className="space-y-6 lg:col-span-2" onSubmit={handleSave}>
           {/* 사진 */}
           <Card className="p-6">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -218,16 +267,20 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <Label htmlFor="name">활동명</Label>
-                <Input id="name" defaultValue={artist.name} />
+                <Input id="name" name="name" defaultValue={artist.name} />
               </div>
               <div>
                 <Label htmlFor="group">그룹명 (선택)</Label>
-                <Input id="group" defaultValue={artist.groupName} />
+                <Input
+                  id="group"
+                  name="groupName"
+                  defaultValue={artist.groupName}
+                />
               </div>
             </div>
             <div>
               <Label htmlFor="tagline">한 줄 소개</Label>
-              <Input id="tagline" defaultValue={artist.tagline} />
+              <Input id="tagline" name="tagline" defaultValue={artist.tagline} />
               <p className="mt-1 text-xs text-neutral-400">
                 광고주가 검색 결과에서 가장 먼저 보는 문장이에요
               </p>
@@ -301,6 +354,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                 <Label htmlFor="budget-min">최소 예산 (만원)</Label>
                 <Input
                   id="budget-min"
+                  name="budgetMin"
                   type="number"
                   defaultValue={artist.budgetRange[0]}
                 />
@@ -309,6 +363,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                 <Label htmlFor="budget-max">최대 예산 (만원)</Label>
                 <Input
                   id="budget-max"
+                  name="budgetMax"
                   type="number"
                   defaultValue={artist.budgetRange[1]}
                 />
@@ -322,6 +377,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
               <Label htmlFor="profile">상세 프로필</Label>
               <Textarea
                 id="profile"
+                name="recentWork"
                 rows={4}
                 placeholder="활동 이력, 수상, 대표 작품 등을 적어주세요"
                 defaultValue={artist.recentWork.join("\n")}
@@ -342,6 +398,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                 <Label htmlFor="preset-fee">기본 출연료 (만원)</Label>
                 <Input
                   id="preset-fee"
+                  name="presetFee"
                   type="number"
                   defaultValue={artist.quotePreset?.baseFee}
                   placeholder="예: 3000"
@@ -351,6 +408,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                 <Label htmlFor="preset-includes">기본 포함 항목</Label>
                 <Input
                   id="preset-includes"
+                  name="presetIncludes"
                   defaultValue={artist.quotePreset?.includes}
                   placeholder="예: 공연 30분 + 포토타임"
                 />
@@ -360,6 +418,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
               <Label htmlFor="preset-note">조건 메모</Label>
               <Input
                 id="preset-note"
+                name="presetNote"
                 defaultValue={artist.quotePreset?.note}
                 placeholder="예: 지방 행사 시 이동비 별도, 심야 할증 20%"
               />
@@ -371,6 +430,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                 </Label>
                 <Input
                   id="preset-rate"
+                  name="agencyRate"
                   type="number"
                   min={0}
                   max={100}
@@ -403,11 +463,21 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <Label htmlFor="instagram">인스타그램</Label>
-                <Input id="instagram" placeholder="@handle" />
+                <Input
+                  id="instagram"
+                  name="instagram"
+                  defaultValue={artist.instagram}
+                  placeholder="@handle"
+                />
               </div>
               <div>
                 <Label htmlFor="youtube">유튜브</Label>
-                <Input id="youtube" placeholder="채널 URL" />
+                <Input
+                  id="youtube"
+                  name="youtube"
+                  defaultValue={artist.youtube}
+                  placeholder="채널 URL"
+                />
               </div>
             </div>
             <p className="text-xs text-neutral-400">
@@ -415,15 +485,23 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
             </p>
           </Card>
 
+          {saveError && (
+            <p className="text-sm font-semibold text-red-600">{saveError}</p>
+          )}
           <div className="flex gap-3">
-            <Button size="lg" onClick={() => setSaved(true)}>
-              저장하기
+            <Button size="lg" type="submit" disabled={saving}>
+              {saving ? "저장 중…" : "저장하기"}
             </Button>
-            <Button size="lg" variant="outline">
-              미리보기
+            <Button
+              size="lg"
+              variant="outline"
+              type="button"
+              onClick={() => window.open(`/@${artist.slug}`, "_blank")}
+            >
+              공개 프로필 미리보기
             </Button>
           </div>
-        </div>
+        </form>
 
         {/* Right: completeness */}
         <div>

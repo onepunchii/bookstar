@@ -97,6 +97,7 @@ async function main() {
         presetFee: a.quotePreset?.baseFee,
         presetIncludes: a.quotePreset?.includes,
         presetNote: a.quotePreset?.note,
+        defaultAgencyRateBp: Math.round((a.defaultAgencyRate ?? 0.3) * 10000),
         verified: a.verified,
       })
       .returning();

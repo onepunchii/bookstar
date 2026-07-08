@@ -93,6 +93,8 @@ export const artists = pgTable("artists", {
   presetFee: integer("preset_fee"), // 만원
   presetIncludes: text("preset_includes"),
   presetNote: text("preset_note"),
+  // 소속사:아티스트 기본 분배율 (basis point, 3000 = 소속사 30%)
+  defaultAgencyRateBp: integer("default_agency_rate_bp").notNull().default(3000),
   verified: boolean("verified").notNull().default(false),
   status: text("status").notNull().default("active"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
