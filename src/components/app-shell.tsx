@@ -19,7 +19,6 @@ import {
   LayoutGrid,
   Palmtree,
   Search,
-  Sparkles,
   Users,
 } from "lucide-react";
 
@@ -30,7 +29,7 @@ const NAV_BY_ROLE: Record<
   company: [
     { href: "/", label: "홈", icon: LayoutGrid },
     { href: "/artists", label: "아티스트", icon: Search },
-    { href: "/recommend", label: "AI 추천", icon: Sparkles },
+    // AI 추천은 홈 카드에서 진입 — 내비 중복 제거
     { href: "/requests", label: "섭외 관리", icon: Inbox },
   ],
   agency: [
