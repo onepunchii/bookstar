@@ -93,7 +93,7 @@ export default async function ArtistsPage({
   };
 
   return (
-    <div className="adv-dark mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-16">
+    <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-16">
       <Reveal>
         <Eyebrow>Discover</Eyebrow>
         <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-4xl">

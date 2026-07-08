@@ -18,6 +18,7 @@ const ROLES: Role[] = ["company", "agency", "artist"];
 export function SampleLauncher() {
   const [open, setOpen] = useState(false);
   const [seen, setSeen] = useState(true);
+  const [dismissed, setDismissed] = useState(false);
   const router = useRouter();
   const setRole = useRoleStore((s) => s.setRole);
 
@@ -26,8 +27,16 @@ export function SampleLauncher() {
     try {
       const v = localStorage.getItem("bookstar-sample-seen");
       if (!v) setSeen(false);
+      if (localStorage.getItem("bookstar-sample-dismissed")) setDismissed(true);
     } catch {}
   }, []);
+
+  const dismiss = () => {
+    setDismissed(true);
+    try {
+      localStorage.setItem("bookstar-sample-dismissed", "1");
+    } catch {}
+  };
 
   const pick = (scenario: Scenario) => {
     setRole(scenario.role);
@@ -42,21 +51,34 @@ export function SampleLauncher() {
   return (
     <>
       {/* 플로팅 버튼 */}
-      <button
-        onClick={() => setOpen(true)}
-        className={cn(
-          "fixed bottom-24 right-4 z-40 flex h-12 items-center gap-2 rounded-full bg-neutral-900 pl-4 pr-5 text-sm font-bold text-white shadow-lg shadow-neutral-900/20 transition-all hover:bg-neutral-700 md:bottom-6",
-          !seen && "ring-4 ring-brand-500/30"
-        )}
-      >
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500">
-          <Sparkles className="h-3.5 w-3.5" />
-        </span>
-        샘플로 둘러보기
-        {!seen && (
-          <span className="ml-0.5 h-2 w-2 rounded-full bg-brand-500" />
-        )}
-      </button>
+      {!dismissed && (
+        <div
+          className={cn(
+            "fixed bottom-24 right-4 z-40 flex h-12 items-center rounded-full bg-neutral-900 pl-4 pr-1.5 text-sm font-bold text-white shadow-lg shadow-neutral-900/20 md:bottom-6",
+            !seen && "ring-4 ring-brand-500/30"
+          )}
+        >
+          <button
+            onClick={() => setOpen(true)}
+            className="flex items-center gap-2 pr-2 transition-opacity hover:opacity-80"
+          >
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500">
+              <Sparkles className="h-3.5 w-3.5" />
+            </span>
+            샘플로 둘러보기
+            {!seen && (
+              <span className="ml-0.5 h-2 w-2 rounded-full bg-brand-500" />
+            )}
+          </button>
+          <button
+            onClick={dismiss}
+            aria-label="샘플 버튼 닫기"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
       {/* 모달 */}
       {open && (

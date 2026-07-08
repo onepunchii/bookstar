@@ -86,12 +86,6 @@ export default function HomePage() {
               <br /> 브라이트마케팅님
             </h1>
             <div className="mt-5 flex flex-wrap gap-2">
-              <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/80 backdrop-blur-sm">
-                진행 중 {inProgress.length}건
-              </span>
-              <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/80 backdrop-blur-sm">
-                새 메시지 {unread}
-              </span>
               <span className="rounded-full bg-brand-500 px-3 py-1.5 text-xs font-bold text-white">
                 매칭 수수료 0%
               </span>
