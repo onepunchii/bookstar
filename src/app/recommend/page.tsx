@@ -5,6 +5,7 @@ import { CastingRecommender } from "./recommender";
 
 export const metadata = {
   title: "AI 캐스팅 추천 · xong",
+  robots: { index: false, follow: false },
 };
 
 export default function RecommendPage() {

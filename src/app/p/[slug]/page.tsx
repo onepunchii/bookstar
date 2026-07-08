@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
 import { Wordmark } from "@/components/wordmark";
 import { Badge } from "@/components/ui/badge";
-import { getArtistBySlug, SCHEDULES } from "@/lib/mock-data";
+import { getArtistBySlug, getRatingSummary, SCHEDULES } from "@/lib/mock-data";
+import { artistPublicUrl, SITE } from "@/lib/site";
 import {
   CATEGORY_LABELS,
   formatBudget,
@@ -64,14 +65,36 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const artist = getArtistBySlug(slug);
-  if (!artist) return { title: "xong" };
+  if (!artist) return { title: "아티스트를 찾을 수 없어요" };
+
+  const cat = CATEGORY_LABELS[artist.category];
+  const title = `${artist.name} 섭외 · ${cat}`;
+  const description = `${artist.tagline} · ${artist.agencyName} 소속. ${artist.name} 섭외 문의는 xong에서 — 매칭 수수료 0%, 평균 ${artist.responseHours}시간 내 응답.`;
+  const url = artistPublicUrl(slug);
+
   return {
-    title: `${artist.name} — xong 섭외`,
-    description: artist.tagline,
+    title,
+    description,
+    keywords: [
+      `${artist.name} 섭외`,
+      `${artist.name} 섭외 문의`,
+      `${artist.name} 섭외 견적`,
+      `${cat} 섭외`,
+      ...artist.tags.map((t) => `${t} 섭외`),
+    ],
+    alternates: { canonical: url },
     openGraph: {
-      title: `${artist.name} 섭외 문의`,
-      description: artist.tagline,
       type: "profile",
+      url,
+      siteName: SITE.name,
+      locale: SITE.locale,
+      title: `${artist.name} 섭외 문의 · xong`,
+      description,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${artist.name} 섭외 문의 · xong`,
+      description,
     },
   };
 }
@@ -82,9 +105,37 @@ export default async function ArtistPublicPage({ params }: PageProps) {
   if (!artist) notFound();
 
   const schedule = SCHEDULES[artist.id] ?? [];
+  const rating = getRatingSummary(artist.id);
+
+  // 구조화 데이터 (Schema.org) — 검색 리치결과
+  const isGroup = artist.gender === "group";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": isGroup ? "PerformingGroup" : "Person",
+    name: artist.name,
+    description: artist.tagline,
+    url: artistPublicUrl(slug),
+    ...(artist.imageUrl ? { image: `${SITE.url}${artist.imageUrl}` } : {}),
+    jobTitle: CATEGORY_LABELS[artist.category],
+    worksFor: { "@type": "Organization", name: artist.agencyName },
+    ...(rating.count > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: rating.avg,
+            reviewCount: rating.count,
+            bestRating: 5,
+          },
+        }
+      : {}),
+  };
 
   return (
     <div className="min-h-dvh bg-neutral-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* 상단 얇은 브랜드 바 */}
       <div className="border-b border-neutral-200 bg-white">
         <div className="mx-auto flex h-12 max-w-4xl items-center justify-between px-4 sm:px-6">

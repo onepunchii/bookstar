@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { ScopeToggle } from "@/components/scope-toggle";
 import { AgencyTabs } from "./agency-tabs";
+
+// 소속사 센터는 로그인 뒤 비공개 앱 화면 → 색인 제외
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default function AgencyLayout({
   children,

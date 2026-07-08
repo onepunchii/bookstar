@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { WeatherBadge } from "@/components/weather-badge";
 import { Wordmark } from "@/components/wordmark";
@@ -7,6 +8,11 @@ import { Car, MapPin, UserRound } from "lucide-react";
 interface Props {
   params: Promise<{ id: string }>;
 }
+
+// 데일리 시트 공유 링크(일정) → 색인 절대 제외
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 function formatDate(iso: string) {
   const d = new Date(iso);

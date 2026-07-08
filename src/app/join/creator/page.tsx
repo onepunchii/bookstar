@@ -4,6 +4,9 @@ import { CreatorWizard } from "./creator-wizard";
 
 export const metadata = {
   title: "크리에이터 등록 · xong",
+  description:
+    "인플루언서·유튜버·크리에이터 셀프 등록. 프로필을 올리면 브랜드가 직접 섭외 제안을 보냅니다. 매칭 수수료 0%.",
+  alternates: { canonical: "/join/creator" },
 };
 
 export default function CreatorJoinPage() {

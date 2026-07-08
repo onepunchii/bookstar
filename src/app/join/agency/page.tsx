@@ -4,6 +4,9 @@ import { Building2, Mail, Phone, Sparkles } from "lucide-react";
 
 export const metadata = {
   title: "소속사 등록 · xong",
+  description:
+    "소속 아티스트를 등록하고 섭외 요청을 한 곳에서 관리하세요. 등록 즉시 공개 프로필이 검색에 노출됩니다. 매칭 수수료 0%.",
+  alternates: { canonical: "/join/agency" },
 };
 
 export default function AgencyJoinPage() {

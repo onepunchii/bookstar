@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { getArtist } from "@/lib/mock-data";
 import { BookingForm } from "./booking-form";
+
+// 섭외 요청 폼 → 색인 제외
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function NewBookingPage({
   searchParams,

@@ -1,13 +1,40 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/app-shell";
+import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "xong — eXperience ON",
-  description:
-    "연예인·인플루언서 섭외를 가장 빠르게 연결하는 B2B 부킹 OS. 가능 일정 확인부터 섭외 요청, 협의, 계약, 정산까지 한 곳에서.",
-  icons: {
-    icon: "/xong1.webp",
+  metadataBase: new URL(SITE.url),
+  title: {
+    default: "xong · 연예인·인플루언서 섭외 — eXperience ON",
+    template: "%s · xong",
+  },
+  description: SITE.description,
+  keywords: [...SITE.keywords],
+  applicationName: SITE.name,
+  authors: [{ name: SITE.name, url: SITE.url }],
+  creator: SITE.name,
+  publisher: SITE.name,
+  alternates: { canonical: "/" },
+  icons: { icon: "/xong1.webp", apple: "/xong1.webp" },
+  openGraph: {
+    type: "website",
+    siteName: SITE.name,
+    locale: SITE.locale,
+    url: SITE.url,
+    title: "xong · 연예인·인플루언서 섭외 — eXperience ON",
+    description: SITE.description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: SITE.twitter,
+    title: "xong · 연예인·인플루언서 섭외",
+    description: SITE.description,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
 };
 
