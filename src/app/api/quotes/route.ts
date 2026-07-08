@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { getDb, schema } from "@/lib/db";
+import { notify } from "@/lib/data/notify";
 
 // 견적 회신 — quotes 저장 + 협의 메시지 생성 + 요청 상태 negotiating 전환.
 // 소속사 인박스의 '견적 보내기'가 광고주 협의 채팅·요청 상세에 실제로 나타난다.
@@ -26,7 +27,10 @@ export async function POST(req: Request) {
     }
     const db = getDb();
     const [request] = await db
-      .select({ status: schema.bookingRequests.status })
+      .select({
+        status: schema.bookingRequests.status,
+        companyUserId: schema.bookingRequests.companyUserId,
+      })
       .from(schema.bookingRequests)
       .where(eq(schema.bookingRequests.id, b.requestId))
       .limit(1);
@@ -72,6 +76,14 @@ export async function POST(req: Request) {
         toStatus: "negotiating",
       });
     }
+
+    // 광고주에게 견적 도착 알림
+    await notify(request.companyUserId, {
+      type: "quote_received",
+      title: "새 견적이 도착했어요",
+      body: `총 ${b.amount.toLocaleString()}만원${b.includes ? ` · ${b.includes}` : ""}`,
+      link: `/requests/${b.requestId}`,
+    });
 
     revalidatePath("/agency/inbox");
     revalidatePath(`/requests/${b.requestId}`);

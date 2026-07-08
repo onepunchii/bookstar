@@ -19,6 +19,7 @@ const cols = {
   eventDate: schema.bookingRequests.eventDate,
   message: schema.bookingRequests.message,
   status: schema.bookingRequests.status,
+  advancing: schema.bookingRequests.advancing,
   createdAt: schema.bookingRequests.createdAt,
   artistName: schema.artists.name,
 };
@@ -35,6 +36,7 @@ type Row = {
   eventDate: string | null;
   message: string | null;
   status: BookingStatus;
+  advancing: string[];
   createdAt: Date;
   artistName: string | null;
 };
@@ -53,6 +55,7 @@ function rowToRequest(r: Row): BookingRequest {
     date: r.eventDate ?? "",
     message: r.message ?? "",
     status: r.status,
+    advancingChecked: r.advancing ?? [],
     createdAt: r.createdAt.toISOString(),
   };
 }

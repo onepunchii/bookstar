@@ -79,6 +79,7 @@ export interface BookingRequest {
   status: BookingStatus;
   createdAt: string;
   unreadCount?: number;
+  advancingChecked?: string[]; // 어드밴싱 완료 항목
 }
 
 export interface ThreadMessage {

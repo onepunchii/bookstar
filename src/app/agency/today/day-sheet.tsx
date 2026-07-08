@@ -199,8 +199,7 @@ export function DaySheet({
                   </button>
                   {sent[s.id] ? (
                     <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-neutral-100 px-3 py-2 text-xs font-semibold text-neutral-500">
-                      <Check className="h-3.5 w-3.5 text-brand-500" /> 전파됨 ·
-                      읽음 2/3
+                      <Check className="h-3.5 w-3.5 text-brand-500" /> 전파됨
                     </span>
                   ) : (
                     <button

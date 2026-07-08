@@ -45,14 +45,72 @@ const ACCENT_BY_TYPE: Record<NotificationType, string> = {
   day_broadcast: "bg-neutral-900/10 text-neutral-900",
 };
 
+interface DbNotification {
+  id: string;
+  type: string;
+  title: string;
+  body: string;
+  link?: string;
+  createdAt: string;
+  readAt?: string;
+}
+
 export function NotificationsPanel({ dark = false }: { dark?: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { role } = useRoleStore();
   const { items, markAllRead, markRead } = useNotificationsStore();
+  // DB 알림 (실제 이벤트) — 역할별 fetch, 스토어 시드와 병합
+  const [dbItems, setDbItems] = useState<DbNotification[]>([]);
 
-  const roleItems = items.filter((n) => n.role === role);
+  useEffect(() => {
+    let alive = true;
+    fetch(`/api/notifications?role=${role}`)
+      .then((r) => (r.ok ? r.json() : { items: [] }))
+      .then((d: { items: DbNotification[] }) => {
+        if (alive) setDbItems(d.items);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [role, open]);
+
+  const seedItems = items.filter((n) => n.role === role);
+  const roleItems = [...dbItems, ...seedItems].sort((a, b) =>
+    b.createdAt.localeCompare(a.createdAt)
+  );
   const unread = roleItems.filter((n) => !n.readAt).length;
+  const isDbId = (id: string) => /^[0-9a-f-]{36}$/.test(id);
+
+  const readOne = (id: string) => {
+    if (isDbId(id)) {
+      setDbItems((prev) =>
+        prev.map((n) =>
+          n.id === id ? { ...n, readAt: new Date().toISOString() } : n
+        )
+      );
+      fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: [id], role }),
+      }).catch(() => {});
+    } else {
+      markRead(id);
+    }
+  };
+
+  const readAll = () => {
+    markAllRead(role);
+    setDbItems((prev) =>
+      prev.map((n) => ({ ...n, readAt: n.readAt ?? new Date().toISOString() }))
+    );
+    fetch("/api/notifications", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ all: true, role }),
+    }).catch(() => {});
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -96,7 +154,7 @@ export function NotificationsPanel({ dark = false }: { dark?: boolean }) {
             </p>
             {unread > 0 && (
               <button
-                onClick={() => markAllRead(role)}
+                onClick={readAll}
                 className="text-xs font-semibold text-neutral-500 transition-colors hover:text-neutral-900"
               >
                 모두 읽음
@@ -111,7 +169,8 @@ export function NotificationsPanel({ dark = false }: { dark?: boolean }) {
             ) : (
               <ul className="divide-y divide-neutral-100">
                 {roleItems.map((n) => {
-                  const Icon = ICON_BY_TYPE[n.type];
+                  const Icon =
+                    ICON_BY_TYPE[n.type as NotificationType] ?? Bell;
                   const item = (
                     <div
                       className={cn(
@@ -122,7 +181,8 @@ export function NotificationsPanel({ dark = false }: { dark?: boolean }) {
                       <span
                         className={cn(
                           "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
-                          ACCENT_BY_TYPE[n.type]
+                          ACCENT_BY_TYPE[n.type as NotificationType] ??
+                            "bg-brand-500/10 text-brand-600"
                         )}
                       >
                         <Icon className="h-4 w-4" />
@@ -151,7 +211,7 @@ export function NotificationsPanel({ dark = false }: { dark?: boolean }) {
                         <Link
                           href={n.link}
                           onClick={() => {
-                            markRead(n.id);
+                            readOne(n.id);
                             setOpen(false);
                           }}
                         >

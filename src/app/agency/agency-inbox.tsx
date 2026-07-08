@@ -28,7 +28,6 @@ import {
   ClipboardCheck,
   CloudRain,
   FileScan,
-  Link2,
   Loader2,
   MapPin,
   SendHorizonal,
@@ -125,8 +124,14 @@ export function AgencyInbox({
   const [aiState, setAiState] = useState<"idle" | "processing" | "done">(
     "idle"
   );
-  const [checklist, setChecklist] = useState<Record<string, boolean>>({});
-  const [linkCopied, setLinkCopied] = useState(false);
+  // 어드밴싱 체크리스트 — DB advancing으로 초기화, 토글 시 저장
+  const [checklist, setChecklist] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(
+      initialRequests.flatMap((r) =>
+        (r.advancingChecked ?? []).map((item) => [`${r.id}:${item}`, true])
+      )
+    )
+  );
 
   const { holds, placeHold } = useScheduleStore();
   const pushNotif = useNotificationsStore((s) => s.push);
@@ -147,18 +152,20 @@ export function AgencyInbox({
   };
 
   const toggleChecklist = (requestId: string, item: string) =>
-    setChecklist((prev) => ({
-      ...prev,
-      [`${requestId}:${item}`]: !prev[`${requestId}:${item}`],
-    }));
-
-  const copyShareLink = () => {
-    navigator.clipboard
-      ?.writeText("https://xong.co.kr/advancing/x8f2k1")
-      .catch(() => {});
-    setLinkCopied(true);
-    setTimeout(() => setLinkCopied(false), 2000);
-  };
+    setChecklist((prev) => {
+      const next = {
+        ...prev,
+        [`${requestId}:${item}`]: !prev[`${requestId}:${item}`],
+      };
+      // DB 저장 (해당 요청의 체크된 항목 전체)
+      const checked = ADVANCING_ITEMS.filter((it) => next[`${requestId}:${it}`]);
+      fetch("/api/booking-requests", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: requestId, advancingChecked: checked }),
+      }).catch(() => {});
+      return next;
+    });
 
   const selected = requests.find((r) => r.id === selectedId);
   const outdoorEvent =
@@ -548,24 +555,9 @@ export function AgencyInbox({
                       행사 준비 체크리스트
                     </h3>
                     <p className="mt-1 text-xs text-neutral-400">
-                      주최측과 공유 링크로 함께 준비 상황을 확인해요
+                      체크 상태는 자동 저장돼요
                     </p>
                   </div>
-                  <button
-                    onClick={copyShareLink}
-                    className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-neutral-900"
-                  >
-                    {linkCopied ? (
-                      <>
-                        <Check className="h-3.5 w-3.5 text-brand-500" />{" "}
-                        복사됨
-                      </>
-                    ) : (
-                      <>
-                        <Link2 className="h-3.5 w-3.5" /> 주최측 공유 링크
-                      </>
-                    )}
-                  </button>
                 </div>
                 <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {ADVANCING_ITEMS.map((item) => {

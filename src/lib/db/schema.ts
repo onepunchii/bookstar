@@ -148,6 +148,8 @@ export const bookingRequests = pgTable("booking_requests", {
   message: text("message"),
   source: text("source").notNull().default("platform"), // platform | ai_intake | email
   status: bookingStatus("status").notNull().default("pending"),
+  // 어드밴싱 체크리스트 — 완료된 항목 라벨 목록
+  advancing: jsonb("advancing").$type<string[]>().notNull().default([]),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -304,5 +306,62 @@ export const notifications = pgTable("notifications", {
   body: text("body"),
   link: text("link"),
   readAt: timestamp("read_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// ---------- 아웃리치 (콜드메일 캠페인) ----------
+// 매출 원천이 소속사 SaaS이므로 아웃리치도 제품의 일부 — 관리자 전용.
+
+export const outreachSegment = pgEnum("outreach_segment", [
+  "agency", // 엔터 기획사 (최우선)
+  "creator", // 유튜버·크리에이터
+  "company", // 중견기업 이상 (행사·마케팅)
+]);
+
+export const outreachStatus = pgEnum("outreach_status", [
+  "queued", // 발송 대기
+  "sent", // 1차 발송됨
+  "opened", // 열람 확인
+  "replied", // 답장 옴 → 더 이상 자동발송 없음
+  "bounced", // 반송 → 재발송 금지
+  "unsubscribed", // 수신거부 → 영구 제외
+  "failed", // 발송 실패
+]);
+
+export const outreachContacts = pgTable("outreach_contacts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull().unique(),
+  name: text("name"), // 담당자명 (없으면 조직명으로 호칭)
+  org: text("org"), // 회사·채널명
+  segment: outreachSegment("segment").notNull(),
+  // 엔터=100 > 유튜버=50 > 기업=10 — 발송 큐 정렬 기준
+  priority: integer("priority").notNull().default(0),
+  status: outreachStatus("status").notNull().default("queued"),
+  unsubToken: uuid("unsub_token").notNull().defaultRandom().unique(),
+  sentCount: integer("sent_count").notNull().default(0), // 최대 2 (1차 + 리마인드)
+  lastSentAt: timestamp("last_sent_at"),
+  resendMessageId: text("resend_message_id"), // 웹훅 이벤트 매칭용
+  note: text("note"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const outreachReplyStatus = pgEnum("outreach_reply_status", [
+  "pending", // AI 초안 생성됨 — 승인 대기
+  "approved", // 관리자가 승인·발송 완료
+  "dismissed", // 무시 (스팸·자동응답 등)
+]);
+
+export const outreachReplies = pgTable("outreach_replies", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  contactId: uuid("contact_id").references(() => outreachContacts.id),
+  fromEmail: text("from_email").notNull(),
+  subject: text("subject"),
+  body: text("body").notNull(), // 수신 원문 (text)
+  intent: text("intent"), // interested | question | rejected | meeting | other
+  summary: text("summary"), // AI 한줄 요약
+  draft: text("draft"), // AI 답장 초안 (관리자 수정 가능)
+  status: outreachReplyStatus("status").notNull().default("pending"),
+  sentReply: text("sent_reply"), // 실제 발송된 답장
+  sentAt: timestamp("sent_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

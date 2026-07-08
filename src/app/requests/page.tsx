@@ -4,11 +4,15 @@ import { Reveal } from "@/components/premium/reveal";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { getBookingRequests } from "@/lib/data/booking-requests";
+import { getLastSenderMap } from "@/lib/data/messages";
 import { formatBudget } from "@/lib/types";
 import { ChevronRight } from "lucide-react";
 
 export default async function RequestsPage() {
-  const requests = await getBookingRequests();
+  const [requests, lastSender] = await Promise.all([
+    getBookingRequests(),
+    getLastSenderMap(),
+  ]);
 
   return (
     <div className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-16">
@@ -36,9 +40,9 @@ export default async function RequestsPage() {
                       {req.artistName}
                     </span>
                     <Badge>{req.eventType}</Badge>
-                    {req.unreadCount ? (
-                      <Badge variant="solid">새 메시지 {req.unreadCount}</Badge>
-                    ) : null}
+                    {lastSender[req.id] === "agency" && (
+                      <Badge variant="solid">새 답장</Badge>
+                    )}
                   </div>
                   <p className="mt-1 truncate text-sm text-white/50">
                     {req.date} · {req.location} · 예산 {formatBudget(req.budget)}

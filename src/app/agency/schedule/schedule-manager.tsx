@@ -127,20 +127,39 @@ export function ScheduleManager({
     [holds, artistId]
   );
 
+  // 월 이동 — 데모 데이터 기준월(2026-07)에서 시작
+  const [month, setMonth] = useState({ y: 2026, m: 7 });
+  const monthKey = `${month.y}-${String(month.m).padStart(2, "0")}`;
+  const daysInMonth = new Date(month.y, month.m, 0).getDate();
+  const firstOffset = new Date(`${monthKey}-01T00:00:00`).getDay();
+  const moveMonth = (delta: number) => {
+    setMonth((prev) => {
+      const d = new Date(prev.y, prev.m - 1 + delta, 1);
+      return { y: d.getFullYear(), m: d.getMonth() + 1 };
+    });
+    setSelection(new Set());
+  };
+
   const baseDays = scheduleMap[artistId] ?? [];
-  const days: ScheduleDay[] = useMemo(
-    () =>
-      baseDays.map((d) => ({
-        ...d,
-        // 우선순위: 홀드 > 승인된 휴가(불가) > 수동 편집 > 기본
-        availability: holds[holdKey(artistId, d.date)]
-          ? "hold"
-          : isOnLeave(leaveRequests, artistId, d.date)
-            ? "busy"
-            : (edits[`${artistId}:${d.date}`] ?? d.availability),
-      })),
-    [baseDays, edits, artistId, holds, leaveRequests]
-  );
+  const days: ScheduleDay[] = useMemo(() => {
+    const byDate = new Map(baseDays.map((d) => [d.date, d]));
+    return Array.from({ length: daysInMonth }, (_, i) => {
+      const date = `${monthKey}-${String(i + 1).padStart(2, "0")}`;
+      const base = byDate.get(date);
+      return {
+        date,
+        note: base?.note,
+        // 우선순위: 홀드 > 승인된 휴가(불가) > 수동 편집 > 기본(미등록=협의 필요)
+        availability: holds[holdKey(artistId, date)]
+          ? ("hold" as Availability)
+          : isOnLeave(leaveRequests, artistId, date)
+            ? ("busy" as Availability)
+            : (edits[`${artistId}:${date}`] ??
+              base?.availability ??
+              ("hold" as Availability)),
+      };
+    });
+  }, [baseDays, edits, artistId, holds, leaveRequests, monthKey, daysInMonth]);
 
   const applyTo = (dates: string[], value: Availability) => {
     setEdits((prev) => {
@@ -269,7 +288,25 @@ export function ScheduleManager({
 
         <Card className="p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-lg font-bold">2026년 7월</h2>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => moveMonth(-1)}
+                aria-label="이전 달"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 transition-colors hover:border-neutral-900"
+              >
+                ‹
+              </button>
+              <h2 className="min-w-28 text-center text-lg font-bold">
+                {month.y}년 {month.m}월
+              </h2>
+              <button
+                onClick={() => moveMonth(1)}
+                aria-label="다음 달"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 transition-colors hover:border-neutral-900"
+              >
+                ›
+              </button>
+            </div>
             <div className="flex gap-3 text-xs text-neutral-500">
               {CYCLE.map((k) => (
                 <span key={k} className="flex items-center gap-1">
@@ -289,7 +326,7 @@ export function ScheduleManager({
                 {d}
               </div>
             ))}
-            {Array.from({ length: 3 }).map((_, i) => (
+            {Array.from({ length: firstOffset }).map((_, i) => (
               <div key={`empty-${i}`} />
             ))}
             {days.map((day, i) => {
@@ -371,7 +408,7 @@ export function ScheduleManager({
       {/* 사이드 요약 */}
       <div className="space-y-4">
         <Card className="p-6">
-          <h3 className="text-sm font-bold text-neutral-500">7월 요약</h3>
+          <h3 className="text-sm font-bold text-neutral-500">{month.m}월 요약</h3>
           <div className="mt-3 space-y-2.5">
             {CYCLE.map((k) => (
               <div
