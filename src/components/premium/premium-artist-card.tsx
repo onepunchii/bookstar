@@ -24,7 +24,8 @@ export async function PremiumArtistCard({
     ? await fetchYoutubeSubscribers(artist.youtube)
     : null;
   const followerValue = ytSubs ?? artist.followers;
-  const followerLabel = ytSubs ? "Subscriber" : "Follower";
+  // 유튜브 연동 시 실 구독자, 아니면 등록된 대표 팔로워 수치
+  const followerLabel = ytSubs ? "유튜브" : "팔로워";
   return (
     <Link href={`/artists/${artist.slug}`} className={cn("group block", className)}>
       <div className="adv-card adv-card-hover overflow-hidden rounded-[1.75rem]">

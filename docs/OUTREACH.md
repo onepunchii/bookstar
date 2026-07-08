@@ -1,5 +1,24 @@
 # xong 아웃리치 콜드메일 (2026-07)
 
+## 자동화 시스템 (플랫폼 내장)
+
+수동 발송 대신 `/admin/outreach` 콘솔에서 운영한다 (users.role='admin' 필요).
+
+**파이프라인**: 대상 등록(이메일,세그먼트,이름,조직) → 매일 09:30 KST 크론 자동 발송
+(우선순위 엔터>유튜버>기업, 일 최대 50통) → 4일 무응답 시 리마인드 1회 → 답장 오면
+Claude가 의도 분류+초안 생성 → 콘솔에서 수정·승인 후 발송.
+
+**셋업 체크리스트**:
+1. [resend.com](https://resend.com) 가입(무료 100통/일) → 발송 전용 서브도메인(예: mail.xong.kr) 추가, SPF/DKIM 설정
+2. env: `RESEND_API_KEY`, `OUTREACH_FROM`, `OUTREACH_WEBHOOK_KEY`, `CRON_SECRET`, `ANTHROPIC_API_KEY`, `SITE_URL`
+3. Resend 웹훅 등록: `https://도메인/api/outreach/webhook?key=키` (opened/bounced/complained)
+4. Resend 인바운드(답장 수신) 등록: `https://도메인/api/outreach/inbound?key=키` — OUTREACH_FROM 주소로 온 메일
+5. 내 계정 `users.role='admin'` 설정
+6. 웜업: 첫 주는 일 20~30통으로 시작해 점진 증가 (콘솔 수동 발송으로 조절)
+
+**법적 가드레일(시스템이 강제)**: 제목 `(광고)` 자동 표기, 본문 수신거부 원클릭 링크
++ List-Unsubscribe 헤더, 수신거부·반송·스팸신고는 영구 재발송 차단, 최대 2통(1차+리마인드).
+
 발송 원칙: 첨부파일 금지(스팸 필터·열람률), 본문 짧게, 링크는 원페이저로.
 - 기획사 → https://xong.kr/for/agency
 - 유튜버·크리에이터 → https://xong.kr/for/creator
