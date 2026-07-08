@@ -178,13 +178,20 @@ export function AgencyInbox({
   const accept = () => {
     if (!selected) return;
     setStatus(selected.id, "accepted");
-    placeHold({
+    const holdPayload = {
       artistId: selected.artistId,
       date: selected.date,
       requestId: selected.id,
       companyName: selected.companyName,
       expiresAt: addDays(TODAY, HOLD_DAYS),
-    });
+    };
+    placeHold(holdPayload);
+    // DB holds에도 기록 → 일정관리에 반영
+    fetch("/api/holds", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(holdPayload),
+    }).catch(() => {});
     // 데일리 시트 자동 생성 → DB(day_schedules)에 실제 생성
     fetch("/api/day-schedules", {
       method: "POST",

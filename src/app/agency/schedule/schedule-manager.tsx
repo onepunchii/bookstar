@@ -4,12 +4,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { WeatherBadge } from "@/components/weather-badge";
-import { isOnLeave, useLeaveStore } from "@/lib/leave-store";
-import { daysUntil, holdKey, useScheduleStore } from "@/lib/schedule-store";
+import { isOnLeave } from "@/lib/leave-store";
+import { daysUntil, holdKey, type Hold } from "@/lib/schedule-store";
 import {
   AVAILABILITY_LABELS,
   type Artist,
   type Availability,
+  type LeaveRequest,
   type ScheduleDay,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -44,9 +45,13 @@ const DOT_STYLES: Record<Availability, string> = {
 export function ScheduleManager({
   artists,
   schedulesByArtist,
+  initialHolds,
+  initialLeaves,
 }: {
   artists: Artist[];
   schedulesByArtist: Record<string, ScheduleDay[]>;
+  initialHolds: Hold[];
+  initialLeaves: LeaveRequest[];
 }) {
   const [artistId, setArtistId] = useState(artists[0]?.id ?? "");
   const [edits, setEdits] = useState<Record<string, Availability>>({});
@@ -70,8 +75,39 @@ export function ScheduleManager({
   const dragAnchor = useRef<number | null>(null);
   const didDrag = useRef(false);
 
-  const { holds, releaseHold } = useScheduleStore();
-  // 매니저 스코프 필터는 매니저 DB 연동(Phase 5) 후 복원 예정.
+  // DB 홀드/휴가를 로컬 상태로 (쓰기는 API + 낙관적 반영)
+  const [holds, setHolds] = useState<Record<string, Hold>>(() =>
+    Object.fromEntries(
+      initialHolds.map((h) => [holdKey(h.artistId, h.date), h])
+    )
+  );
+  const [leaveRequests, setLeaveRequests] =
+    useState<LeaveRequest[]>(initialLeaves);
+
+  const releaseHold = (aid: string, date: string) => {
+    setHolds((prev) => {
+      const next = { ...prev };
+      delete next[holdKey(aid, date)];
+      return next;
+    });
+    fetch("/api/holds", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ artistId: aid, date }),
+    }).catch(() => {});
+  };
+  const decide = (id: string, status: "approved" | "rejected") => {
+    setLeaveRequests((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, status } : r))
+    );
+    fetch("/api/leaves", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, status }),
+    }).catch(() => {});
+  };
+
+  // 매니저 스코프 필터는 매니저 DB 연동 후 복원 예정.
   const visibleArtists = artists;
   const currentSlug = artists.find((a) => a.id === artistId)?.slug;
 
@@ -82,7 +118,6 @@ export function ScheduleManager({
       setSelection(new Set());
     }
   }, [visibleArtists, artistId]);
-  const { requests: leaveRequests, decide } = useLeaveStore();
   const pendingLeaves = leaveRequests.filter((r) => r.status === "pending");
   const artistHolds = useMemo(
     () =>

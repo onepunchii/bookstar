@@ -4,8 +4,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { WeatherBadge } from "@/components/weather-badge";
-import { useLeaveStore } from "@/lib/leave-store";
-import type { DaySchedule } from "@/lib/types";
+import type { DaySchedule, LeaveRequest } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
   Car,
@@ -17,18 +16,18 @@ import {
   UserRound,
 } from "lucide-react";
 
-const ME_ID = "a5"; // 정하늘 (휴가 목데이터 브릿지용)
 const TODAY = "2026-07-07";
 
 export function MySchedule({
   schedules,
   artistName,
+  leaves,
 }: {
   schedules: DaySchedule[];
   artistName: string;
+  leaves: LeaveRequest[];
 }) {
-  const { requests } = useLeaveStore();
-  const myLeaves = requests.filter((r) => r.artistId === ME_ID);
+  const myLeaves = leaves;
   const today = schedules.find((s) => s.date === TODAY);
   const upcoming = schedules.filter((s) => s.date > TODAY);
   const callTime = today?.stops[0];

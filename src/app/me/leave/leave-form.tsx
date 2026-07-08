@@ -4,10 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
-import { useLeaveStore } from "@/lib/leave-store";
+import type { LeaveRequest } from "@/lib/types";
 import { cn } from "@/lib/utils";
-
-const ME = { id: "a5", name: "정하늘" };
 
 const STATUS_STYLE = {
   pending: "bg-neutral-900 text-white",
@@ -21,26 +19,55 @@ const STATUS_LABEL = {
   rejected: "거절됨",
 } as const;
 
-export function LeaveForm() {
-  const { requests, submit } = useLeaveStore();
+export function LeaveForm({
+  artistId,
+  artistName,
+  initialRequests,
+}: {
+  artistId: string;
+  artistName: string;
+  initialRequests: LeaveRequest[];
+}) {
+  const [myRequests, setMyRequests] =
+    useState<LeaveRequest[]>(initialRequests);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reason, setReason] = useState("");
-  const myRequests = requests.filter((r) => r.artistId === ME.id);
+  const [saving, setSaving] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!startDate || !reason) return;
-    submit({
-      artistId: ME.id,
-      artistName: ME.name,
-      startDate,
-      endDate: endDate || startDate,
-      reason,
-    });
-    setStartDate("");
-    setEndDate("");
-    setReason("");
+    if (!startDate || !reason || saving) return;
+    setSaving(true);
+    const end = endDate || startDate;
+    try {
+      const res = await fetch("/api/leaves", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ artistId, startDate, endDate: end, reason }),
+      });
+      if (!res.ok) throw new Error();
+      const { id } = (await res.json()) as { id: string };
+      setMyRequests((prev) => [
+        {
+          id,
+          artistId,
+          artistName,
+          startDate,
+          endDate: end,
+          reason,
+          status: "pending",
+        },
+        ...prev,
+      ]);
+      setStartDate("");
+      setEndDate("");
+      setReason("");
+    } catch {
+      /* 무시 */
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
