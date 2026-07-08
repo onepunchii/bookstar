@@ -155,7 +155,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
   };
 
   return (
-    <div className="min-h-dvh bg-[#0a0a0b] text-white">
+    <div className="min-h-dvh overflow-x-clip bg-[#0a0a0b] text-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -262,7 +262,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
       {/* 본문 */}
       <div className="mx-auto grid max-w-4xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-3">
         {/* 좌측 컨텐츠 */}
-        <div className="space-y-10 lg:col-span-2">
+        <div className="min-w-0 space-y-10 lg:col-span-2">
           {/* 태그 */}
           {artist.tags.length > 0 && (
             <section>
