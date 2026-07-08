@@ -154,11 +154,42 @@ export default async function ArtistPublicPage({ params }: PageProps) {
       : {}),
   };
 
+  // "{이름} 섭외" 검색 인텐트용 FAQ — 스키마와 하단 보이는 섹션이 같은 내용을 공유
+  const [budgetMin, budgetMax] = artist.budgetRange;
+  const budgetAnswer =
+    budgetMin > 0 && budgetMax > 0
+      ? `${artist.name} 섭외가는 ${budgetMin.toLocaleString()}만~${budgetMax.toLocaleString()}만 원 범위이며, 행사 성격·일정·지역에 따라 달라집니다. 정확한 견적은 예산과 날짜를 적어 문의하면 소속사 공식 창구가 직접 회신합니다.`
+      : `${artist.name} 섭외가는 행사 성격·일정·지역에 따라 달라집니다. 예산과 날짜를 적어 문의하면 소속사 공식 창구가 직접 회신합니다.`;
+  const bookingFaq = [
+    { q: `${artist.name} 섭외 비용은 얼마인가요?`, a: budgetAnswer },
+    {
+      q: `${artist.name} 섭외는 어떻게 문의하나요?`,
+      a: `이 페이지의 섭외 요청 버튼으로 행사 개요·예산·날짜를 보내면 ${artist.agencyName} 공식 창구에 바로 전달됩니다. 중간 대행 없이 직접 협의하며, xong의 매칭 수수료는 0%입니다.`,
+    },
+    {
+      q: `답변은 얼마나 걸리나요?`,
+      a: `${artist.name} 소속사의 평균 응답 시간은 약 ${artist.responseHours}시간입니다. 문의에 예산·날짜가 명확할수록 회신이 빠릅니다.`,
+    },
+  ];
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: bookingFaq.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+
   return (
     <div className="min-h-dvh overflow-x-clip bg-[#0a0a0b] text-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       {/* 상단 얇은 브랜드 바 — 히어로 위에 오버레이 */}
       <div className="absolute inset-x-0 top-0 z-20">
@@ -401,6 +432,32 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           </div>
         </aside>
       </div>
+
+      {/* 섭외 안내 FAQ — "{이름} 섭외" 검색 인텐트 대응 (스키마와 동일 내용) */}
+      <section className="mx-auto max-w-4xl px-4 pb-14 sm:px-6">
+        <h2 className="display-kr text-lg font-bold text-white sm:text-xl">
+          {artist.name} 섭외 안내
+        </h2>
+        <div className="mt-4 space-y-2.5">
+          {bookingFaq.map((f, i) => (
+            <details
+              key={i}
+              className="group rounded-2xl bg-white/[0.03] ring-1 ring-white/10"
+            >
+              <summary className="cursor-pointer list-none px-5 py-3.5 text-[15px] font-semibold text-white/90 marker:content-none">
+                <span className="mr-2 text-brand-400">Q.</span>
+                {f.q}
+              </summary>
+              <p
+                className="px-5 pb-4 text-sm leading-[1.8] text-white/60"
+                style={{ wordBreak: "keep-all" }}
+              >
+                {f.a}
+              </p>
+            </details>
+          ))}
+        </div>
+      </section>
 
       {/* 푸터 */}
       <footer className="border-t border-white/8">

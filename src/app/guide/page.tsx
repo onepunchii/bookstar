@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { GUIDES } from "@/lib/guides";
+import { BOOKING_TOPICS } from "@/lib/booking-topics";
 import { absoluteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -42,6 +43,22 @@ export default function GuideIndexPage() {
           </Link>
         ))}
       </div>
+
+      {/* 카테고리별 섭외 — "OO 섭외" 검색 인텐트 랜딩으로 연결 */}
+      <section className="mt-14">
+        <h2 className="text-sm font-bold text-white/45">카테고리별 섭외 안내</h2>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {BOOKING_TOPICS.map((t) => (
+            <Link
+              key={t.slug}
+              href={`/섭외/${encodeURIComponent(t.slug)}`}
+              className="rounded-full bg-white/6 px-4 py-2 text-sm font-semibold text-white/65 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              {t.keyword}
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <script
         type="application/ld+json"

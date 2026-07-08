@@ -13,6 +13,12 @@ const nextConfig: NextConfig = {
       { source: "/for/agency", destination: "/for-agency.html" },
       { source: "/for/creator", destination: "/for-creator.html" },
       { source: "/for/company", destination: "/for-company.html" },
+      // /섭외/슬러그 → /booking-topic/슬러그 (한글 폴더명 라우팅 회피, URL은 한글 유지)
+      { source: "/섭외/:slug", destination: "/booking-topic/:slug" },
+      {
+        source: "/%EC%84%AD%EC%99%B8/:slug",
+        destination: "/booking-topic/:slug",
+      },
     ];
   },
 };

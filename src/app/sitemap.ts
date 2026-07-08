@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getPublicArtists } from "@/lib/data/artists";
 import { GUIDES } from "@/lib/guides";
+import { BOOKING_TOPICS } from "@/lib/booking-topics";
 import { SITE, absoluteUrl, artistPublicUrl } from "@/lib/site";
 import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
 
@@ -57,6 +58,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
+  // 1.6) 섭외 카테고리 랜딩 ("가수 섭외", "행사 MC 섭외" 등 상황·장르 키워드)
+  const topicPages: MetadataRoute.Sitemap = BOOKING_TOPICS.map((t) => ({
+    url: absoluteUrl(`/섭외/${encodeURIComponent(t.slug)}`),
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.85,
+  }));
+
   // 2) 카테고리별 아티스트 목록 ("아이돌 섭외" 등 검색 유입)
   const categoryPages: MetadataRoute.Sitemap = (
     Object.keys(CATEGORY_LABELS) as ArtistCategory[]
@@ -84,5 +93,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ],
   }));
 
-  return [...staticPages, ...guidePages, ...categoryPages, ...artistPages];
+  return [
+    ...staticPages,
+    ...guidePages,
+    ...topicPages,
+    ...categoryPages,
+    ...artistPages,
+  ];
 }
