@@ -4,6 +4,7 @@ import { signOut } from "@/auth";
 import { ScopeToggle } from "@/components/scope-toggle";
 import { getSessionAgency } from "@/lib/data/session";
 import { AgencyTabs } from "./agency-tabs";
+import { SwipeNav } from "./swipe-nav";
 
 // 소속사 센터는 로그인 뒤 비공개 앱 화면 → 색인 제외
 export const metadata: Metadata = {
@@ -68,7 +69,9 @@ export default function AgencyLayout({
         아티스트 프로필, 일정, 섭외 요청을 한 곳에서 관리하세요
       </p>
       <AgencyTabs />
-      <div className="pt-6">{children}</div>
+      <SwipeNav>
+        <div className="pt-6">{children}</div>
+      </SwipeNav>
     </div>
   );
 }

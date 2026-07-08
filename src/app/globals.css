@@ -229,3 +229,12 @@ body {
     rgba(255, 120, 40, 0) 70%
   );
 }
+
+/* 가로 스크롤 스크롤바 숨김 (탭바 스와이프) */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
