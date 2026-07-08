@@ -142,7 +142,7 @@ export function LineupBundleCard({
   );
 
   return (
-    <Link href={`/artists?bundle=${bundle.id}`} className={cn("group block h-full", className)}>
+    <Link href={`/sets/${bundle.id}`} className={cn("group block h-full", className)}>
       {dark ? (
         <div className="adv-card adv-card-hover h-full rounded-[1.75rem] p-5">
           {inner}

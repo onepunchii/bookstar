@@ -22,7 +22,19 @@ const LABEL = "mb-1.5 block text-sm font-medium text-white/70";
 const FIELD =
   "adv-glass h-11 w-full rounded-xl px-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-brand-500/50";
 
-export function BookingForm({ artist }: { artist: Artist }) {
+export interface SetInfo {
+  title: string;
+  members: string; // "리센느 · QWER · 이준호"
+  budgetMin: number; // 만원
+}
+
+export function BookingForm({
+  artist,
+  setInfo,
+}: {
+  artist: Artist;
+  setInfo?: SetInfo;
+}) {
   const [submitted, setSubmitted] = useState(false);
   const [eventType, setEventType] = useState<EventType>("행사");
   const pushNotif = useNotificationsStore((s) => s.push);
@@ -121,6 +133,16 @@ export function BookingForm({ artist }: { artist: Artist }) {
         </div>
       </div>
 
+      {setInfo && (
+        <div className="adv-glass rounded-2xl p-4 ring-1 ring-brand-500/30">
+          <p className="text-xs font-bold text-brand-300">📦 세트 섭외 문의</p>
+          <p className="mt-1 text-sm font-semibold text-white">
+            {setInfo.title}
+          </p>
+          <p className="mt-0.5 text-xs text-white/50">{setInfo.members}</p>
+        </div>
+      )}
+
       <div>
         <p className={LABEL}>행사 유형</p>
         <div className="flex flex-wrap gap-2">
@@ -167,6 +189,7 @@ export function BookingForm({ artist }: { artist: Artist }) {
             required
             placeholder="예: 3000"
             min={0}
+            defaultValue={setInfo?.budgetMin}
             className={FIELD}
           />
         </div>
@@ -219,6 +242,11 @@ export function BookingForm({ artist }: { artist: Artist }) {
           name="message"
           rows={5}
           required
+          defaultValue={
+            setInfo
+              ? `[세트 섭외] ${setInfo.title}\n구성: ${setInfo.members}\n\n`
+              : undefined
+          }
           placeholder="행사 개요, 아티스트 역할(공연/진행/촬영 등), 콘텐츠 사용 범위(SNS/TVC/기간), 독점 조항 여부를 적어주시면 협의가 빨라져요."
           className="adv-glass w-full rounded-xl px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-brand-500/50"
         />

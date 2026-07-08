@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { getPublicArtistBySlug } from "@/lib/data/artists";
-import { BookingForm } from "./booking-form";
+import { getArtist, getBundle } from "@/lib/mock-data";
+import { BookingForm, type SetInfo } from "./booking-form";
 
 // 섭외 요청 폼 → 색인 제외
 export const metadata: Metadata = {
@@ -12,10 +13,29 @@ export const metadata: Metadata = {
 export default async function NewBookingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ artist?: string }>;
+  searchParams: Promise<{ artist?: string; set?: string }>;
 }) {
-  const { artist: slug } = await searchParams;
-  const artist = slug ? await getPublicArtistBySlug(slug) : null;
+  const { artist: slug, set: setId } = await searchParams;
+
+  // 세트 문의: 번들 → 구성원 이름 + 대표(첫) 아티스트로 폼 진입
+  let leadSlug = slug;
+  let setInfo: SetInfo | undefined;
+  if (setId) {
+    const bundle = getBundle(setId);
+    if (bundle) {
+      const members = bundle.artistIds
+        .map((id) => getArtist(id))
+        .filter(Boolean) as { name: string; slug: string }[];
+      leadSlug = leadSlug ?? members[0]?.slug;
+      setInfo = {
+        title: bundle.title,
+        members: members.map((m) => m.name).join(" · "),
+        budgetMin: bundle.totalBudget[0],
+      };
+    }
+  }
+
+  const artist = leadSlug ? await getPublicArtistBySlug(leadSlug) : null;
   if (!artist) notFound();
 
   return (
@@ -23,12 +43,14 @@ export default async function NewBookingPage({
       <div className="mx-auto max-w-2xl px-5 py-12 sm:px-8 sm:py-16">
         <Eyebrow>Booking Request</Eyebrow>
         <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-4xl">
-          섭외 요청
+          {setInfo ? "세트 섭외 문의" : "섭외 요청"}
         </h1>
         <p className="mt-2 text-sm text-white/50">
-          표준 브리프로 작성하면 소속사가 더 빠르게 답변할 수 있어요
+          {setInfo
+            ? "세트 구성으로 문의하면 소속사가 구성·예산을 함께 검토해요"
+            : "표준 브리프로 작성하면 소속사가 더 빠르게 답변할 수 있어요"}
         </p>
-        <BookingForm artist={artist} />
+        <BookingForm artist={artist} setInfo={setInfo} />
       </div>
     </div>
   );
