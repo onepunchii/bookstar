@@ -40,3 +40,73 @@ export async function fetchYoutubeSubscribers(
     return null;
   }
 }
+
+export interface YoutubeVideo {
+  id: string; // videoId
+  title: string;
+  thumbnail: string;
+  publishedAt: string;
+}
+
+/** 채널 최근 업로드 영상 — 상세 페이지 카드 스크롤용. 실패 시 [] */
+export async function fetchYoutubeVideos(
+  channelInput: string,
+  max = 8
+): Promise<YoutubeVideo[]> {
+  const key = process.env.YOUTUBE_API_KEY;
+  if (!key) return [];
+  const parsed = parseChannel(channelInput);
+  if (!parsed) return [];
+
+  try {
+    // 1) 채널 → 업로드 재생목록
+    const chParams = new URLSearchParams({ part: "contentDetails", key });
+    if (parsed.id) chParams.set("id", parsed.id);
+    else if (parsed.forHandle) chParams.set("forHandle", parsed.forHandle);
+    const chRes = await fetch(
+      `https://www.googleapis.com/youtube/v3/channels?${chParams}`,
+      { next: { revalidate: 21600 } }
+    );
+    if (!chRes.ok) return [];
+    const uploads =
+      (await chRes.json())?.items?.[0]?.contentDetails?.relatedPlaylists
+        ?.uploads;
+    if (!uploads) return [];
+
+    // 2) 재생목록 → 최근 영상
+    const plParams = new URLSearchParams({
+      part: "snippet",
+      playlistId: uploads,
+      maxResults: String(max),
+      key,
+    });
+    const plRes = await fetch(
+      `https://www.googleapis.com/youtube/v3/playlistItems?${plParams}`,
+      { next: { revalidate: 21600 } }
+    );
+    if (!plRes.ok) return [];
+    const items = (await plRes.json())?.items ?? [];
+    return items
+      .map(
+        (i: {
+          snippet?: {
+            title?: string;
+            publishedAt?: string;
+            resourceId?: { videoId?: string };
+            thumbnails?: { medium?: { url?: string }; high?: { url?: string } };
+          };
+        }) => ({
+          id: i.snippet?.resourceId?.videoId ?? "",
+          title: i.snippet?.title ?? "",
+          thumbnail:
+            i.snippet?.thumbnails?.medium?.url ??
+            i.snippet?.thumbnails?.high?.url ??
+            "",
+          publishedAt: i.snippet?.publishedAt ?? "",
+        })
+      )
+      .filter((v: YoutubeVideo) => v.id && v.thumbnail);
+  } catch {
+    return [];
+  }
+}

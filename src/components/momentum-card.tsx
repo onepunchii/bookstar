@@ -44,7 +44,8 @@ export async function MomentumCard({
       label: hasYt ? "유튜브 구독자 (만)" : "팔로워 (만)",
       value: `${followersLast.toLocaleString()}`,
       delta: followersDelta,
-      series: m.followers,
+      // 실측일 땐 가짜 추이 곡선을 그리지 않음 (현재값만)
+      series: hasYt ? [] : m.followers,
     },
   ];
 
@@ -129,13 +130,15 @@ export async function MomentumCard({
                 )}
               </div>
               <div className="mt-2">
-                <Sparkline
-                  values={item.series}
-                  width={220}
-                  height={36}
-                  color={color}
-                  className="w-full"
-                />
+                {item.series.length > 0 && (
+                  <Sparkline
+                    values={item.series}
+                    width={220}
+                    height={36}
+                    color={color}
+                    className="w-full"
+                  />
+                )}
               </div>
             </div>
           );

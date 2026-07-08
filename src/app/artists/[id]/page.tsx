@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
 import { MomentumCard } from "@/components/momentum-card";
+import { YoutubeVideos } from "@/components/youtube-videos";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { PremiumCTA } from "@/components/premium/premium-cta";
 import { Reveal } from "@/components/premium/reveal";
@@ -161,6 +162,14 @@ export default async function ArtistDetailPage({
               dark
             />
           </Reveal>
+
+          {/* 유튜브 최근 영상 — 채널 연동 시 카드 가로 스크롤 */}
+          {artist.youtube && (
+            <Reveal>
+              <Eyebrow className="mb-4">YouTube</Eyebrow>
+              <YoutubeVideos channel={artist.youtube} dark />
+            </Reveal>
+          )}
 
           <Reveal>
             <Eyebrow className="mb-4">Recent Work</Eyebrow>
