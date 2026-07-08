@@ -73,7 +73,7 @@ export function SettlementBoard({
         </div>
         <button
           onClick={() => setEditorOpen(true)}
-          className="flex h-10 items-center gap-2 rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
+          className="flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
         >
           <Plus className="h-4 w-4" /> 새 정산 등록
         </button>
@@ -140,14 +140,14 @@ export function SettlementBoard({
                   {!hasInvoice && (
                     <button
                       onClick={() => markInvoice(s.id)}
-                      className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-neutral-900"
+                      className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-neutral-900"
                     >
                       <FileText className="h-3.5 w-3.5" /> 세금계산서 발행
                     </button>
                   )}
                   {s.status === "overdue" &&
                     (reminded[s.id] ? (
-                      <span className="flex items-center gap-1.5 rounded-lg bg-neutral-100 px-3 py-2 text-xs font-semibold text-neutral-500">
+                      <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-neutral-100 px-3 py-2 text-xs font-semibold text-neutral-500">
                         <Check className="h-3.5 w-3.5 text-brand-500" />{" "}
                         리마인더 발송됨
                       </span>
@@ -156,7 +156,7 @@ export function SettlementBoard({
                         onClick={() =>
                           setReminded((prev) => ({ ...prev, [s.id]: true }))
                         }
-                        className="flex items-center gap-1.5 rounded-lg bg-brand-500 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-600"
+                        className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-brand-500 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-600"
                       >
                         <BellRing className="h-3.5 w-3.5" /> 입금 리마인더
                       </button>

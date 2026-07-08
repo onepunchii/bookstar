@@ -212,7 +212,7 @@ export default async function AgencyDashboardPage() {
             <Package className="h-3.5 w-3.5 text-brand-500" /> 번들 상품{" "}
             {BUNDLES.length}개
           </h2>
-          <button className="flex items-center gap-1 text-xs font-semibold text-brand-600 hover:text-brand-700">
+          <button className="flex shrink-0 items-center gap-1 whitespace-nowrap text-xs font-semibold text-brand-600 hover:text-brand-700">
             <Plus className="h-3 w-3" /> 새 번들 만들기
           </button>
         </div>

@@ -22,7 +22,7 @@ export function PremiumCTA({
     <Link
       href={href}
       className={cn(
-        "group premium-ease inline-flex items-center gap-3 rounded-full font-semibold",
+        "group premium-ease inline-flex items-center gap-3 whitespace-nowrap rounded-full font-semibold",
         "hover:scale-[1.02] active:scale-[0.98]",
         size === "lg" ? "py-3 pl-7 pr-3 text-base" : "py-2.5 pl-5 pr-2.5 text-sm",
         variant === "solid" &&

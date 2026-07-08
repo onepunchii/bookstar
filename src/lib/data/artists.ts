@@ -90,6 +90,22 @@ export async function getPublicArtists(): Promise<Artist[]> {
   }
 }
 
+/** uuid로 공개 아티스트 1명 (공유 링크 OG 등) */
+export async function getPublicArtistById(id: string): Promise<Artist | null> {
+  try {
+    const db = getDb();
+    const [row] = await db
+      .select()
+      .from(schema.artists)
+      .where(eq(schema.artists.id, id))
+      .limit(1);
+    if (row) return rowToArtist(row);
+  } catch {
+    /* 폴백 */
+  }
+  return MOCK_ARTISTS.find((a) => a.id === id) ?? null;
+}
+
 /** 슬러그로 공개 아티스트 1명 */
 export async function getPublicArtistBySlug(
   slug: string

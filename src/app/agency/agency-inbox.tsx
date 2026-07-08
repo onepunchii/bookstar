@@ -525,7 +525,7 @@ export function AgencyInbox({
                   </div>
                   <button
                     onClick={copyShareLink}
-                    className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-neutral-900"
+                    className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-neutral-900"
                   >
                     {linkCopied ? (
                       <>
@@ -606,7 +606,7 @@ export function AgencyInbox({
                   {preset && (
                     <button
                       onClick={fillPreset}
-                      className="flex items-center gap-1.5 rounded-lg border border-brand-200 bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-700 transition-colors hover:bg-brand-100"
+                      className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-brand-200 bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-700 transition-colors hover:bg-brand-100"
                     >
                       <Sparkles className="h-3.5 w-3.5" />
                       {selected.artistName} 프리셋 ·{" "}

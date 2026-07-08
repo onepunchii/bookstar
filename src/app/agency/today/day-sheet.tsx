@@ -129,14 +129,14 @@ export function DaySheet({
         <div className="flex gap-2">
           <button
             onClick={() => setEditorState({ mode: "create", date })}
-            className="flex h-10 items-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 text-sm font-semibold text-neutral-700 transition-colors hover:border-neutral-900"
+            className="flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-neutral-200 bg-white px-4 text-sm font-semibold text-neutral-700 transition-colors hover:border-neutral-900"
           >
             <Plus className="h-4 w-4" /> 새 스케줄
           </button>
           {daySchedules.length > 0 && (
             <button
               onClick={sendAll}
-              className="flex h-10 items-center gap-2 rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
+              className="flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
             >
               <MessageCircle className="h-4 w-4" /> 전체 카톡 전파
             </button>
@@ -185,7 +185,7 @@ export function DaySheet({
                   </button>
                   <button
                     onClick={() => copyShare(s.id)}
-                    className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+                    className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
                   >
                     {copied === s.id ? (
                       <>
@@ -198,14 +198,14 @@ export function DaySheet({
                     )}
                   </button>
                   {sent[s.id] ? (
-                    <span className="flex items-center gap-1.5 rounded-lg bg-neutral-100 px-3 py-2 text-xs font-semibold text-neutral-500">
+                    <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-neutral-100 px-3 py-2 text-xs font-semibold text-neutral-500">
                       <Check className="h-3.5 w-3.5 text-brand-500" /> 전파됨 ·
                       읽음 2/3
                     </span>
                   ) : (
                     <button
                       onClick={() => broadcast(s.id)}
-                      className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-brand-500 hover:text-brand-600"
+                      className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-brand-500 hover:text-brand-600"
                     >
                       <MessageCircle className="h-3.5 w-3.5" /> 카톡 전파
                     </button>

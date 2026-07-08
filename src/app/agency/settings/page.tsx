@@ -23,7 +23,7 @@ export default async function AgencySettingsPage() {
               담당 매니저는 자기 담당 아티스트의 일정과 요청만 볼 수 있어요
             </p>
           </div>
-          <button className="flex h-10 items-center gap-2 rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-600">
+          <button className="flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-600">
             <Plus className="h-4 w-4" /> 매니저 초대
           </button>
         </div>

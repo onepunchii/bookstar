@@ -2,22 +2,65 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { WeatherBadge } from "@/components/weather-badge";
 import { Wordmark } from "@/components/wordmark";
+import { getPublicArtistById } from "@/lib/data/artists";
 import { getDayScheduleById } from "@/lib/data/day-schedules";
+import { SITE, absoluteUrl } from "@/lib/site";
 import { Car, MapPin, UserRound } from "lucide-react";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
-// 데일리 시트 공유 링크(일정) → 색인 절대 제외
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
-};
-
 function formatDate(iso: string) {
   const d = new Date(iso);
   const dow = ["일", "월", "화", "수", "목", "금", "토"][d.getDay()];
   return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${dow})`;
+}
+
+// 공유(카톡 등) 시 시트 내용에 맞는 OG — 아티스트 사진 있으면 그걸로.
+// 일정 페이지라 색인은 절대 제외(noindex).
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const schedule = await getDayScheduleById(id);
+  if (!schedule) {
+    return {
+      title: "데일리 시트",
+      robots: { index: false, follow: false },
+    };
+  }
+  const artist = await getPublicArtistById(schedule.artistId);
+  const title = `${schedule.artistName} 데일리 시트 · ${formatDate(schedule.date)}`;
+  const first = schedule.stops[0];
+  const description = [
+    schedule.title,
+    first ? `${first.time} ${first.label}${first.location ? ` (${first.location})` : ""} 시작` : null,
+    schedule.manager ? `담당 ${schedule.manager}` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  const image = artist?.imageUrl
+    ? absoluteUrl(artist.imageUrl)
+    : absoluteUrl("/opengraph-image");
+
+  return {
+    title,
+    description,
+    robots: { index: false, follow: false },
+    openGraph: {
+      title,
+      description,
+      siteName: SITE.name,
+      locale: SITE.locale,
+      type: "article",
+      images: [{ url: image }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
+  };
 }
 
 export default async function SharedDaySheetPage({ params }: Props) {

@@ -316,9 +316,11 @@ export function ScheduleManager({
                   )}
                 >
                   <span>{dayNum}</span>
-                  {day.availability !== "busy" && (
-                    <WeatherBadge date={day.date} compact className="!bg-black/10 !text-inherit" />
-                  )}
+                  <WeatherBadge
+                    date={day.date}
+                    compact
+                    className="!bg-black/10 !text-inherit"
+                  />
                   {hold && (
                     <CalendarClock className="absolute right-1 top-1 h-3 w-3 text-brand-400" />
                   )}
