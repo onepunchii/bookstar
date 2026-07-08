@@ -11,7 +11,12 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
-export const userRole = pgEnum("user_role", ["company", "agency", "admin"]);
+export const userRole = pgEnum("user_role", [
+  "company",
+  "agency",
+  "admin",
+  "artist",
+]);
 export const artistCategory = pgEnum("artist_category", [
   "idol",
   "actor",
@@ -43,7 +48,8 @@ export const messageSender = pgEnum("message_sender", [
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
-  email: text("email").notNull().unique(),
+  kakaoId: text("kakao_id").unique(), // 카카오 로그인 식별자(sub)
+  email: text("email").unique(),
   passwordHash: text("password_hash"),
   role: userRole("role").notNull().default("company"),
   name: text("name").notNull(),
@@ -69,6 +75,8 @@ export const artists = pgTable("artists", {
   agencyId: uuid("agency_id")
     .notNull()
     .references(() => agencies.id),
+  // 크리에이터 셀프 계정(카카오 로그인)과 연결 — 없으면 소속사가 등록한 아티스트
+  userId: uuid("user_id").references(() => users.id),
   // 공개 프로필 URL(`/@슬러그`)·사이트맵 키 — 소속사 등록 시 자동 노출의 앵커
   slug: text("slug").notNull().unique(),
   name: text("name").notNull(),

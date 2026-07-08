@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { getAgencyArtists } from "@/lib/data/artists";
+import { getSessionAgency } from "@/lib/data/session";
 import { getManagers } from "@/lib/data/managers";
 import { INTEGRATIONS, integrationStatus } from "@/lib/integrations";
 import { cn } from "@/lib/utils";
@@ -17,8 +18,9 @@ import {
 export default async function AgencySettingsPage() {
   const status = integrationStatus();
   const connected = Object.values(status).filter(Boolean).length;
+    const agency = await getSessionAgency();
   const [ARTISTS, MANAGERS] = await Promise.all([
-    getAgencyArtists(),
+    getAgencyArtists(agency?.id),
     getManagers(),
   ]);
 

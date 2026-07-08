@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { getAgencyArtists, getPublicScheduleMap } from "@/lib/data/artists";
 import { getBookingRequests } from "@/lib/data/booking-requests";
+import { getSessionAgency } from "@/lib/data/session";
 import { generateMetrics, recentDelta } from "@/lib/metrics";
 import { ARTISTS as MOCK_ARTISTS, BUNDLES, mockIdForSlug } from "@/lib/mock-data";
 import { profileCompleteness } from "@/lib/profile";
@@ -26,8 +27,9 @@ import {
 const TODAY = "2026-07-07";
 
 export default async function AgencyDashboardPage() {
+  const agency = await getSessionAgency();
   const [ARTISTS, BOOKING_REQUESTS, scheduleMap] = await Promise.all([
-    getAgencyArtists(),
+    getAgencyArtists(agency?.id),
     getBookingRequests(),
     getPublicScheduleMap(),
   ]);

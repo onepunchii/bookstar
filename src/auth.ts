@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Kakao from "next-auth/providers/kakao";
+import { upsertKakaoUser } from "@/lib/data/upsert-user";
 
 // Auth.js(NextAuth v5) — 카카오 OAuth.
 // 보호 경로: /agency(소속사 콘솔), /me(아티스트), /api/artists/*(쓰기 API).
@@ -31,8 +32,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (isProtected) return !!auth?.user;
       return true;
     },
+    // 최초 로그인 시 카카오 유저를 users에 upsert → DB id·role을 토큰에 저장
+    async jwt({ token, account, profile }) {
+      if (account && profile) {
+        const kakaoId = String(
+          (profile as { id?: number | string }).id ?? token.sub
+        );
+        const acc = profile as {
+          properties?: { nickname?: string };
+          kakao_account?: { profile?: { nickname?: string } };
+        };
+        const name =
+          acc.kakao_account?.profile?.nickname ??
+          acc.properties?.nickname ??
+          "사용자";
+        try {
+          const dbUser = await upsertKakaoUser(kakaoId, name);
+          token.uid = dbUser.id;
+          token.role = dbUser.role;
+        } catch {
+          /* DB 실패해도 로그인은 유지 */
+        }
+      }
+      return token;
+    },
     session({ session, token }) {
-      if (token.sub && session.user) session.user.id = token.sub;
+      if (session.user) {
+        // DB users.id 우선, 없으면 카카오 sub
+        session.user.id = (token.uid as string) ?? token.sub;
+        if (token.role) session.user.role = token.role as string;
+      }
       return session;
     },
   },

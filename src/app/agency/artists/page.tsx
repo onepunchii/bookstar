@@ -2,17 +2,29 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { getAgencyArtists } from "@/lib/data/artists";
+import { getSessionAgency } from "@/lib/data/session";
 import { profileCompleteness } from "@/lib/profile";
 import { CATEGORY_LABELS, formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Camera, Pencil } from "lucide-react";
 import { NewArtistButton } from "./new-artist-button";
+import { StartAgencyButton } from "../start-agency-button";
 
-// 매니저 스코프 필터는 매니저 DB 연동(Phase 5) 후 복원 예정.
 export default async function AgencyArtistsPage() {
-  const visible = await getAgencyArtists();
+  const agency = await getSessionAgency();
+  const visible = await getAgencyArtists(agency?.id);
+  const demo = !agency;
   return (
     <div>
+      {demo && (
+        <div className="mb-4 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-700">
+          👀 <span className="font-bold">테스터 보기</span> — 샘플 데이터예요.
+          소속사로 시작하면 여기부터 내 아티스트만 실제로 관리해요.
+          <div>
+            <StartAgencyButton />
+          </div>
+        </div>
+      )}
       <div className="mb-5 flex items-center justify-between">
         <p className="text-sm text-neutral-500">
           소속 아티스트 {visible.length}팀 · 프로필과 사진은 여기서 관리해요

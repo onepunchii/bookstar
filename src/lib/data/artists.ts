@@ -48,19 +48,30 @@ function rowToArtist(row: ArtistRow): Artist {
   };
 }
 
-/** 소속사 콘솔용 아티스트 전체 (상태 무관) */
-export async function getAgencyArtists(): Promise<Artist[]> {
+/**
+ * 소속사 콘솔용 아티스트.
+ * agencyId 주면 그 소속사 것만(=가입한 실 소속사), 없으면 전체(=데모/테스터).
+ */
+export async function getAgencyArtists(agencyId?: string): Promise<Artist[]> {
   try {
     const db = getDb();
-    const rows = await db
-      .select()
-      .from(schema.artists)
-      .orderBy(asc(schema.artists.createdAt));
+    const rows = agencyId
+      ? await db
+          .select()
+          .from(schema.artists)
+          .where(eq(schema.artists.agencyId, agencyId))
+          .orderBy(asc(schema.artists.createdAt))
+      : await db
+          .select()
+          .from(schema.artists)
+          .orderBy(asc(schema.artists.createdAt));
+    // 실 소속사(가입)면 빈 목록도 그대로 반환, 데모면 폴백 허용
+    if (agencyId) return rows.map(rowToArtist);
     if (rows.length > 0) return rows.map(rowToArtist);
   } catch {
     /* 폴백 */
   }
-  return MOCK_ARTISTS;
+  return agencyId ? [] : MOCK_ARTISTS;
 }
 
 /** 공개 아티스트 전체 — 브라우즈·사이트맵용 */
