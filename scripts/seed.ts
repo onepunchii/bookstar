@@ -80,6 +80,8 @@ async function main() {
       .insert(schema.artists)
       .values({
         agencyId: agency.id,
+        slug: a.slug,
+        agencyName: a.agencyName,
         name: a.name,
         groupName: a.groupName,
         categories: a.categories,

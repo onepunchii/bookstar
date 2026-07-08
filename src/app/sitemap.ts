@@ -1,12 +1,15 @@
 import type { MetadataRoute } from "next";
-import { ARTISTS } from "@/lib/mock-data";
+import { getPublicArtists } from "@/lib/data/artists";
 import { SITE, absoluteUrl, artistPublicUrl } from "@/lib/site";
 import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
 
-// 동적 사이트맵 — 아티스트 데이터 소스(현재 mock, 향후 Neon)를 읽어
-// 소속사가 아티스트를 등록하면 자동으로 공개 프로필 URL이 추가된다.
-export default function sitemap(): MetadataRoute.Sitemap {
+// 동적 사이트맵 — Neon의 artists 테이블을 읽어, 소속사가 아티스트를 등록하면
+// 공개 프로필 URL(@슬러그)과 프로필 이미지가 자동으로 사이트맵에 추가된다.
+export const revalidate = 3600; // 1시간마다 재생성
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  const artists = await getPublicArtists();
 
   // 1) 공개 정적 페이지
   const staticPages: MetadataRoute.Sitemap = [
@@ -48,9 +51,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   // 3) 아티스트 공개 프로필 — 이미지 사이트맵 포함
-  const artistPages: MetadataRoute.Sitemap = ARTISTS.filter(
-    (a) => a.slug
-  ).map((a) => ({
+  const artistPages: MetadataRoute.Sitemap = artists
+    .filter((a) => a.slug)
+    .map((a) => ({
     url: artistPublicUrl(a.slug),
     lastModified: now,
     changeFrequency: "weekly",

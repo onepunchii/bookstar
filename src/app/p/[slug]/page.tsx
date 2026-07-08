@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
 import { Wordmark } from "@/components/wordmark";
 import { Badge } from "@/components/ui/badge";
-import { getArtistBySlug, getRatingSummary, SCHEDULES } from "@/lib/mock-data";
+import { getPublicArtistBySlug, getPublicSchedule } from "@/lib/data/artists";
+import { getRatingSummaryBySlug } from "@/lib/mock-data";
 import { artistPublicUrl, SITE } from "@/lib/site";
 import {
   CATEGORY_LABELS,
@@ -64,7 +65,7 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const artist = getArtistBySlug(slug);
+  const artist = await getPublicArtistBySlug(slug);
   if (!artist) return { title: "아티스트를 찾을 수 없어요" };
 
   const cat = CATEGORY_LABELS[artist.category];
@@ -101,11 +102,11 @@ export async function generateMetadata({
 
 export default async function ArtistPublicPage({ params }: PageProps) {
   const { slug } = await params;
-  const artist = getArtistBySlug(slug);
+  const artist = await getPublicArtistBySlug(slug);
   if (!artist) notFound();
 
-  const schedule = SCHEDULES[artist.id] ?? [];
-  const rating = getRatingSummary(artist.id);
+  const schedule = await getPublicSchedule(artist.id);
+  const rating = getRatingSummaryBySlug(slug);
 
   // 구조화 데이터 (Schema.org) — 검색 리치결과
   const isGroup = artist.gender === "group";

@@ -570,6 +570,12 @@ export function getRatingSummary(artistId: string) {
   return { avg: Math.round(avg * 10) / 10, count: rs.length };
 }
 
+// 리뷰 테이블이 생기기 전까지, DB 아티스트(uuid)의 평점은 슬러그로 목 리뷰를 브릿지
+export function getRatingSummaryBySlug(slug: string) {
+  const a = ARTISTS.find((x) => x.slug === slug);
+  return a ? getRatingSummary(a.id) : { avg: 0, count: 0 };
+}
+
 // ── 라인업 번들 ──
 export const BUNDLES: LineupBundle[] = [
   {

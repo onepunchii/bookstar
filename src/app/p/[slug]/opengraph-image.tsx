@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getArtistBySlug } from "@/lib/mock-data";
+import { getPublicArtistBySlug } from "@/lib/data/artists";
 import { loadPretendard } from "@/lib/og";
 import { CATEGORY_LABELS, formatFollowers } from "@/lib/types";
 
@@ -13,7 +13,7 @@ export default async function Image({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const artist = getArtistBySlug(slug);
+  const artist = await getPublicArtistBySlug(slug);
   const font = await loadPretendard(700);
 
   const name = artist?.name ?? "xong";

@@ -68,7 +68,11 @@ export const artists = pgTable("artists", {
   agencyId: uuid("agency_id")
     .notNull()
     .references(() => agencies.id),
+  // 공개 프로필 URL(`/@슬러그`)·사이트맵 키 — 소속사 등록 시 자동 노출의 앵커
+  slug: text("slug").notNull().unique(),
   name: text("name").notNull(),
+  // 표시용 소속사명(비정규화) — 다중 소속사 정식 모델링 전까지 원본 유지
+  agencyName: text("agency_name"),
   groupName: text("group_name"),
   categories: jsonb("categories").$type<string[]>().notNull().default([]),
   gender: text("gender"),
