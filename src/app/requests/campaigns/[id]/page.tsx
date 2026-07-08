@@ -70,6 +70,15 @@ export default async function CampaignDetailPage({
           {c.title}
         </h1>
 
+        {c.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={c.imageUrl}
+            alt=""
+            className="mt-5 h-56 w-full rounded-2xl object-cover ring-1 ring-white/10"
+          />
+        )}
+
         <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div className="adv-card rounded-xl p-4">
             <p className="text-[11px] text-white/40">예산</p>

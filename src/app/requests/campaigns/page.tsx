@@ -44,6 +44,14 @@ export default async function CompanyCampaignsPage() {
             <Reveal key={c.id} delay={(i % 6) * 50}>
               <Link href={`/requests/campaigns/${c.id}`} className="group block">
                 <div className="adv-card adv-card-hover rounded-2xl p-5">
+                  {c.imageUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={c.imageUrl}
+                      alt=""
+                      className="mb-3 h-32 w-full rounded-xl object-cover"
+                    />
+                  )}
                   <div className="flex items-center gap-2">
                     <span className="rounded-full bg-white/8 px-2.5 py-0.5 text-[11px] font-semibold text-white/70">
                       {c.eventType}

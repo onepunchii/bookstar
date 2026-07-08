@@ -335,6 +335,7 @@ export const campaigns = pgTable("campaigns", {
   eventDate: date("event_date"), // 예정 시기(협의 가능이면 null)
   deadline: date("deadline").notNull(), // 지원 마감일(기한)
   description: text("description"),
+  imageUrl: text("image_url"), // 브랜드·레퍼런스 이미지(선택, WebP)
   brief: jsonb("brief").$type<Record<string, string>>(), // 조건(분량/독점/초상권)
   status: campaignStatus("status").notNull().default("open"),
   awardedApplicationId: uuid("awarded_application_id"), // 선정된 지원(순환참조 피해 FK 생략)

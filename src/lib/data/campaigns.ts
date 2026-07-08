@@ -17,6 +17,7 @@ export interface CampaignInput {
   eventDate?: string | null;
   deadline: string;
   description?: string | null;
+  imageUrl?: string | null;
 }
 
 export interface CampaignCard {
@@ -30,6 +31,7 @@ export interface CampaignCard {
   eventDate: string | null;
   deadline: string;
   description: string | null;
+  imageUrl: string | null;
   status: string;
   companyName: string | null;
   applicantCount: number;
@@ -76,6 +78,7 @@ export async function createCampaign(input: CampaignInput): Promise<string> {
       eventDate: input.eventDate ?? null,
       deadline: input.deadline,
       description: input.description ?? null,
+      imageUrl: input.imageUrl ?? null,
     })
     .returning({ id: schema.campaigns.id });
   return row.id;
@@ -380,6 +383,7 @@ function toCard(c: CampaignRow, applicantCount: number): CampaignCard {
     eventDate: c.eventDate,
     deadline: c.deadline,
     description: c.description,
+    imageUrl: c.imageUrl,
     status: effectiveStatus(c.status, c.deadline),
     companyName: c.companyName,
     applicantCount,

@@ -51,6 +51,14 @@ export default async function AgencyCampaignsPage() {
           const d = dday(c.deadline);
           return (
             <Card key={c.id} className="p-5">
+              {c.imageUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={c.imageUrl}
+                  alt=""
+                  className="mb-3 h-36 w-full rounded-xl object-cover"
+                />
+              )}
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-semibold text-neutral-600">
                   {c.eventType}

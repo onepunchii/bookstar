@@ -24,6 +24,7 @@ export async function POST(req: Request) {
       eventDate?: string;
       deadline?: string;
       description?: string;
+      imageUrl?: string;
       companyName?: string;
     };
     if (!b.title?.trim() || !b.eventType?.trim() || !b.deadline)
@@ -48,6 +49,7 @@ export async function POST(req: Request) {
       eventDate: b.eventDate || null,
       deadline: b.deadline,
       description: b.description?.trim() || null,
+      imageUrl: b.imageUrl || null,
     });
 
     revalidatePath("/requests/campaigns");
