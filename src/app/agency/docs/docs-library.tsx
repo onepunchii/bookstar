@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { DOCUMENTS } from "@/lib/mock-data";
-import type { DocType } from "@/lib/types";
+import type { DocType, DocumentItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Download, FileText, Upload } from "lucide-react";
 
@@ -16,9 +15,9 @@ const TYPES: (DocType | "전체")[] = [
   "정산서",
 ];
 
-export function DocsLibrary() {
+export function DocsLibrary({ documents }: { documents: DocumentItem[] }) {
   const [filter, setFilter] = useState<DocType | "전체">("전체");
-  const docs = DOCUMENTS.filter((d) => filter === "전체" || d.type === filter);
+  const docs = documents.filter((d) => filter === "전체" || d.type === filter);
 
   return (
     <div>

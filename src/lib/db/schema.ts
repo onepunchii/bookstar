@@ -263,6 +263,7 @@ export const messages = pgTable("messages", {
     .references(() => bookingRequests.id),
   sender: messageSender("sender").notNull(),
   senderUserId: uuid("sender_user_id").references(() => users.id),
+  senderName: text("sender_name"),
   body: text("body").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

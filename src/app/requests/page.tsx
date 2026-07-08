@@ -1,18 +1,14 @@
-"use client";
-
 import Link from "next/link";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { Reveal } from "@/components/premium/reveal";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
-import { allRequests, useBookingsStore } from "@/lib/bookings-store";
+import { getBookingRequests } from "@/lib/data/booking-requests";
 import { formatBudget } from "@/lib/types";
 import { ChevronRight } from "lucide-react";
 
-export default function RequestsPage() {
-  const extra = useBookingsStore((s) => s.extra);
-  const overrides = useBookingsStore((s) => s.overrides);
-  const requests = allRequests(extra, overrides);
+export default async function RequestsPage() {
+  const requests = await getBookingRequests();
 
   return (
     <div className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-16">

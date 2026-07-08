@@ -1,28 +1,23 @@
-"use client";
-
-import { use } from "react";
 import { notFound } from "next/navigation";
 import { LeaveReviewCard } from "@/components/leave-review-card";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
-import { allRequests, useBookingsStore } from "@/lib/bookings-store";
-import { getThread } from "@/lib/mock-data";
+import { getBookingRequests } from "@/lib/data/booking-requests";
+import { getMessages } from "@/lib/data/messages";
 import { formatBudget } from "@/lib/types";
-import { MessageComposer } from "./message-composer";
+import { RequestThread } from "./request-thread";
 import { cn } from "@/lib/utils";
 
-export default function RequestDetailPage({
+export default async function RequestDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = use(params);
-  const extra = useBookingsStore((s) => s.extra);
-  const overrides = useBookingsStore((s) => s.overrides);
-  const threads = useBookingsStore((s) => s.threads);
-  const request = allRequests(extra, overrides).find((r) => r.id === id);
+  const { id } = await params;
+  const requests = await getBookingRequests();
+  const request = requests.find((r) => r.id === id);
   if (!request) notFound();
-  const thread = [...getThread(id), ...(threads[id] ?? [])];
+  const thread = await getMessages(id);
 
   return (
     <div className="adv-dark min-h-dvh">
@@ -42,51 +37,7 @@ export default function RequestDetailPage({
         <div className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-3">
           {/* Thread */}
           <div className="lg:col-span-2">
-            <div className="adv-card flex h-[560px] flex-col overflow-hidden rounded-[1.75rem]">
-              <div className="border-b border-white/8 px-5 py-3.5 text-sm font-semibold text-white/80">
-                협의 채팅
-              </div>
-              <div className="flex-1 space-y-4 overflow-y-auto p-5">
-                {thread.length === 0 && (
-                  <p className="py-16 text-center text-sm text-white/40">
-                    아직 메시지가 없어요. 소속사 응답을 기다리는 중입니다.
-                  </p>
-                )}
-                {thread.map((msg) =>
-                  msg.sender === "system" ? (
-                    <p
-                      key={msg.id}
-                      className="text-center text-xs text-white/35"
-                    >
-                      {msg.body}
-                    </p>
-                  ) : (
-                    <div
-                      key={msg.id}
-                      className={cn(
-                        "flex flex-col",
-                        msg.sender === "company" ? "items-end" : "items-start"
-                      )}
-                    >
-                      <span className="mb-1 px-1 text-xs text-white/40">
-                        {msg.senderName}
-                      </span>
-                      <div
-                        className={cn(
-                          "max-w-[82%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
-                          msg.sender === "company"
-                            ? "rounded-br-md bg-brand-500 text-white"
-                            : "rounded-bl-md bg-white/[0.08] text-white/90"
-                        )}
-                      >
-                        {msg.body}
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-              <MessageComposer requestId={id} />
-            </div>
+            <RequestThread requestId={id} initialMessages={thread} />
           </div>
 
           {/* Summary sidebar */}
