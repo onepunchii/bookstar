@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/app-shell";
+import { auth } from "@/auth";
 import { SITE } from "@/lib/site";
 
 export const viewport: Viewport = {
@@ -53,11 +54,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+  const isAdmin = session?.user?.role === "admin";
   return (
     <html lang="ko" className="h-full antialiased">
       <head>
@@ -67,7 +70,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full bg-white text-neutral-900">
-        <AppShell>{children}</AppShell>
+        <AppShell isAdmin={isAdmin}>{children}</AppShell>
       </body>
     </html>
   );

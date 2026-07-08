@@ -19,6 +19,7 @@ import {
   LayoutGrid,
   Palmtree,
   Search,
+  ShieldAlert,
   Users,
 } from "lucide-react";
 
@@ -85,7 +86,13 @@ function isActive(pathname: string, href: string) {
   return pathname.startsWith(href);
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  isAdmin = false,
+}: {
+  children: React.ReactNode;
+  isAdmin?: boolean;
+}) {
   const pathname = usePathname();
   const { role: storedRole, setRole } = useRoleStore();
 
@@ -252,6 +259,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {nav.find((n) => isActive(pathname, n.href))?.label ?? ""}
           </div>
           <div className="flex items-center gap-2">
+            {isAdmin && (
+              <Link
+                href="/admin"
+                aria-label="관리자"
+                className={cn(
+                  "flex h-9 items-center gap-1.5 rounded-full px-3 text-xs font-bold transition-colors",
+                  dark
+                    ? "bg-brand-500/15 text-brand-300 hover:bg-brand-500/25"
+                    : "bg-brand-50 text-brand-600 hover:bg-brand-100"
+                )}
+              >
+                <ShieldAlert className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">관리자</span>
+              </Link>
+            )}
             <NotificationsPanel dark={dark} />
             <RoleSwitcher dark={dark} />
           </div>
