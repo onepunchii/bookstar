@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HomeSearch } from "@/components/home-search";
 import { LineupBundleCard } from "@/components/lineup-bundle";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { PremiumArtistCard } from "@/components/premium/premium-artist-card";
@@ -17,7 +18,6 @@ import {
   CalendarCheck,
   Clock,
   MessageSquare,
-  Search,
   Sparkles,
   TrendingUp,
 } from "lucide-react";
@@ -59,48 +59,33 @@ export default function HomePage() {
   return (
     <div className="adv-dark relative overflow-hidden">
       <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10">
-        {/* ── HERO 벤토 ─────────────────────────── */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
-          {/* 인사 (풀폭) */}
-          <Reveal className="col-span-2">
-            <div className="glass relative overflow-hidden rounded-[1.75rem] p-6 sm:p-9">
-              <Eyebrow>광고주 콘솔</Eyebrow>
-              <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-5xl">
-                안녕하세요,
-                <br className="sm:hidden" /> 브라이트마케팅님
-              </h1>
-              <div className="mt-5 flex flex-wrap gap-2">
-                <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/80">
-                  진행 중 {inProgress.length}건
-                </span>
-                <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/80">
-                  새 메시지 {unread}
-                </span>
-                <span className="rounded-full bg-brand-500 px-3 py-1.5 text-xs font-bold text-white">
-                  매칭 수수료 0%
-                </span>
-              </div>
-            </div>
-          </Reveal>
+        {/* ── HERO ─────────────────────────────── */}
+        <Reveal className="px-1 pt-2 sm:pt-4">
+          <Eyebrow>광고주 콘솔</Eyebrow>
+          <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-5xl">
+            안녕하세요,
+            <br className="sm:hidden" /> 브라이트마케팅님
+          </h1>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <span className="rounded-full bg-white/8 px-3 py-1.5 text-xs font-semibold text-white/75">
+              진행 중 {inProgress.length}건
+            </span>
+            <span className="rounded-full bg-white/8 px-3 py-1.5 text-xs font-semibold text-white/75">
+              새 메시지 {unread}
+            </span>
+            <span className="rounded-full bg-brand-500 px-3 py-1.5 text-xs font-bold text-white">
+              매칭 수수료 0%
+            </span>
+          </div>
+        </Reveal>
 
-          {/* 검색 (풀폭) */}
-          <Reveal delay={60} className="col-span-2">
-            <form action="/artists" className="relative">
-              <Search className="pointer-events-none absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" />
-              <input
-                name="q"
-                placeholder="아티스트·소속사·키워드 검색"
-                className="glass premium-ease h-15 w-full rounded-full py-4 pl-14 pr-28 text-base text-white outline-none placeholder:text-white/35 focus:border-brand-500/50"
-              />
-              <button
-                type="submit"
-                className="premium-ease absolute right-2 top-1/2 flex h-11 -translate-y-1/2 items-center rounded-full bg-brand-500 px-6 text-sm font-semibold text-white hover:bg-brand-600 hover:brand-glow"
-              >
-                검색
-              </button>
-            </form>
-          </Reveal>
+        {/* 검색 + AI 캐스팅 */}
+        <Reveal delay={60} className="mt-7">
+          <HomeSearch />
+        </Reveal>
 
+        {/* ── 벤토 위젯 ─────────────────────────── */}
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4">
           {/* 섭외 현황 */}
           <Reveal delay={110}>
             <Link href="/requests" className="group block h-full">
