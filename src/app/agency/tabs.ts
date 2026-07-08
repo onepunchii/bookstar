@@ -3,6 +3,7 @@ export const AGENCY_TABS: { href: string; label: string }[] = [
   { href: "/agency", label: "대시보드" },
   { href: "/agency/today", label: "데일리" },
   { href: "/agency/inbox", label: "섭외 인박스" },
+  { href: "/agency/campaigns", label: "오픈 캠페인" },
   { href: "/agency/artists", label: "아티스트" },
   { href: "/agency/schedule", label: "일정 관리" },
   { href: "/agency/settlement", label: "정산" },

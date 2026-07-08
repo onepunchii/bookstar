@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { Reveal } from "@/components/premium/reveal";
+import { RequestsTabs } from "@/components/requests-tabs";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { getBookingRequests } from "@/lib/data/booking-requests";
@@ -26,6 +27,7 @@ export default async function RequestsPage() {
         <p className="mt-2 text-sm text-white/50">
           보낸 요청의 진행 상황을 한눈에 확인하세요 · 총 {requests.length}건
         </p>
+        <RequestsTabs />
       </Reveal>
 
       <div className="mt-8 space-y-3">

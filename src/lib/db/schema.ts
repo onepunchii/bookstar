@@ -311,6 +311,66 @@ export const notifications = pgTable("notifications", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// ---------- 오픈 캠페인 (역방향 캐스팅) ----------
+// 광고주가 니즈를 공개하면 소속사/아티스트가 역으로 지원 → 선정 시 booking_requests로 전환.
+export const campaignStatus = pgEnum("campaign_status", [
+  "open", // 지원 접수 중
+  "closed", // 마감(기한 경과/수동) — 지원 불가
+  "awarded", // 선정 완료 → 부킹으로 전환됨
+  "cancelled", // 취소
+]);
+
+export const campaigns = pgTable("campaigns", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  companyUserId: uuid("company_user_id")
+    .notNull()
+    .references(() => users.id),
+  companyName: text("company_name"), // 비정규화 표시용
+  title: text("title").notNull(),
+  eventType: text("event_type").notNull(), // 유튜브 협업 | 행사 MC | 브랜드 앰배서더 | 광고 촬영 ...
+  categories: jsonb("categories").$type<string[]>().notNull().default([]), // 원하는 아티스트 카테고리(매칭)
+  budgetMin: integer("budget_min"), // 만원
+  budgetMax: integer("budget_max"), // 만원
+  location: text("location"),
+  eventDate: date("event_date"), // 예정 시기(협의 가능이면 null)
+  deadline: date("deadline").notNull(), // 지원 마감일(기한)
+  description: text("description"),
+  brief: jsonb("brief").$type<Record<string, string>>(), // 조건(분량/독점/초상권)
+  status: campaignStatus("status").notNull().default("open"),
+  awardedApplicationId: uuid("awarded_application_id"), // 선정된 지원(순환참조 피해 FK 생략)
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const applicationStatus = pgEnum("application_status", [
+  "applied", // 지원함
+  "shortlisted", // 후보(관심)
+  "selected", // 최종 선정
+  "rejected", // 미선정
+  "withdrawn", // 지원 철회
+]);
+
+export const campaignApplications = pgTable(
+  "campaign_applications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    campaignId: uuid("campaign_id")
+      .notNull()
+      .references(() => campaigns.id),
+    artistId: uuid("artist_id")
+      .notNull()
+      .references(() => artists.id),
+    agencyId: uuid("agency_id").references(() => agencies.id),
+    applicantUserId: uuid("applicant_user_id").references(() => users.id),
+    pitch: text("pitch"), // 제안 메시지 — "왜 우리 아티스트가 적합한지"
+    proposedFee: integer("proposed_fee"), // 만원(선택)
+    proposedIncludes: text("proposed_includes"),
+    status: applicationStatus("status").notNull().default("applied"),
+    requestId: uuid("request_id").references(() => bookingRequests.id), // 선정 시 생성된 부킹
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("campaign_app_unique").on(t.campaignId, t.artistId)]
+);
+
 // ---------- 아웃리치 (콜드메일 캠페인) ----------
 // 매출 원천이 소속사 SaaS이므로 아웃리치도 제품의 일부 — 관리자 전용.
 
