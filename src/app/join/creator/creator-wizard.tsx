@@ -98,15 +98,60 @@ export function CreatorWizard() {
     }
   };
 
-  const finalize = () => {
-    const slug = handle.replace(/[^a-zA-Z0-9_]/g, "").toLowerCase() || "me";
-    const params = new URLSearchParams({
-      name,
-      slug,
-      category,
-      followers: String(snsResult?.followers ?? 0),
-    });
-    router.push(`/join/complete?${params.toString()}` as never);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  const finalize = async () => {
+    if (saving) return;
+    setSaving(true);
+    setSaveError(null);
+    const desiredSlug =
+      handle.replace(/[^a-zA-Z0-9_-]/g, "").toLowerCase() || "creator";
+    try {
+      const res = await fetch("/api/join/creator", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          slug: desiredSlug,
+          category,
+          gender,
+          instagram: handle ? `@${handle.replace(/^@/, "")}` : undefined,
+          youtube: youtube || undefined,
+          baseFee: Number(baseFee) || undefined,
+          includes: includes || undefined,
+          tags,
+          followers: snsResult?.followers ?? 0,
+        }),
+      });
+      if (res.status === 401) {
+        // 카카오 로그인 후 이어서 등록
+        router.push("/login?callbackUrl=/join/creator");
+        return;
+      }
+      if (!res.ok) throw new Error(await res.text());
+      const { slug } = (await res.json()) as { slug: string };
+      // 프로필 사진이 있으면 업로드 (로그인 상태)
+      if (photo) {
+        const fd = new FormData();
+        fd.append("slug", slug);
+        fd.append("slot", "0");
+        fd.append("file", photo.blob, photo.fileName);
+        await fetch("/api/artists/photo", { method: "POST", body: fd }).catch(
+          () => {}
+        );
+      }
+      const params = new URLSearchParams({
+        name,
+        slug,
+        category,
+        followers: String(snsResult?.followers ?? 0),
+      });
+      router.push(`/join/complete?${params.toString()}` as never);
+    } catch {
+      setSaveError("등록에 실패했어요. 다시 시도해주세요.");
+      setSaving(false);
+    }
   };
 
   return (
@@ -489,9 +534,16 @@ export function CreatorWizard() {
             다음 <ArrowRight className="h-4 w-4" />
           </Button>
         ) : (
-          <Button size="lg" onClick={finalize}>
-            공개하기 <Sparkles className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-3">
+            {saveError && (
+              <span className="text-xs font-semibold text-red-600">
+                {saveError}
+              </span>
+            )}
+            <Button size="lg" disabled={saving} onClick={finalize}>
+              {saving ? "등록 중…" : "공개하기"} <Sparkles className="h-4 w-4" />
+            </Button>
+          </div>
         )}
       </div>
     </div>

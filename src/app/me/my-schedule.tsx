@@ -84,9 +84,14 @@ export function MySchedule({
                         </span>
                       </p>
                       {stop.location && (
-                        <button className="flex items-center gap-1 rounded-lg bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700 transition-colors hover:bg-brand-100">
+                        <a
+                          href={`https://map.kakao.com/link/search/${encodeURIComponent(stop.location)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 rounded-lg bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700 transition-colors hover:bg-brand-100"
+                        >
                           <Navigation className="h-3 w-3" /> 내비
-                        </button>
+                        </a>
                       )}
                     </div>
                     {stop.location && (

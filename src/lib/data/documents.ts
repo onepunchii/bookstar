@@ -13,6 +13,7 @@ export async function getDocuments(): Promise<DocumentItem[]> {
         name: schema.documents.name,
         type: schema.documents.type,
         eventTitle: schema.documents.eventTitle,
+        fileUrl: schema.documents.fileUrl,
         createdAt: schema.documents.createdAt,
         artistName: schema.artists.name,
       })
@@ -27,6 +28,7 @@ export async function getDocuments(): Promise<DocumentItem[]> {
         eventTitle: r.eventTitle ?? "",
         artistName: r.artistName ?? "",
         date: r.createdAt.toISOString().slice(0, 10),
+        fileUrl: r.fileUrl ?? undefined,
       }));
     }
   } catch {

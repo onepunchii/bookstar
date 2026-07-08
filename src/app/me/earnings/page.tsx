@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
-import { getPublicArtistBySlug } from "@/lib/data/artists";
+import { getPublicArtistById, getPublicArtistBySlug } from "@/lib/data/artists";
+import { getSessionArtistId } from "@/lib/data/session";
 import { getSettlements } from "@/lib/data/settlements";
 import { formatBudget, settlementBreakdown } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -12,7 +13,10 @@ const STATUS_LABEL = {
 
 // 데모 아티스트(정하늘) 기준 — DB 정산에서 본인 건만.
 export default async function MyEarningsPage() {
-  const artist = await getPublicArtistBySlug("haneul");
+  const sessionArtistId = await getSessionArtistId();
+  const artist = sessionArtistId
+    ? await getPublicArtistById(sessionArtistId)
+    : await getPublicArtistBySlug("haneul"); // 미가입=데모(정하늘)
   const all = await getSettlements();
   const mine = artist ? all.filter((s) => s.artistId === artist.id) : [];
   const totalNet = mine.reduce(

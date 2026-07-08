@@ -154,6 +154,7 @@ export interface DocumentItem {
   eventTitle: string;
   artistName: string;
   date: string;
+  fileUrl?: string;
 }
 
 // ── 라인업 번들 ──

@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       { source: "/ir", destination: "/ir.html" },
       { source: "/for/agency", destination: "/for-agency.html" },
       { source: "/for/creator", destination: "/for-creator.html" },
+      { source: "/for/company", destination: "/for-company.html" },
     ];
   },
 };
