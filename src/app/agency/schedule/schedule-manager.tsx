@@ -3,12 +3,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ARTISTS, SCHEDULES } from "@/lib/mock-data";
 import { isOnLeave, useLeaveStore } from "@/lib/leave-store";
 import { daysUntil, holdKey, useScheduleStore } from "@/lib/schedule-store";
-import { useScopedArtistIds } from "@/lib/scope-store";
 import {
   AVAILABILITY_LABELS,
+  type Artist,
   type Availability,
   type ScheduleDay,
 } from "@/lib/types";
@@ -41,11 +40,22 @@ const DOT_STYLES: Record<Availability, string> = {
   busy: "bg-neutral-50 border border-neutral-200",
 };
 
-export function ScheduleManager() {
-  const [artistId, setArtistId] = useState(ARTISTS[0].id);
+export function ScheduleManager({
+  artists,
+  schedulesByArtist,
+}: {
+  artists: Artist[];
+  schedulesByArtist: Record<string, ScheduleDay[]>;
+}) {
+  const [artistId, setArtistId] = useState(artists[0]?.id ?? "");
   const [edits, setEdits] = useState<Record<string, Availability>>({});
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [copiedFeed, setCopiedFeed] = useState(false);
+  // DB에서 받은 일정 맵 — 저장 성공 시 로컬 반영
+  const [scheduleMap, setScheduleMap] =
+    useState<Record<string, ScheduleDay[]>>(schedulesByArtist);
 
   const copyFeed = () => {
     const url = `${window.location.origin}/api/calendar/${artistId}`;
@@ -60,10 +70,9 @@ export function ScheduleManager() {
   const didDrag = useRef(false);
 
   const { holds, releaseHold } = useScheduleStore();
-  const scopedIds = useScopedArtistIds();
-  const visibleArtists = scopedIds
-    ? ARTISTS.filter((a) => scopedIds.has(a.id))
-    : ARTISTS;
+  // 매니저 스코프 필터는 매니저 DB 연동(Phase 5) 후 복원 예정.
+  const visibleArtists = artists;
+  const currentSlug = artists.find((a) => a.id === artistId)?.slug;
 
   // 스코프 변경으로 현재 아티스트가 사라졌으면 첫 번째로 스위치
   useEffect(() => {
@@ -82,7 +91,7 @@ export function ScheduleManager() {
     [holds, artistId]
   );
 
-  const baseDays = SCHEDULES[artistId] ?? [];
+  const baseDays = scheduleMap[artistId] ?? [];
   const days: ScheduleDay[] = useMemo(
     () =>
       baseDays.map((d) => ({
@@ -154,6 +163,51 @@ export function ScheduleManager() {
     setArtistId(id);
     setSelection(new Set());
     setSaved(false);
+    setSaveError(null);
+  };
+
+  const handleSave = async () => {
+    const changes = Object.entries(edits)
+      .filter(([k]) => k.startsWith(`${artistId}:`))
+      .map(([k, v]) => ({
+        date: k.slice(artistId.length + 1),
+        availability: v,
+      }));
+    if (changes.length === 0) return;
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const res = await fetch("/api/schedules", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ artistId, slug: currentSlug, changes }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      // 로컬 일정 맵에 반영 + 해당 아티스트 편집 클리어
+      setScheduleMap((prev) => {
+        const days = [...(prev[artistId] ?? [])];
+        for (const c of changes) {
+          const idx = days.findIndex((d) => d.date === c.date);
+          if (idx >= 0)
+            days[idx] = { ...days[idx], availability: c.availability };
+          else days.push({ date: c.date, availability: c.availability });
+        }
+        days.sort((a, b) => a.date.localeCompare(b.date));
+        return { ...prev, [artistId]: days };
+      });
+      setEdits((prev) => {
+        const next = { ...prev };
+        for (const key of Object.keys(next))
+          if (key.startsWith(`${artistId}:`)) delete next[key];
+        return next;
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch {
+      setSaveError("저장에 실패했어요. 다시 시도해주세요.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -415,18 +469,22 @@ export function ScheduleManager() {
           </p>
         </Card>
 
+        {saveError && (
+          <p className="text-sm font-semibold text-red-600">{saveError}</p>
+        )}
         {saved ? (
           <div className="flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm font-semibold text-brand-700">
-            <CheckCircle2 className="h-4 w-4" /> 저장 완료
+            <CheckCircle2 className="h-4 w-4" /> 저장 완료 · 공개 프로필에
+            반영됐어요
           </div>
         ) : (
           <Button
             size="lg"
             className="w-full"
-            disabled={!dirty}
-            onClick={() => setSaved(true)}
+            disabled={!dirty || saving}
+            onClick={handleSave}
           >
-            변경사항 저장
+            {saving ? "저장 중…" : "변경사항 저장"}
           </Button>
         )}
       </div>

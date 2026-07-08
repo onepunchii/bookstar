@@ -8,6 +8,7 @@ import {
   pgEnum,
   uuid,
   jsonb,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 export const userRole = pgEnum("user_role", ["company", "agency", "admin"]);
@@ -100,17 +101,21 @@ export const artists = pgTable("artists", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const schedules = pgTable("schedules", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  artistId: uuid("artist_id")
-    .notNull()
-    .references(() => artists.id),
-  date: date("date").notNull(),
-  availability: availability("availability").notNull().default("hold"),
-  publicNote: text("public_note"),
-  privateMemo: text("private_memo"), // 소속사만 열람
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+export const schedules = pgTable(
+  "schedules",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    artistId: uuid("artist_id")
+      .notNull()
+      .references(() => artists.id),
+    date: date("date").notNull(),
+    availability: availability("availability").notNull().default("hold"),
+    publicNote: text("public_note"),
+    privateMemo: text("private_memo"), // 소속사만 열람
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("schedules_artist_date_unique").on(t.artistId, t.date)]
+);
 
 export const bookingRequests = pgTable("booking_requests", {
   id: uuid("id").primaryKey().defaultRandom(),
