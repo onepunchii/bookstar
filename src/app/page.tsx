@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { HomeSearch } from "@/components/home-search";
 import { LineupBundleCard } from "@/components/lineup-bundle";
@@ -59,22 +60,42 @@ export default function HomePage() {
     <div className="adv-dark relative overflow-hidden">
       <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10">
         {/* ── HERO ─────────────────────────────── */}
-        <Reveal className="px-1 pt-2 sm:pt-4">
-          <Eyebrow>광고주 콘솔</Eyebrow>
-          <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-5xl">
-            안녕하세요,
-            <br className="sm:hidden" /> 브라이트마케팅님
-          </h1>
-          <div className="mt-5 flex flex-wrap gap-2">
-            <span className="rounded-full bg-white/8 px-3 py-1.5 text-xs font-semibold text-white/75">
-              진행 중 {inProgress.length}건
-            </span>
-            <span className="rounded-full bg-white/8 px-3 py-1.5 text-xs font-semibold text-white/75">
-              새 메시지 {unread}
-            </span>
-            <span className="rounded-full bg-brand-500 px-3 py-1.5 text-xs font-bold text-white">
-              매칭 수수료 0%
-            </span>
+        <Reveal className="relative">
+          {/* 콘서트 이미지 — 오른쪽에서 배경으로 번짐 */}
+          <div className="pointer-events-none absolute right-[-1rem] top-[-1.5rem] h-[calc(100%+3rem)] w-[68%] overflow-hidden sm:right-[-2rem] sm:w-[54%]">
+            <Image
+              src="/hero-concert.webp"
+              alt=""
+              fill
+              priority
+              sizes="(max-width: 640px) 68vw, 640px"
+              className="object-cover object-[center_35%]"
+            />
+            {/* 좌→우 다크 그라디언트 (왼쪽 텍스트 가독성) */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0b] via-[#0a0a0b]/75 to-[#0a0a0b]/5" />
+            {/* 상·하 페이드 */}
+            <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[#0a0a0b] to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0a0a0b] to-transparent" />
+          </div>
+
+          {/* 텍스트 */}
+          <div className="relative max-w-[70%] px-1 pb-6 pt-6 sm:max-w-md sm:pt-10">
+            <Eyebrow>광고주 콘솔</Eyebrow>
+            <h1 className="display-kr mt-3 text-3xl font-black text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] sm:text-5xl">
+              안녕하세요,
+              <br /> 브라이트마케팅님
+            </h1>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/80 backdrop-blur-sm">
+                진행 중 {inProgress.length}건
+              </span>
+              <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/80 backdrop-blur-sm">
+                새 메시지 {unread}
+              </span>
+              <span className="rounded-full bg-brand-500 px-3 py-1.5 text-xs font-bold text-white">
+                매칭 수수료 0%
+              </span>
+            </div>
           </div>
         </Reveal>
 
