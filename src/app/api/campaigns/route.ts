@@ -57,6 +57,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, id });
   } catch (e) {
     console.error("[campaigns:create]", e);
-    return NextResponse.json({ error: "생성에 실패했어요" }, { status: 500 });
+    // 임시 진단: 실제 원인을 화면에 노출 (원인 확인 후 일반 메시지로 복구)
+    const msg = e instanceof Error ? e.message : String(e);
+    return NextResponse.json(
+      { error: `생성 실패: ${msg}` },
+      { status: 500 }
+    );
   }
 }
