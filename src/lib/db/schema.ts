@@ -62,6 +62,9 @@ export const agencies = pgTable("agencies", {
   id: uuid("id").primaryKey().defaultRandom(),
   ownerId: uuid("owner_id").references(() => users.id),
   companyName: text("company_name").notNull(),
+  // solo = 1인 기획사/유튜버(무료), company = 대형 기획사(SaaS 유료)
+  agencyType: text("agency_type").notNull().default("solo"),
+  plan: text("plan").notNull().default("free"), // free | growth | enterprise
   manager: text("manager"),
   phone: text("phone"),
   email: text("email"),

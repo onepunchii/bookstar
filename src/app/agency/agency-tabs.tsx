@@ -12,6 +12,7 @@ const TABS = [
   { href: "/agency/schedule", label: "일정 관리" },
   { href: "/agency/settlement", label: "정산" },
   { href: "/agency/docs", label: "서류함" },
+  { href: "/agency/account", label: "계정·요금제" },
   { href: "/agency/settings", label: "설정" },
 ];
 

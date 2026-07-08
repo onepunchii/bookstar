@@ -22,11 +22,18 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   };
 }
 
-// 로그인 유저가 소유한 소속사 (없으면 null → 데모)
-export async function getSessionAgency(): Promise<{
+export interface SessionAgency {
   id: string;
   companyName: string;
-} | null> {
+  agencyType: string; // solo | company
+  plan: string; // free | growth | enterprise
+  manager: string | null;
+  phone: string | null;
+  email: string | null;
+}
+
+// 로그인 유저가 소유한 소속사 (없으면 null → 데모)
+export async function getSessionAgency(): Promise<SessionAgency | null> {
   const session = await auth();
   const uid = session?.user?.id;
   if (!uid) return null;
@@ -36,6 +43,11 @@ export async function getSessionAgency(): Promise<{
       .select({
         id: schema.agencies.id,
         companyName: schema.agencies.companyName,
+        agencyType: schema.agencies.agencyType,
+        plan: schema.agencies.plan,
+        manager: schema.agencies.manager,
+        phone: schema.agencies.phone,
+        email: schema.agencies.email,
       })
       .from(schema.agencies)
       .where(eq(schema.agencies.ownerId, uid))
