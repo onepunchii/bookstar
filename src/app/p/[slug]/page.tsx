@@ -6,7 +6,7 @@ import { getPublicArtistBySlug, getPublicSchedule } from "@/lib/data/artists";
 import { getRatingSummaryBySlug } from "@/lib/mock-data";
 import { YoutubeVideos } from "@/components/youtube-videos";
 import { fetchYoutubeSubscribers } from "@/lib/youtube";
-import { artistPublicUrl, SITE } from "@/lib/site";
+import { absoluteUrl, artistPublicUrl, SITE } from "@/lib/site";
 import { ShareButton } from "./share-button";
 
 // SNS 입력(@핸들 또는 URL) → 실제 링크
@@ -139,7 +139,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
     name: artist.name,
     description: artist.tagline,
     url: artistPublicUrl(slug),
-    ...(artist.imageUrl ? { image: `${SITE.url}${artist.imageUrl}` } : {}),
+    ...(artist.imageUrl ? { image: absoluteUrl(artist.imageUrl) } : {}),
     jobTitle: CATEGORY_LABELS[artist.category],
     worksFor: { "@type": "Organization", name: artist.agencyName },
     ...(rating.count > 0

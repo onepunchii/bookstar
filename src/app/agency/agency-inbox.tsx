@@ -142,12 +142,47 @@ export function AgencyInbox({
     setTimeout(() => setAiState("done"), 1400);
   };
 
-  // AI 공문 인식 데모 — 로컬 요청 카드로 추가(데모, 미저장)
-  const addAiRequest = () => {
-    if (!requests.some((r) => r.id === AI_EXTRACTED.id)) {
-      setRequests((prev) => [AI_EXTRACTED, ...prev]);
+  // AI 공문 인식 데모 — 실제 QWER 아티스트로 DB에 요청 생성 (수락·견적 흐름까지 동작)
+  const addAiRequest = async () => {
+    if (requests.some((r) => r.message === AI_EXTRACTED.message)) {
+      setSelectedId(
+        requests.find((r) => r.message === AI_EXTRACTED.message)!.id
+      );
+      setAiState("idle");
+      return;
     }
-    setSelectedId(AI_EXTRACTED.id);
+    const qwer = artists.find((a) => a.slug === "qwer") ?? artists[0];
+    try {
+      const res = await fetch("/api/booking-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          artistId: qwer?.id,
+          companyName: AI_EXTRACTED.companyName,
+          companyVerified: true,
+          companyEventCount: AI_EXTRACTED.companyEventCount,
+          eventType: AI_EXTRACTED.eventType,
+          budget: AI_EXTRACTED.budget,
+          location: AI_EXTRACTED.location,
+          eventDate: AI_EXTRACTED.date,
+          message: AI_EXTRACTED.message,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      const { id } = (await res.json()) as { id: string };
+      const created: BookingRequest = {
+        ...AI_EXTRACTED,
+        id,
+        artistId: qwer?.id ?? AI_EXTRACTED.artistId,
+        artistName: qwer?.name ?? AI_EXTRACTED.artistName,
+      };
+      setRequests((prev) => [created, ...prev]);
+      setSelectedId(id);
+    } catch {
+      // API 실패 시 로컬 데모로 폴백
+      setRequests((prev) => [AI_EXTRACTED, ...prev]);
+      setSelectedId(AI_EXTRACTED.id);
+    }
     setAiState("idle");
   };
 

@@ -5,7 +5,7 @@
  * 공개 프로필·브라우즈가 자동으로 반영한다. DATABASE_URL이 없거나 쿼리가
  * 실패하면 목데이터로 폴백해 로컬/빌드가 깨지지 않게 한다.
  */
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq, ne } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
 import {
   ARTISTS as MOCK_ARTISTS,
@@ -82,7 +82,13 @@ export async function getPublicArtists(): Promise<Artist[]> {
     const rows = await db
       .select()
       .from(schema.artists)
-      .where(eq(schema.artists.status, "active"))
+      .where(
+        and(
+          eq(schema.artists.status, "active"),
+          // 이름 미설정(기본값) 빈 프로필은 공개 노출 제외
+          ne(schema.artists.name, "새 아티스트")
+        )
+      )
       .orderBy(asc(schema.artists.createdAt));
     if (rows.length === 0) return MOCK_ARTISTS;
     return rows.map(rowToArtist);
