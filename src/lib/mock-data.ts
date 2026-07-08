@@ -576,6 +576,11 @@ export function getRatingSummaryBySlug(slug: string) {
   return a ? getRatingSummary(a.id) : { avg: 0, count: 0 };
 }
 
+// 슬러그 → 목 아티스트 id (리뷰·모멘텀 등 아직 mock인 시계열 브릿지용)
+export function mockIdForSlug(slug: string): string | undefined {
+  return ARTISTS.find((x) => x.slug === slug)?.id;
+}
+
 // ── 라인업 번들 ──
 export const BUNDLES: LineupBundle[] = [
   {

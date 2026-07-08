@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { WeatherBadge } from "@/components/weather-badge";
 import { isOnLeave, useLeaveStore } from "@/lib/leave-store";
 import { daysUntil, holdKey, useScheduleStore } from "@/lib/schedule-store";
 import {
@@ -271,7 +272,7 @@ export function ScheduleManager({
                       : `${dayNum}일 · ${AVAILABILITY_LABELS[day.availability]}`
                   }
                   className={cn(
-                    "relative flex h-12 items-center justify-center rounded-lg text-sm font-medium transition-colors",
+                    "relative flex h-16 flex-col items-center justify-center gap-1 rounded-lg text-sm font-medium transition-colors",
                     CELL_STYLES[day.availability],
                     hold &&
                       "bg-neutral-900 text-white hover:bg-neutral-700",
@@ -279,7 +280,10 @@ export function ScheduleManager({
                       "ring-2 ring-neutral-900 ring-offset-1 ring-offset-white"
                   )}
                 >
-                  {dayNum}
+                  <span>{dayNum}</span>
+                  {day.availability !== "busy" && (
+                    <WeatherBadge date={day.date} compact className="!bg-black/10 !text-inherit" />
+                  )}
                   {hold && (
                     <CalendarClock className="absolute right-1 top-1 h-3 w-3 text-brand-400" />
                   )}

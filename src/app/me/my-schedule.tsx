@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { WeatherBadge } from "@/components/weather-badge";
 import { useLeaveStore } from "@/lib/leave-store";
 import { DAY_SCHEDULES } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
@@ -53,6 +54,9 @@ export function MySchedule() {
             <p className="mt-1 text-sm text-neutral-400">
               {today.title} · {callTime.location}
             </p>
+            <div className="mt-3">
+              <WeatherBadge date={today.date} location={callTime.location} />
+            </div>
           </div>
           <div className="p-5">
             {/* 타임라인 */}

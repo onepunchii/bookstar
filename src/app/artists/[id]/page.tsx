@@ -5,7 +5,9 @@ import { Eyebrow } from "@/components/premium/eyebrow";
 import { PremiumCTA } from "@/components/premium/premium-cta";
 import { Reveal } from "@/components/premium/reveal";
 import { ReviewsSection } from "@/components/reviews-section";
-import { getArtist, getRatingSummary, SCHEDULES } from "@/lib/mock-data";
+import { getPublicArtistBySlug, getPublicSchedule } from "@/lib/data/artists";
+import { getRatingSummaryBySlug, mockIdForSlug } from "@/lib/mock-data";
+import { fetchYoutubeSubscribers } from "@/lib/youtube";
 import { CATEGORY_LABELS, formatBudget, formatFollowers } from "@/lib/types";
 import {
   BadgeCheck,
@@ -23,10 +25,18 @@ export default async function ArtistDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const artist = getArtist(id);
+  // [id]는 이제 slug — DB에서 로드
+  const artist = await getPublicArtistBySlug(id);
   if (!artist) notFound();
-  const schedule = SCHEDULES[artist.id] ?? [];
-  const rating = getRatingSummary(artist.id);
+  const schedule = await getPublicSchedule(artist.id);
+  const rating = getRatingSummaryBySlug(id);
+  // 리뷰·모멘텀 mock 시계열은 slug→목 id로 브릿지
+  const bridgeId = mockIdForSlug(id) ?? artist.id;
+  const ytSubs = artist.youtube
+    ? await fetchYoutubeSubscribers(artist.youtube)
+    : null;
+  const followerValue = ytSubs ?? artist.followers;
+  const followerLabel = ytSubs ? "구독자" : "팔로워";
 
   return (
     <div className="adv-dark">
@@ -96,8 +106,8 @@ export default async function ArtistDetailPage({
               {[
                 {
                   icon: Users,
-                  label: "팔로워",
-                  value: formatFollowers(artist.followers),
+                  label: followerLabel,
+                  value: formatFollowers(followerValue),
                 },
                 {
                   icon: TrendingUp,
@@ -132,7 +142,7 @@ export default async function ArtistDetailPage({
         <div className="min-w-0 space-y-14">
           <Reveal>
             <Eyebrow className="mb-4">Momentum</Eyebrow>
-            <MomentumCard artistId={artist.id} artistName={artist.name} dark />
+            <MomentumCard artistId={bridgeId} artistName={artist.name} dark />
           </Reveal>
 
           <Reveal>
@@ -152,7 +162,7 @@ export default async function ArtistDetailPage({
 
           <Reveal>
             <Eyebrow className="mb-4">Reviews</Eyebrow>
-            <ReviewsSection artistId={artist.id} dark />
+            <ReviewsSection artistId={bridgeId} dark />
           </Reveal>
 
           <Reveal>
@@ -183,7 +193,7 @@ export default async function ArtistDetailPage({
 
             <div className="mt-6">
               <PremiumCTA
-                href={`/booking/new?artist=${artist.id}`}
+                href={`/booking/new?artist=${artist.slug}`}
                 variant="solid"
                 className="w-full justify-center"
               >

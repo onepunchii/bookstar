@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Eyebrow } from "@/components/premium/eyebrow";
-import { getArtist } from "@/lib/mock-data";
+import { getPublicArtistBySlug } from "@/lib/data/artists";
 import { BookingForm } from "./booking-form";
 
 // 섭외 요청 폼 → 색인 제외
@@ -14,8 +14,8 @@ export default async function NewBookingPage({
 }: {
   searchParams: Promise<{ artist?: string }>;
 }) {
-  const { artist: artistId } = await searchParams;
-  const artist = artistId ? getArtist(artistId) : undefined;
+  const { artist: slug } = await searchParams;
+  const artist = slug ? await getPublicArtistBySlug(slug) : null;
   if (!artist) notFound();
 
   return (

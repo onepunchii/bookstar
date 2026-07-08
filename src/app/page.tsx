@@ -6,11 +6,10 @@ import { Eyebrow } from "@/components/premium/eyebrow";
 import { PremiumArtistCard } from "@/components/premium/premium-artist-card";
 import { PremiumCTA } from "@/components/premium/premium-cta";
 import { Reveal } from "@/components/premium/reveal";
+import { getPublicArtists, getPublicScheduleMap } from "@/lib/data/artists";
 import {
-  ARTISTS,
   BOOKING_REQUESTS,
   BUNDLES,
-  SCHEDULES,
   THREAD_MESSAGES,
 } from "@/lib/mock-data";
 import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
@@ -22,7 +21,11 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [ARTISTS, scheduleMap] = await Promise.all([
+    getPublicArtists(),
+    getPublicScheduleMap(),
+  ]);
   const inProgress = BOOKING_REQUESTS.filter((r) =>
     ["pending", "reviewing", "negotiating"].includes(r.status)
   );
@@ -42,7 +45,7 @@ export default function HomePage() {
     .slice(0, 4);
   const availableThisWeek = ARTISTS.map((a) => ({
     artist: a,
-    days: (SCHEDULES[a.id] ?? [])
+    days: (scheduleMap[a.id] ?? [])
       .slice(6, 13)
       .filter((d) => d.availability === "available").length,
   }))
@@ -226,7 +229,7 @@ export default function HomePage() {
                   {fastResponders.map((a) => (
                     <Link
                       key={a.id}
-                      href={`/artists/${a.id}`}
+                      href={`/artists/${a.slug}`}
                       className="premium-ease flex items-center justify-between py-3 text-white/80 first:pt-0 last:pb-0 hover:text-brand-400"
                     >
                       <span className="font-semibold">{a.name}</span>
@@ -247,7 +250,7 @@ export default function HomePage() {
                   {availableThisWeek.map(({ artist, days }) => (
                     <Link
                       key={artist.id}
-                      href={`/artists/${artist.id}`}
+                      href={`/artists/${artist.slug}`}
                       className="premium-ease flex items-center justify-between py-3 text-white/80 first:pt-0 last:pb-0 hover:text-brand-400"
                     >
                       <span className="font-semibold">{artist.name}</span>

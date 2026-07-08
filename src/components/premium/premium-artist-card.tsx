@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getRatingSummary } from "@/lib/mock-data";
+import { getRatingSummaryBySlug } from "@/lib/mock-data";
+import { fetchYoutubeSubscribers } from "@/lib/youtube";
 import {
   CATEGORY_LABELS,
   formatBudget,
@@ -10,16 +11,22 @@ import { cn } from "@/lib/utils";
 import { ArrowUpRight, BadgeCheck, Star } from "lucide-react";
 
 // 광고주용 다크 럭셔리 카드 — 대형 비주얼, 유리 질감, 오렌지 글로우
-export function PremiumArtistCard({
+export async function PremiumArtistCard({
   artist,
   className,
 }: {
   artist: Artist;
   className?: string;
 }) {
-  const rating = getRatingSummary(artist.id);
+  const rating = getRatingSummaryBySlug(artist.slug);
+  // 유튜브 채널 있으면 실 구독자, 없으면 저장 팔로워
+  const ytSubs = artist.youtube
+    ? await fetchYoutubeSubscribers(artist.youtube)
+    : null;
+  const followerValue = ytSubs ?? artist.followers;
+  const followerLabel = ytSubs ? "Subscriber" : "Follower";
   return (
-    <Link href={`/artists/${artist.id}`} className={cn("group block", className)}>
+    <Link href={`/artists/${artist.slug}`} className={cn("group block", className)}>
       <div className="adv-card adv-card-hover overflow-hidden rounded-[1.75rem]">
         {/* 비주얼 */}
         <div className="relative aspect-[4/5] overflow-hidden bg-neutral-900">
@@ -28,9 +35,21 @@ export function PremiumArtistCard({
             aria-hidden
             className="premium-ease absolute -right-8 top-1/2 h-40 w-40 -translate-y-1/2 rounded-full bg-brand-500/10 blur-3xl group-hover:bg-brand-500/25"
           />
-          <span className="premium-ease absolute inset-0 flex items-center justify-center text-7xl font-black text-white/10 group-hover:scale-105 group-hover:text-brand-500/30">
-            {artist.name.slice(0, 1)}
-          </span>
+          {artist.imageUrl ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={artist.imageUrl}
+                alt={artist.name}
+                className="premium-ease absolute inset-0 h-full w-full object-cover group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            </>
+          ) : (
+            <span className="premium-ease absolute inset-0 flex items-center justify-center text-7xl font-black text-white/10 group-hover:scale-105 group-hover:text-brand-500/30">
+              {artist.name.slice(0, 1)}
+            </span>
+          )}
           {/* 상단 메타 */}
           <div className="absolute inset-x-0 top-0 flex items-start justify-between p-4">
             <div className="flex flex-wrap gap-1.5">
@@ -73,9 +92,9 @@ export function PremiumArtistCard({
         {/* 정보 바 */}
         <div className="flex items-center justify-between gap-2 px-4 py-3.5 sm:px-5 sm:py-4">
           <div className="min-w-0">
-            <p className="eyebrow text-white/35">Follower</p>
+            <p className="eyebrow text-white/35">{followerLabel}</p>
             <p className="mt-0.5 text-sm font-bold text-white/90">
-              {formatFollowers(artist.followers)}
+              {formatFollowers(followerValue)}
             </p>
           </div>
           <div className="h-8 w-px shrink-0 bg-white/10" />
