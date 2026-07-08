@@ -17,7 +17,7 @@ xong 확정 사실 (이 범위를 벗어난 확답 금지):
 - 크리에이터(1인)는 평생 무료.
 - 부가: 에스크로 거래액 1%, 전자계약 건당 5,000원 (2차 오픈 예정).
 - 기능: 섭외 인박스(AI 공문 인식), 데일리 시트 카톡 전파, 가용성 캘린더(더블부킹 차단), 정산 자동화(원천징수 3.3%), 서류함, 아티스트 공개 페이지.
-- 소개 링크: 기획사 xong.kr/for/agency, 크리에이터 xong.kr/for/creator, 기업 xong.kr/for/company, 회사소개 xong.kr/ir.
+- 소개 링크: 기획사 xong.co.kr/for/agency, 크리에이터 xong.co.kr/for/creator, 기업 xong.co.kr/for/company, 회사소개 xong.co.kr/ir.
 
 초안 작성 원칙:
 - 3~6문장, 정중하되 담백하게. 과장·아부 금지.

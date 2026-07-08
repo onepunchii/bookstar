@@ -27,7 +27,7 @@ export function ShareButton({ url }: { url: string }) {
     <button
       onClick={share}
       aria-label="공유"
-      className="flex h-10 flex-1 items-center justify-center rounded-lg border border-neutral-200 text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+      className="flex h-10 flex-1 items-center justify-center rounded-lg text-white/60 ring-1 ring-white/15 transition-colors hover:text-white hover:ring-white/40"
     >
       {copied ? (
         <Check className="h-4 w-4 text-brand-500" />

@@ -1,5 +1,5 @@
 // Resend 발송 래퍼 — SDK 의존성 없이 REST 직접 호출 (무료: 100통/일, 3,000통/월)
-// 필요 env: RESEND_API_KEY, OUTREACH_FROM (예: "XONG <hello@mail.xong.kr>")
+// 필요 env: RESEND_API_KEY, OUTREACH_FROM (예: "XONG <hello@mail.xong.co.kr>")
 
 interface SendEmailInput {
   to: string;
@@ -74,6 +74,6 @@ export function siteUrl(): string {
   return (
     process.env.SITE_URL ??
     process.env.NEXT_PUBLIC_SITE_URL ??
-    "https://xong.kr"
+    "https://xong.co.kr"
   );
 }

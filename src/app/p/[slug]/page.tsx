@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
 import { Wordmark } from "@/components/wordmark";
-import { Badge } from "@/components/ui/badge";
 import { getPublicArtistBySlug, getPublicSchedule } from "@/lib/data/artists";
 import { getRatingSummaryBySlug } from "@/lib/mock-data";
 import { YoutubeVideos } from "@/components/youtube-videos";
@@ -156,100 +155,109 @@ export default async function ArtistPublicPage({ params }: PageProps) {
   };
 
   return (
-    <div className="min-h-dvh bg-neutral-50">
+    <div className="min-h-dvh bg-[#0a0a0b] text-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/* 상단 얇은 브랜드 바 */}
-      <div className="border-b border-neutral-200 bg-white">
-        <div className="mx-auto flex h-12 max-w-4xl items-center justify-between px-4 sm:px-6">
+      {/* 상단 얇은 브랜드 바 — 히어로 위에 오버레이 */}
+      <div className="absolute inset-x-0 top-0 z-20">
+        <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-5 sm:px-6">
           <Link href="/" aria-label="xong 홈으로">
             <Wordmark height={18} />
           </Link>
-          <span className="text-xs text-neutral-400">공개 프로필</span>
+          <span className="rounded-full bg-black/40 px-3 py-1 text-[11px] font-semibold text-white/60 backdrop-blur">
+            공개 프로필
+          </span>
         </div>
       </div>
 
-      {/* 히어로 */}
-      <section className="relative overflow-hidden bg-neutral-950 text-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-500/20 via-transparent to-transparent" />
-        <div className="relative mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24">
-          <div className="flex flex-col items-start gap-8 sm:flex-row sm:items-center">
-            {/* 대표 사진 — 없으면 그라디언트 이니셜 */}
-            {artist.imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={artist.imageUrl}
-                alt={`${artist.name} 프로필 사진`}
-                className="h-32 w-32 shrink-0 rounded-3xl object-cover shadow-2xl shadow-brand-500/30 sm:h-40 sm:w-40"
-              />
-            ) : (
-              <div className="flex h-32 w-32 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-500 to-brand-700 text-5xl font-black text-white shadow-2xl shadow-brand-500/30 sm:h-40 sm:w-40 sm:text-6xl">
-                {artist.name.slice(0, 1)}
-              </div>
-            )}
-            <div className="min-w-0 flex-1">
-              <div className="mb-3 flex flex-wrap items-center gap-2">
-                {artist.categories.map((c) => (
-                  <span
-                    key={c}
-                    className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white backdrop-blur"
-                  >
-                    {CATEGORY_LABELS[c]}
-                  </span>
-                ))}
-                {artist.verified && (
-                  <span className="flex items-center gap-1 rounded-full bg-brand-500 px-3 py-1 text-xs font-bold text-white">
-                    <BadgeCheck className="h-3 w-3" /> 인증 소속사
-                  </span>
-                )}
-              </div>
-              <h1 className="text-4xl font-black tracking-tight sm:text-6xl">
-                {artist.name}
-              </h1>
-              <p className="mt-3 max-w-xl text-base leading-relaxed text-neutral-300 sm:text-lg">
-                {artist.tagline}
-              </p>
-              <p className="mt-4 text-sm text-neutral-500">
-                소속:{" "}
-                <span className="text-neutral-300">{artist.agencyName}</span>
-              </p>
-            </div>
+      {/* 풀블리드 히어로 — 아티스트 사진이 화면을 채움 */}
+      <section className="relative h-[62vh] min-h-[440px] w-full overflow-hidden sm:h-[68vh] sm:max-h-[720px]">
+        {artist.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={artist.imageUrl}
+            alt={`${artist.name} 프로필 사진`}
+            className="absolute inset-0 h-full w-full object-cover object-top"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-500/25 via-[#141416] to-black">
+            <span className="absolute inset-0 flex items-center justify-center text-[10rem] font-black text-white/10 sm:text-[16rem]">
+              {artist.name.slice(0, 1)}
+            </span>
           </div>
+        )}
+        {/* 아래로 갈수록 페이지 배경에 녹아드는 그라디언트 */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-[#0a0a0b]/35 to-black/25" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-24 top-1/4 h-72 w-72 rounded-full bg-brand-500/20 blur-3xl"
+        />
 
-          {/* 통계 스트립 */}
-          <div className="mt-10 grid grid-cols-3 gap-4 border-t border-white/10 pt-8 sm:gap-8">
-            <div>
-              <p className="flex items-center gap-1.5 text-xs text-neutral-400">
-                <Users className="h-3 w-3" /> {followerLabel}
-              </p>
-              <p className="mt-1 text-2xl font-black sm:text-3xl">
-                {formatFollowers(followerValue)}
-              </p>
-            </div>
-            <div>
-              <p className="flex items-center gap-1.5 text-xs text-neutral-400">
-                <TrendingUp className="h-3 w-3" /> 응답률
-              </p>
-              <p className="mt-1 text-2xl font-black text-brand-400 sm:text-3xl">
-                {artist.responseRate}%
-              </p>
-            </div>
-            <div>
-              <p className="flex items-center gap-1.5 text-xs text-neutral-400">
-                <Clock className="h-3 w-3" /> 평균 응답
-              </p>
-              <p className="mt-1 text-2xl font-black sm:text-3xl">
-                {artist.responseHours}
-                <span className="ml-1 text-lg font-bold text-neutral-500">
-                  시간
+        {/* 히어로 하단 정보 */}
+        <div className="absolute inset-x-0 bottom-0">
+          <div className="mx-auto max-w-4xl px-5 pb-7 sm:px-6 sm:pb-10">
+            <div className="flex flex-wrap items-center gap-2">
+              {artist.categories.map((c) => (
+                <span
+                  key={c}
+                  className="rounded-full bg-white/12 px-3 py-1 text-xs font-semibold text-white backdrop-blur"
+                >
+                  {CATEGORY_LABELS[c]}
                 </span>
-              </p>
+              ))}
+              {artist.verified && (
+                <span className="flex items-center gap-1 rounded-full bg-brand-500 px-3 py-1 text-xs font-bold text-white">
+                  <BadgeCheck className="h-3 w-3" /> 인증 소속사
+                </span>
+              )}
             </div>
+            <h1 className="display-kr mt-4 text-5xl font-black tracking-tight sm:text-7xl">
+              {artist.name}
+            </h1>
+            <p className="mt-3 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
+              {artist.tagline}
+            </p>
+            <p className="mt-3 text-sm text-white/45">
+              소속 <span className="text-white/75">{artist.agencyName}</span>
+            </p>
           </div>
         </div>
       </section>
+
+      {/* 통계 스트립 — 글래스 카드 */}
+      <div className="mx-auto max-w-4xl px-4 sm:px-6">
+        <div className="grid grid-cols-3 divide-x divide-white/8 rounded-2xl bg-white/[0.04] py-5 ring-1 ring-white/10 backdrop-blur">
+          <div className="px-4 text-center sm:px-6">
+            <p className="flex items-center justify-center gap-1.5 text-xs text-white/40">
+              <Users className="h-3 w-3" /> {followerLabel}
+            </p>
+            <p className="mt-1 text-2xl font-black sm:text-3xl">
+              {formatFollowers(followerValue)}
+            </p>
+          </div>
+          <div className="px-4 text-center sm:px-6">
+            <p className="flex items-center justify-center gap-1.5 text-xs text-white/40">
+              <TrendingUp className="h-3 w-3" /> 응답률
+            </p>
+            <p className="mt-1 text-2xl font-black text-brand-400 sm:text-3xl">
+              {artist.responseRate}%
+            </p>
+          </div>
+          <div className="px-4 text-center sm:px-6">
+            <p className="flex items-center justify-center gap-1.5 text-xs text-white/40">
+              <Clock className="h-3 w-3" /> 평균 응답
+            </p>
+            <p className="mt-1 text-2xl font-black sm:text-3xl">
+              {artist.responseHours}
+              <span className="ml-1 text-lg font-bold text-white/40">
+                시간
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* 본문 */}
       <div className="mx-auto grid max-w-4xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-3">
@@ -258,12 +266,17 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           {/* 태그 */}
           {artist.tags.length > 0 && (
             <section>
-              <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-neutral-500">
+              <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-white/40">
                 Tag
               </h2>
               <div className="flex flex-wrap gap-1.5">
                 {artist.tags.map((t) => (
-                  <Badge key={t}>{t}</Badge>
+                  <span
+                    key={t}
+                    className="rounded-full bg-white/8 px-3 py-1 text-xs font-medium text-white/70"
+                  >
+                    {t}
+                  </span>
                 ))}
               </div>
             </section>
@@ -271,17 +284,17 @@ export default async function ArtistPublicPage({ params }: PageProps) {
 
           {/* 최근 활동 */}
           <section>
-            <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-neutral-500">
+            <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
               Recent Work
             </h2>
             <ul className="space-y-2.5">
               {artist.recentWork.map((work) => (
                 <li
                   key={work}
-                  className="flex items-start gap-3 rounded-xl bg-white p-4 text-sm shadow-sm ring-1 ring-neutral-200/70"
+                  className="flex items-start gap-3 rounded-xl bg-white/[0.04] p-4 text-sm ring-1 ring-white/8"
                 >
                   <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
-                  <span className="leading-relaxed text-neutral-700">
+                  <span className="leading-relaxed text-white/80">
                     {work}
                   </span>
                 </li>
@@ -292,7 +305,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           {/* 갤러리 */}
           {artist.galleryUrls && artist.galleryUrls.length > 0 && (
             <section>
-              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-neutral-500">
+              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
                 Photos
               </h2>
               <div className="grid grid-cols-3 gap-2">
@@ -302,7 +315,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
                     key={url}
                     src={url}
                     alt={`${artist.name} 사진`}
-                    className="aspect-square w-full rounded-xl object-cover ring-1 ring-neutral-200/70"
+                    className="aspect-square w-full rounded-xl object-cover ring-1 ring-white/10"
                   />
                 ))}
               </div>
@@ -312,23 +325,24 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           {/* 유튜브 최근 영상 — 채널 연동 시 카드 가로 스크롤 */}
           {artist.youtube && (
             <section>
-              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-neutral-500">
+              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
                 YouTube
               </h2>
-              <YoutubeVideos channel={artist.youtube} />
+              <YoutubeVideos channel={artist.youtube} dark />
             </section>
           )}
 
           {/* 가능 일정 */}
           <section>
-            <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-neutral-500">
+            <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
               Availability
             </h2>
-            <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-neutral-200/70">
+            <div className="rounded-2xl bg-white/[0.04] p-6 ring-1 ring-white/10">
               <AvailabilityCalendar
                 days={schedule}
                 monthLabel="2026년 7월"
                 firstDayOffset={3}
+                dark
               />
             </div>
           </section>
@@ -336,32 +350,32 @@ export default async function ArtistPublicPage({ params }: PageProps) {
 
         {/* 우측 CTA (모바일에선 위로) */}
         <aside className="order-first lg:order-last">
-          <div className="sticky top-6 space-y-3 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-neutral-200/70">
-            <p className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+          <div className="sticky top-6 space-y-3 rounded-2xl bg-white/[0.05] p-6 ring-1 ring-white/10 backdrop-blur">
+            <p className="text-xs font-bold uppercase tracking-wider text-white/40">
               Booking
             </p>
-            <p className="text-2xl font-black">
+            <p className="text-2xl font-black text-white">
               {formatBudget(artist.budgetRange[0])}
-              <span className="text-base font-bold text-neutral-400">~</span>
+              <span className="text-base font-bold text-white/40">~</span>
             </p>
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-white/45">
               행사 유형과 조건에 따라 달라져요
             </p>
 
             <Link
               href={`/booking/new?artist=${artist.slug}`}
-              className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-500 text-sm font-bold text-white transition-colors hover:bg-brand-600"
+              className="premium-ease mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-500 text-sm font-bold text-white hover:bg-brand-600"
             >
               <MessageSquare className="h-4 w-4" />
               섭외 문의하기
             </Link>
-            <p className="text-center text-[11px] text-neutral-400">
+            <p className="text-center text-[11px] text-white/40">
               매칭 수수료 0% · 평균 {artist.responseHours}시간 내 응답
             </p>
 
-            <div className="my-4 h-px bg-neutral-100" />
+            <div className="my-4 h-px bg-white/10" />
 
-            <p className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+            <p className="text-xs font-bold uppercase tracking-wider text-white/40">
               Follow
             </p>
             <div className="flex gap-2">
@@ -371,7 +385,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
-                  className="flex h-10 flex-1 items-center justify-center rounded-lg border border-neutral-200 text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+                  className="flex h-10 flex-1 items-center justify-center rounded-lg ring-1 ring-white/15 text-white/60 transition-colors hover:text-white hover:ring-white/40"
                 >
                   <InstagramIcon className="h-4 w-4" />
                 </a>
@@ -382,7 +396,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="YouTube"
-                  className="flex h-10 flex-1 items-center justify-center rounded-lg border border-neutral-200 text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+                  className="flex h-10 flex-1 items-center justify-center rounded-lg ring-1 ring-white/15 text-white/60 transition-colors hover:text-white hover:ring-white/40"
                 >
                   <YoutubeIcon className="h-4 w-4" />
                 </a>
@@ -394,11 +408,11 @@ export default async function ArtistPublicPage({ params }: PageProps) {
       </div>
 
       {/* 푸터 */}
-      <footer className="border-t border-neutral-200 bg-white">
-        <div className="mx-auto flex max-w-4xl flex-col items-start justify-between gap-2 px-4 py-6 text-xs text-neutral-400 sm:flex-row sm:items-center sm:px-6">
+      <footer className="border-t border-white/8">
+        <div className="mx-auto flex max-w-4xl flex-col items-start justify-between gap-2 px-4 py-6 text-xs text-white/35 sm:flex-row sm:items-center sm:px-6">
           <p>
             이 페이지는{" "}
-            <Link href="/" className="font-semibold text-neutral-900">
+            <Link href="/" className="font-semibold text-white/80">
               xong
             </Link>
             에서 발행됐어요 · 검증된 소속사의 공식 섭외 창구
