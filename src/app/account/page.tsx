@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { signOut } from "@/auth";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { Reveal } from "@/components/premium/reveal";
 import { getSessionProfile } from "@/lib/data/session";
-import { LogIn, ShieldCheck } from "lucide-react";
+import { LogIn, LogOut, ShieldCheck } from "lucide-react";
 import { MeAccountForm } from "./account-form";
 
 export const metadata = { title: "내 계정" };
@@ -27,6 +28,20 @@ export default async function MyAccountPage() {
       {me ? (
         <Reveal delay={80} className="mt-8">
           <MeAccountForm profile={me} />
+          <form
+            action={async () => {
+              "use server";
+              await signOut({ redirectTo: "/login" });
+            }}
+            className="mt-4"
+          >
+            <button
+              type="submit"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-white/[0.04] px-6 py-3 text-sm font-semibold text-white/60 ring-1 ring-white/10 transition-colors hover:text-white hover:ring-white/25"
+            >
+              <LogOut className="h-4 w-4" /> 로그아웃
+            </button>
+          </form>
         </Reveal>
       ) : (
         <Reveal delay={80} className="mt-8">
