@@ -4,6 +4,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { getBookingRequests } from "@/lib/data/booking-requests";
 import { getMessages } from "@/lib/data/messages";
+import { getLatestQuote } from "@/lib/data/quotes";
 import { formatBudget } from "@/lib/types";
 import { RequestThread } from "./request-thread";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,10 @@ export default async function RequestDetailPage({
   const requests = await getBookingRequests();
   const request = requests.find((r) => r.id === id);
   if (!request) notFound();
-  const thread = await getMessages(id);
+  const [thread, quote] = await Promise.all([
+    getMessages(id),
+    getLatestQuote(id),
+  ]);
 
   return (
     <div className="adv-dark min-h-dvh">
@@ -49,15 +53,20 @@ export default async function RequestDetailPage({
               </p>
             </div>
 
-            {request.status === "negotiating" && (
+            {quote && (
               <div className="adv-card rounded-2xl p-5 ring-1 ring-brand-500/30">
                 <h3 className="text-sm font-bold text-brand-300">최근 견적</h3>
                 <p className="mt-2 text-2xl font-black text-white">
-                  {formatBudget(1800)}
+                  {formatBudget(quote.amount)}
                 </p>
-                <p className="mt-1 text-xs text-white/50">
-                  언박싱 + 브이로그 + 라이브커머스 1회 포함
-                </p>
+                {quote.includes && (
+                  <p className="mt-1 text-xs text-white/50">
+                    포함: {quote.includes}
+                  </p>
+                )}
+                {quote.note && (
+                  <p className="mt-1 text-xs text-white/45">{quote.note}</p>
+                )}
                 <p className="mt-3 text-xs text-white/40">
                   견적 수락 시 전자계약 단계로 넘어갑니다 (2차 오픈 예정)
                 </p>

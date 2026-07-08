@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XONG — 카톡과 엑셀로 아티스트를 지키는 시대는 끝났습니다</title>
+<meta name="description" content="더블부킹 차단, 데일리 시트 카톡 전파, 원천징수 3.3% 자동 정산. 매칭 수수료 0%의 소속사 부킹 OS.">
+<meta property="og:title" content="매니저의 시간을 돌려드립니다 — XONG">
+<meta property="og:description" content="스케줄 펑크 공포를 시스템으로 없애세요. 매칭 수수료 0% · 도입비 0원.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --ink: rgba(255, 255, 255, 0.92);
+    --muted: rgba(255, 255, 255, 0.58);
+    --faint: rgba(255, 255, 255, 0.40);
+    --hairline: rgba(255, 255, 255, 0.08);
+    --glass: rgba(255, 255, 255, 0.024);
+    --brand: #FF5A00;
+    --brand-hot: #ff7d38;
+    --brand-soft: #ffa470;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: var(--bg); color: var(--ink); }
+  body {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+      "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
+    letter-spacing: -0.01em; line-height: 1.7; font-size: 16px;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  ::selection { background: rgba(255, 90, 0, 0.35); color: #fff; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 28px; }
+  p { word-break: keep-all; }
+  strong { color: var(--ink); font-weight: 700; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .eyebrow {
+    font-size: 0.6875rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--brand);
+  }
+  .display {
+    word-break: keep-all; line-height: 1.12; letter-spacing: -0.03em;
+    font-weight: 700; text-wrap: balance; color: #fff;
+  }
+  .lede { font-size: 1.125rem; color: var(--muted); max-width: 60ch; }
+
+  section { padding: 84px 0; border-top: 1px solid var(--hairline); }
+  .section-head { margin-bottom: 40px; }
+  .section-head h2 { font-size: clamp(1.625rem, 4vw, 2.25rem); margin-top: 14px; }
+  .section-head .lede { margin-top: 16px; }
+
+  /* 히어로 */
+  .hero { position: relative; padding: 108px 0 88px; border-top: none; overflow: visible; }
+  .orb {
+    position: absolute; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(255, 90, 0, 0.55) 0%, rgba(255, 90, 0, 0) 70%);
+    filter: blur(40px); opacity: 0.45;
+  }
+  .orb-1 { width: 480px; height: 480px; top: -200px; right: -120px; animation: float 8s ease-in-out infinite; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(22px); } }
+  .hero-inner { position: relative; }
+  .logo { font-size: 1.375rem; font-weight: 800; letter-spacing: -0.04em; color: #fff; margin-bottom: 36px; display: inline-block; }
+  .logo em { font-style: normal; color: var(--brand); }
+  .logo small { font-size: 0.75rem; font-weight: 600; color: var(--faint); letter-spacing: 0.08em; margin-left: 10px; }
+  .hero h1 { font-size: clamp(2.125rem, 6vw, 3.5rem); margin: 0 0 24px; }
+  .hero h1 .accent { color: var(--brand); }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px; border-radius: 999px;
+    padding: 8px 18px; font-size: 0.8125rem; font-weight: 700; color: #fff;
+    background: linear-gradient(120deg, rgba(255, 90, 0, 0.28), rgba(255, 90, 0, 0.10));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 12px 32px -12px rgba(255, 90, 0, 0.45);
+    margin-bottom: 28px;
+  }
+  .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--brand-hot); box-shadow: 0 0 12px rgba(255, 90, 0, 0.9); }
+
+  /* 글래스 */
+  .glass {
+    background: var(--glass);
+    backdrop-filter: blur(13px) saturate(1.15);
+    -webkit-backdrop-filter: blur(13px) saturate(1.15);
+    border-radius: 1rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 24px 48px -24px rgba(0, 0, 0, 0.8);
+    padding: 26px 28px;
+  }
+
+  /* 비교 */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
+  .compare-col h3 {
+    font-size: 0.9375rem; font-weight: 700; letter-spacing: -0.01em;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 18px;
+  }
+  .compare-col.now h3 { color: var(--faint); }
+  .compare-col.xong h3 { color: var(--brand-hot); }
+  .compare-col ul { list-style: none; display: grid; gap: 14px; }
+  .compare-col li {
+    position: relative; padding-left: 26px;
+    font-size: 0.9375rem; color: var(--muted); word-break: keep-all;
+  }
+  .compare-col li::before {
+    position: absolute; left: 0; top: 0.08em; font-size: 0.875rem; font-weight: 800;
+  }
+  .compare-col.now li::before { content: "✕"; color: rgba(255, 255, 255, 0.25); }
+  .compare-col.xong li::before { content: "✓"; color: var(--brand); }
+  .compare-col.xong {
+    background: linear-gradient(160deg, rgba(255, 90, 0, 0.12), rgba(255, 90, 0, 0.02) 60%, var(--glass));
+    box-shadow: inset 0 1px 0 rgba(255, 165, 112, 0.3), 0 24px 48px -24px rgba(0, 0, 0, 0.8);
+  }
+  .compare-col.xong li strong { color: #fff; }
+
+  /* 스크린샷 */
+  .shot-frame {
+    border-radius: 1rem; overflow: hidden; background: rgba(255, 255, 255, 0.03);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09),
+      0 32px 64px -28px rgba(0, 0, 0, 0.9), 0 24px 60px -24px rgba(255, 90, 0, 0.14);
+  }
+  .shot-bar {
+    display: flex; align-items: center; gap: 12px; padding: 11px 16px;
+    background: rgba(255, 255, 255, 0.02); border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .shot-bar .dots { display: flex; gap: 6px; }
+  .shot-bar .dots span { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, 0.14); }
+  .shot-bar .url {
+    flex: 1; max-width: 300px; margin: 0 auto; border-radius: 999px; padding: 3px 14px;
+    background: rgba(255, 255, 255, 0.05); font-size: 0.6875rem; color: var(--faint); text-align: center;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .shot-frame img { display: block; width: 100%; height: auto; }
+  .feature { margin-bottom: 60px; }
+  .feature:last-child { margin-bottom: 0; }
+  .feature-head { margin-bottom: 20px; }
+  .feature-head .feature-no {
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--brand);
+  }
+  .feature-head h4 {
+    font-size: 1.25rem; font-weight: 800; letter-spacing: -0.03em; color: #fff;
+    margin: 8px 0 8px; word-break: keep-all; text-wrap: balance;
+  }
+  .feature-head p { color: var(--muted); font-size: 0.9375rem; max-width: 66ch; }
+
+  /* 요금 */
+  .plans { display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 16px; align-items: stretch; }
+  .plan { display: flex; flex-direction: column; padding: 30px 28px; }
+  .plan-name { font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+  .plan-price { margin: 16px 0 4px; font-size: 1.875rem; font-weight: 800; letter-spacing: -0.04em; color: #fff; font-variant-numeric: tabular-nums; }
+  .plan-target { font-size: 0.875rem; color: var(--muted); }
+  .plan ul { list-style: none; margin: 20px 0 0; padding: 20px 0 0; border-top: 1px solid var(--hairline); display: grid; gap: 10px; }
+  .plan li { position: relative; padding-left: 18px; font-size: 0.875rem; color: var(--muted); word-break: keep-all; }
+  .plan li::before { content: ""; position: absolute; left: 0; top: 0.58em; width: 7px; height: 2px; border-radius: 2px; background: var(--brand); }
+  .plan--featured {
+    background: linear-gradient(160deg, rgba(255, 90, 0, 0.14), rgba(255, 90, 0, 0.03) 55%, var(--glass));
+    box-shadow: inset 0 1px 0 rgba(255, 165, 112, 0.35), 0 24px 48px -24px rgba(0, 0, 0, 0.8), 0 16px 44px -16px rgba(255, 90, 0, 0.30);
+  }
+  .plan--featured .plan-name { color: var(--brand-hot); }
+  .plan-flag {
+    align-self: flex-start; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: #fff; background: var(--brand);
+    border-radius: 999px; padding: 4px 12px; margin-bottom: 16px;
+    box-shadow: 0 12px 32px -12px rgba(255, 90, 0, 0.6);
+  }
+  .plans-note { margin-top: 18px; font-size: 0.875rem; color: var(--faint); word-break: keep-all; }
+
+  /* CTA */
+  .cta-section { text-align: center; padding: 100px 0 92px; position: relative; }
+  .cta-orb {
+    position: absolute; left: 50%; top: 42%; width: 560px; height: 340px;
+    transform: translate(-50%, -50%); pointer-events: none;
+    background: radial-gradient(ellipse, rgba(255, 90, 0, 0.22) 0%, rgba(255, 90, 0, 0) 70%);
+    filter: blur(30px);
+  }
+  .cta-inner { position: relative; }
+  .cta-section h2 { font-size: clamp(1.75rem, 4.5vw, 2.625rem); max-width: 20ch; margin: 16px auto 0; }
+  .cta-section .lede { margin: 22px auto 36px; }
+  .btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; border-radius: 999px;
+    padding: 14px 30px; font-size: 0.9375rem; font-weight: 700; text-decoration: none;
+    transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  }
+  .btn-primary {
+    color: #fff; background: var(--brand);
+    box-shadow: 0 12px 32px -12px rgba(255, 90, 0, 0.65);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -12px rgba(255, 90, 0, 0.8); }
+  .btn-ghost {
+    color: var(--ink); background: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .btn-ghost:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.08); }
+  .cta-note { margin-top: 20px; font-size: 0.8125rem; color: var(--faint); }
+
+  footer {
+    border-top: 1px solid var(--hairline); padding: 28px 0 52px;
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    font-size: 0.75rem; color: var(--faint);
+  }
+
+  .reveal { opacity: 0; transform: translateY(1.75rem); filter: blur(6px);
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease), filter 0.7s var(--ease); }
+  .reveal.in { opacity: 1; transform: translateY(0); filter: blur(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; filter: none; transition: none; }
+    .orb-1 { animation: none; }
+  }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 4px; }
+  @media (max-width: 760px) {
+    section { padding: 60px 0; }
+    .hero { padding: 80px 0 64px; }
+    .compare, .plans { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+
+<header class="hero">
+  <div class="wrap hero-inner">
+    <span class="logo reveal">XO<em>NG</em><small>FOR AGENCIES</small></span>
+    <div class="badge reveal"><span class="dot"></span>매칭 수수료 0% · 도입비 0원 · Free로 시작</div>
+    <h1 class="display reveal">
+      카톡과 엑셀로 아티스트를<br>지키는 시대는 <span class="accent">끝났습니다</span>
+    </h1>
+    <p class="lede reveal">
+      엑셀 스케줄표 캡처, 새벽 카톡 전파, 정산 시즌의 계산기.
+      매니저의 최대 공포인 <strong>"스케줄 누락 = 펑크"</strong>를 사람의 꼼꼼함이 아니라
+      시스템으로 막는 부킹 OS — XONG입니다.
+    </p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Before / After</span>
+      <h2 class="display">지금의 하루 vs XONG의 하루</h2>
+    </div>
+    <div class="compare">
+      <div class="glass compare-col now reveal">
+        <h3>지금 — 카톡 + 엑셀 + 수기</h3>
+        <ul>
+          <li>엑셀 스케줄표를 <strong>캡처해서 카톡방마다</strong> 뿌리는 아침</li>
+          <li>더블부킹은 사람이 걸러야 — 놓치면 방송 펑크</li>
+          <li>정산 시즌마다 계산기 들고 분배율·원천징수 수작업</li>
+          <li>공문·큐시트 PDF가 이메일·카톡에 흩어짐</li>
+          <li>브로커 낀 문의 — 진위도, 실예산도 알 수 없음</li>
+        </ul>
+      </div>
+      <div class="glass compare-col xong reveal">
+        <h3>XONG — 부킹 OS</h3>
+        <ul>
+          <li>데일리 시트 <strong>"전체 카톡 전파" 원클릭</strong> — 콜타임·장소·차량까지</li>
+          <li>가용성 캘린더·홀드가 <strong>더블부킹을 자동 차단</strong></li>
+          <li>분배율·원천징수 3.3% <strong>자동 계산</strong> + 미수금 리마인더</li>
+          <li>AI 공문 인식 — <strong>PDF를 올리면 요청 카드로</strong></li>
+          <li>사업자 인증 주최자와 <strong>수수료 0% 직거래</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Product</span>
+      <h2 class="display">화면으로 보는 3가지</h2>
+    </div>
+
+    <div class="feature reveal">
+      <div class="feature-head">
+        <span class="feature-no">01 · 데일리 시트</span>
+        <h4>매니저의 하루를 그대로 옮긴 스케줄표 — 카톡으로 전파</h4>
+        <p>픽업→도착→리허설→본방 타임라인에 날씨 예보·담당 매니저·차량 번호·주의사항까지. 버튼 하나로 팀 전원에게 카톡 전파됩니다.</p>
+      </div>
+      <div class="shot-frame">
+        <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/agency/today</div></div>
+        <img src="/ir/agency-today.jpg" alt="XONG 데일리 시트 — 아티스트별 타임라인과 카톡 전파" loading="lazy">
+      </div>
+    </div>
+
+    <div class="feature reveal">
+      <div class="feature-head">
+        <span class="feature-no">02 · 섭외 인박스</span>
+        <h4>흩어진 문의가 하나의 파이프라인으로</h4>
+        <p>모든 요청에 예산·날짜가 정리되어 들어오고, 미인증 주최자는 경고 배지로 걸러집니다. 아티스트별 견적 프리셋으로 원클릭 회신 — 응답이 빨라지면 성사율이 올라갑니다.</p>
+      </div>
+      <div class="shot-frame">
+        <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/agency/inbox</div></div>
+        <img src="/ir/agency-inbox.jpg" alt="XONG 섭외 인박스 — AI 공문 인식과 견적 프리셋" loading="lazy">
+      </div>
+    </div>
+
+    <div class="feature reveal">
+      <div class="feature-head">
+        <span class="feature-no">03 · 정산</span>
+        <h4>분배율·원천징수 3.3%·실지급액, 계산기가 필요 없습니다</h4>
+        <p>총 출연료에서 소속사:아티스트 분배율과 원천징수를 자동 계산합니다. 미수금은 주황색으로 표시되고, 입금 리마인더와 세금계산서 발행까지 이어집니다. 아티스트도 본인 화면에서 내역을 투명하게 봅니다 — 정산 분쟁이 줄어듭니다.</p>
+      </div>
+      <div class="shot-frame">
+        <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/agency/settlement</div></div>
+        <img src="/ir/agency-settlement.jpg" alt="XONG 정산 — 분배율·원천징수 자동 계산과 미수금 관리" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Pricing</span>
+      <h2 class="display">매니저 하루 인건비보다<br>싼 한 달</h2>
+      <p class="lede">섭외가 성사돼도 수수료는 0%입니다. XONG는 거래에서 떼지 않고, 매니저의 시간을 아껴주는 값만 받습니다.</p>
+    </div>
+    <div class="plans">
+      <div class="glass plan reveal">
+        <span class="plan-name">Free</span>
+        <div class="plan-price num">0원</div>
+        <div class="plan-target">1인 기획사 · 크리에이터</div>
+        <ul>
+          <li>아티스트 5팀</li>
+          <li>섭외 인박스</li>
+          <li>프로필 · 캘린더</li>
+        </ul>
+      </div>
+      <div class="glass plan plan--featured reveal">
+        <span class="plan-flag">추천</span>
+        <span class="plan-name">Growth</span>
+        <div class="plan-price num">월 9만원</div>
+        <div class="plan-target">성장하는 소속사</div>
+        <ul>
+          <li>아티스트 20팀</li>
+          <li>데일리 시트 · 카톡 전파</li>
+          <li>정산 자동화</li>
+          <li>매니저 권한 스코프</li>
+        </ul>
+      </div>
+      <div class="glass plan reveal">
+        <span class="plan-name">Enterprise</span>
+        <div class="plan-price num">월 50만원~</div>
+        <div class="plan-target">대형 기획사 · MCN</div>
+        <ul>
+          <li>아티스트 무제한</li>
+          <li>전자계약 · API</li>
+          <li>전담 CS</li>
+        </ul>
+      </div>
+    </div>
+    <p class="plans-note reveal">언제든 Free로 시작해 팀이 커지면 올리시면 됩니다. 계약 기간 없음 · 카드 등록 없이 시작.</p>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-orb"></div>
+  <div class="wrap cta-inner">
+    <span class="eyebrow reveal">Get Started</span>
+    <h2 class="display reveal">이번 주 스케줄표부터<br>XONG로 보내보세요</h2>
+    <p class="lede reveal">지금 쓰시는 엑셀 그대로 두고, 데일리 시트 하나만 먼저 써보셔도 됩니다.</p>
+    <div class="btn-row reveal">
+      <a class="btn btn-primary" href="/join/agency">무료로 시작하기 →</a>
+      <a class="btn btn-ghost" href="/ir">회사 소개서 보기</a>
+    </div>
+    <p class="cta-note reveal">카카오 로그인 3초 · 도입 교육 없이 바로 사용</p>
+  </div>
+</section>
+
+<div class="wrap">
+  <footer>
+    <span>XONG — 연예인·인플루언서 섭외를 가장 빠르게</span>
+    <span>hello@xong.kr</span>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var items = document.querySelectorAll(".reveal");
+    if (reduced || !("IntersectionObserver" in window)) {
+      items.forEach(function (el) { el.classList.add("in"); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    items.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+</body>
+</html>

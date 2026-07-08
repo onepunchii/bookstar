@@ -8,7 +8,8 @@ import { Card } from "@/components/ui/card";
 import { Input, Label, Textarea } from "@/components/ui/input";
 import { useNotificationsStore } from "@/lib/notifications-store";
 import { holdKey, useScheduleStore } from "@/lib/schedule-store";
-import { getForecast, isRainRisky } from "@/lib/weather";
+import { useForecast } from "@/lib/use-forecast";
+import { isRainRisky } from "@/lib/weather";
 import {
   AVAILABILITY_LABELS,
   formatBudget,
@@ -85,10 +86,15 @@ export function AgencyInbox({
   initialRequests,
   artists,
   scheduleMap,
+  initialQuotes = {},
 }: {
   initialRequests: BookingRequest[];
   artists: Artist[];
   scheduleMap: Record<string, ScheduleDay[]>;
+  initialQuotes?: Record<
+    string,
+    { amount: number; includes: string | null; note: string | null }
+  >;
 }) {
   const [requests, setRequests] = useState<BookingRequest[]>(initialRequests);
   // 상태 변경 → DB PATCH + 로컬 반영
@@ -103,7 +109,15 @@ export function AgencyInbox({
     }).catch(() => {});
   };
   const [selectedId, setSelectedId] = useState(requests[0]?.id);
-  const [quotes, setQuotes] = useState<Record<string, Quote>>({});
+  // DB 견적으로 초기화 → 새로고침해도 '견적 보냈어요' 유지
+  const [quotes, setQuotes] = useState<Record<string, Quote>>(() =>
+    Object.fromEntries(
+      Object.entries(initialQuotes).map(([rid, q]) => [
+        rid,
+        { amount: q.amount, items: q.includes ?? "", note: q.note ?? "" },
+      ])
+    )
+  );
   const [holdPlacedFor, setHoldPlacedFor] = useState<string | null>(null);
   const [quoteAmount, setQuoteAmount] = useState("");
   const [quoteItems, setQuoteItems] = useState("");
@@ -149,9 +163,8 @@ export function AgencyInbox({
   const selected = requests.find((r) => r.id === selectedId);
   const outdoorEvent =
     selected && ["축제", "행사"].includes(selected.eventType);
-  const forecast = selected
-    ? getForecast(selected.date, selected.location)
-    : undefined;
+  // 실 기상청 예보 (근접일) — mock 즉시 표시 후 업그레이드
+  const forecast = useForecast(selected?.date, selected?.location);
   const rainRisk =
     selected && outdoorEvent && forecast && isRainRisky(forecast);
   const artist = selected
@@ -222,15 +235,30 @@ export function AgencyInbox({
 
   const sendQuote = () => {
     if (!selected || !quoteAmount) return;
+    const amount = Number(quoteAmount);
     setQuotes((prev) => ({
       ...prev,
-      [selected.id]: {
-        amount: Number(quoteAmount),
-        items: quoteItems,
-        note: quoteNote,
-      },
+      [selected.id]: { amount, items: quoteItems, note: quoteNote },
     }));
-    setStatus(selected.id, "negotiating");
+    // DB 저장: quotes + 협의 메시지 + 상태 negotiating (API가 일괄 처리)
+    fetch("/api/quotes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        requestId: selected.id,
+        amount,
+        includes: quoteItems,
+        note: quoteNote,
+        senderName: artist?.agencyName
+          ? `${artist.agencyName} 담당자`
+          : "소속사 담당자",
+      }),
+    }).catch(() => {});
+    setRequests((prev) =>
+      prev.map((r) =>
+        r.id === selected.id ? { ...r, status: "negotiating" } : r
+      )
+    );
     setQuoteAmount("");
     setQuoteItems("");
     setQuoteNote("");

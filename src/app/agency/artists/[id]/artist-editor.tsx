@@ -39,9 +39,14 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
     null,
   ]);
   const [converting, setConverting] = useState<number | null>(null);
-  // 대표 사진(idx 0)은 Blob 업로드 → DB 반영. 기존 이미지가 있으면 미리보기.
-  const [coverUrl, setCoverUrl] = useState<string | undefined>(artist.imageUrl);
-  const [uploadingCover, setUploadingCover] = useState(false);
+  // 저장된 사진 URL (0=대표, 1~3=갤러리) — 기존 업로드 미리보기
+  const [savedUrls, setSavedUrls] = useState<(string | undefined)[]>([
+    artist.imageUrl,
+    artist.galleryUrls?.[0],
+    artist.galleryUrls?.[1],
+    artist.galleryUrls?.[2],
+  ]);
+  const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
   const [coverError, setCoverError] = useState<string | null>(null);
 
   const handlePhoto = async (idx: number, file: File | undefined | null) => {
@@ -51,26 +56,25 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
       const result = await fileToWebP(file);
       setPhotos((prev) => prev.map((p, i) => (i === idx ? result : p)));
 
-      // 대표 사진은 즉시 Blob+DB에 반영 → 공개 프로필·사이트맵에 노출
-      if (idx === 0) {
-        setUploadingCover(true);
-        setCoverError(null);
-        try {
-          const fd = new FormData();
-          fd.append("slug", artist.slug);
-          fd.append("file", result.blob, result.fileName);
-          const res = await fetch("/api/artists/photo", {
-            method: "POST",
-            body: fd,
-          });
-          if (!res.ok) throw new Error(await res.text());
-          const data = (await res.json()) as { url: string };
-          setCoverUrl(data.url);
-        } catch {
-          setCoverError("대표 사진 저장에 실패했어요. 다시 시도해주세요.");
-        } finally {
-          setUploadingCover(false);
-        }
+      // 모든 슬롯 즉시 Blob+DB 반영 (0=대표→공개 프로필·사이트맵, 1~3=갤러리)
+      setUploadingIdx(idx);
+      setCoverError(null);
+      try {
+        const fd = new FormData();
+        fd.append("slug", artist.slug);
+        fd.append("slot", String(idx));
+        fd.append("file", result.blob, result.fileName);
+        const res = await fetch("/api/artists/photo", {
+          method: "POST",
+          body: fd,
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const data = (await res.json()) as { url: string };
+        setSavedUrls((prev) => prev.map((u, i) => (i === idx ? data.url : u)));
+      } catch {
+        setCoverError("사진 저장에 실패했어요. 다시 시도해주세요.");
+      } finally {
+        setUploadingIdx(null);
       }
     } finally {
       setConverting(null);
@@ -175,8 +179,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                 const photo = photos[idx];
                 const isCover = idx === 0;
                 const label = isCover ? "대표 사진 업로드" : null;
-                const previewSrc =
-                  photo?.dataUrl ?? (isCover ? coverUrl : undefined);
+                const previewSrc = photo?.dataUrl ?? savedUrls[idx];
                 return (
                   <label
                     key={idx}
@@ -222,14 +225,14 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                             )}
                           </span>
                         )}
-                        {isCover && uploadingCover && (
+                        {uploadingIdx === idx && (
                           <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-xs font-bold text-white">
                             저장 중…
                           </span>
                         )}
-                        {isCover && !uploadingCover && coverUrl && (
+                        {uploadingIdx !== idx && savedUrls[idx] && (
                           <span className="absolute right-1.5 top-1.5 rounded-full bg-brand-500 px-2 py-0.5 text-[10px] font-bold text-white">
-                            공개 프로필 반영됨
+                            {isCover ? "공개 프로필 반영됨" : "저장됨"}
                           </span>
                         )}
                       </>

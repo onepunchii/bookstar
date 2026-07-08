@@ -43,6 +43,7 @@ export interface Artist {
   gender: "male" | "female" | "group";
   tagline: string;
   imageUrl?: string;
+  galleryUrls?: string[]; // 추가 사진 (대표 외 최대 3장)
   followers: number;
   responseRate: number; // 0-100
   responseHours: number; // 평균 응답 시간

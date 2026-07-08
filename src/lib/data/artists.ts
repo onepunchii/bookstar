@@ -28,6 +28,7 @@ function rowToArtist(row: ArtistRow): Artist {
     gender: (row.gender as Artist["gender"]) ?? "group",
     tagline: row.tagline ?? "",
     imageUrl: row.imageUrl ?? undefined,
+    galleryUrls: (row.galleryUrls as string[]) ?? [],
     followers: row.followers,
     responseRate: row.responseRate,
     responseHours: row.responseHours,

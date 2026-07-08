@@ -287,6 +287,7 @@ export const quotes = pgTable("quotes", {
     .references(() => bookingRequests.id),
   amount: integer("amount").notNull(), // 만원
   items: jsonb("items").$type<{ label: string; amount: number }[]>(),
+  includes: text("includes"), // 기본 포함 항목 (예: 공연 30분 + 포토타임)
   note: text("note"),
   createdByUserId: uuid("created_by_user_id").references(() => users.id),
   accepted: boolean("accepted").notNull().default(false),

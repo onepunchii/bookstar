@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XONG 사업계획서 — 매칭 수수료 0% 부킹 에이전시 OS</title>
+<meta name="description" content="연예인·인플루언서 섭외를 가장 빠르게 연결하는 부킹 에이전시 OS. 매칭 수수료 0%, 소속사 SaaS 구독 모델.">
+<meta property="og:title" content="XONG 사업계획서">
+<meta property="og:description" content="매칭 수수료 0% — 브로커가 아니라 인프라입니다.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+</head>
+<body>
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --ink: rgba(255, 255, 255, 0.92);
+    --muted: rgba(255, 255, 255, 0.58);
+    --faint: rgba(255, 255, 255, 0.40);
+    --hairline: rgba(255, 255, 255, 0.08);
+    --glass: rgba(255, 255, 255, 0.024);
+    --glass-hover: rgba(255, 255, 255, 0.045);
+    --brand: #FF5A00;
+    --brand-hot: #ff7d38;
+    --brand-soft: #ffa470;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* XONG 광고주향 Vantablack Luxe — 의도적 다크 단일 테마 */
+  html, body,
+  :root[data-theme="light"] body,
+  :root[data-theme="dark"] body {
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  body {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+      "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
+    letter-spacing: -0.01em;
+    line-height: 1.7;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: rgba(255, 90, 0, 0.35); color: #fff; }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- 타이포 시스템 ---------- */
+  .eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--brand);
+  }
+  .eyebrow--ghost { color: var(--faint); }
+
+  .display {
+    word-break: keep-all;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+    text-wrap: balance;
+    color: #fff;
+  }
+
+  h2.display { font-size: clamp(1.75rem, 4vw, 2.5rem); margin: 14px 0 0; }
+  h3 { font-size: 1.0625rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; margin: 0; word-break: keep-all; }
+  p { margin: 0; word-break: keep-all; }
+  .lede { font-size: 1.125rem; color: var(--muted); max-width: 62ch; }
+  .body-copy { color: var(--muted); max-width: 65ch; }
+  .num { font-variant-numeric: tabular-nums; }
+  strong { color: var(--ink); font-weight: 700; }
+  .brand-text { color: var(--brand); }
+
+  /* ---------- 섹션 리듬 ---------- */
+  section { padding: 92px 0; border-top: 1px solid var(--hairline); }
+  section:first-of-type { border-top: none; }
+  .section-head { display: flex; flex-direction: column; gap: 0; margin-bottom: 44px; }
+  .section-head .lede { margin-top: 18px; }
+
+  /* ---------- 히어로 ---------- */
+  .hero {
+    position: relative;
+    padding: 120px 0 100px;
+    border-top: none;
+    overflow: visible;
+  }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(255, 90, 0, 0.55) 0%, rgba(255, 90, 0, 0) 70%);
+    filter: blur(40px);
+    opacity: 0.5;
+  }
+  .orb-1 { width: 520px; height: 520px; top: -220px; right: -140px; animation: float 8s ease-in-out infinite; }
+  .orb-2 { width: 340px; height: 340px; bottom: -180px; left: -160px; opacity: 0.25; animation: float 8s ease-in-out infinite reverse; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(24px) translateX(-14px); }
+  }
+
+  .hero-inner { position: relative; }
+  .hero-meta {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+  .logo {
+    font-size: 1.375rem; font-weight: 800; letter-spacing: -0.04em; color: #fff;
+  }
+  .logo em { font-style: normal; color: var(--brand); }
+  .hero-meta .divider { width: 1px; height: 16px; background: var(--hairline); }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 6.5vw, 4.25rem);
+    margin: 0 0 28px;
+  }
+  .hero h1 .line-accent { color: var(--brand); }
+
+  .badge-zero {
+    display: inline-flex; align-items: center; gap: 8px;
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.02em;
+    color: #fff;
+    background: linear-gradient(120deg, rgba(255, 90, 0, 0.28), rgba(255, 90, 0, 0.10));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 12px 32px -12px rgba(255, 90, 0, 0.45);
+    margin-bottom: 30px;
+  }
+  .badge-zero .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--brand-hot); box-shadow: 0 0 12px rgba(255, 90, 0, 0.9); }
+
+  .hero-defs {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-top: 52px;
+  }
+
+  /* ---------- 글래스 카드 ---------- */
+  .glass {
+    background: var(--glass);
+    backdrop-filter: blur(13px) saturate(1.15);
+    -webkit-backdrop-filter: blur(13px) saturate(1.15);
+    border-radius: 1rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 24px 48px -24px rgba(0, 0, 0, 0.8);
+    padding: 26px 28px;
+    transition: transform 0.5s var(--ease), background 0.5s var(--ease), box-shadow 0.5s var(--ease);
+  }
+  .glass:hover {
+    transform: translateY(-3px);
+    background: var(--glass-hover);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10),
+      0 24px 48px -24px rgba(0, 0, 0, 0.8),
+      0 20px 50px -20px rgba(255, 90, 0, 0.28);
+  }
+  .glass .eyebrow { display: block; margin-bottom: 12px; }
+  .glass p { color: var(--muted); font-size: 0.9375rem; margin-top: 10px; }
+
+  /* ---------- 문제: 스탯 + 거품 바 ---------- */
+  .problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 56px; }
+  .stat-value {
+    font-size: clamp(2rem, 4.5vw, 2.75rem);
+    font-weight: 800; letter-spacing: -0.04em; line-height: 1.05;
+    color: #fff; font-variant-numeric: tabular-nums;
+  }
+  .stat-value .unit { font-size: 0.5em; font-weight: 600; color: var(--faint); letter-spacing: 0; }
+  .stat-label { font-size: 0.9375rem; color: var(--muted); margin-top: 12px; word-break: keep-all; }
+
+  .bubble-chart { margin-top: 8px; }
+  .bubble-chart .chart-title { font-size: 0.9375rem; color: var(--muted); margin-bottom: 22px; }
+  .bubble-bar {
+    display: flex; width: 100%; height: 64px;
+    border-radius: 0.75rem; overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .bubble-bar .seg { position: relative; height: 100%; }
+  .seg-base { background: rgba(255, 255, 255, 0.10); }
+  .seg-1 { background: rgba(255, 90, 0, 0.30); }
+  .seg-2 { background: rgba(255, 90, 0, 0.55); }
+  .seg-3 { background: rgba(255, 90, 0, 0.85); }
+  .bubble-legend { display: flex; flex-wrap: wrap; gap: 18px 28px; margin-top: 20px; }
+  .bubble-legend .item { display: flex; align-items: baseline; gap: 8px; font-size: 0.8125rem; color: var(--muted); }
+  .bubble-legend .swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; transform: translateY(1px); }
+  .bubble-legend .amt { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .problem-list { display: grid; gap: 14px; margin-top: 56px; }
+  .problem-list .glass { display: grid; grid-template-columns: 168px 1fr; gap: 20px; align-items: baseline; }
+  .problem-list .tag { font-size: 0.8125rem; font-weight: 700; color: var(--brand-soft); letter-spacing: 0.02em; word-break: keep-all; }
+  .problem-list p { margin: 0; }
+
+  /* ---------- 솔루션: 양면 ---------- */
+  .sides { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .side-card { padding: 32px; }
+  .side-card .side-role { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.03em; color: #fff; margin: 6px 0 4px; }
+  .side-card .side-sub { font-size: 0.875rem; color: var(--faint); }
+  .side-card ul { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 12px; }
+  .side-card li {
+    position: relative; padding-left: 20px;
+    font-size: 0.9375rem; color: var(--muted); word-break: keep-all;
+  }
+  .side-card li::before {
+    content: ""; position: absolute; left: 0; top: 0.62em;
+    width: 8px; height: 2px; border-radius: 2px; background: var(--brand);
+  }
+  .side-card li strong { color: var(--ink); }
+  .flywheel-note {
+    margin-top: 16px; padding: 22px 28px;
+    border-radius: 1rem;
+    background: linear-gradient(120deg, rgba(255, 90, 0, 0.12), rgba(255, 90, 0, 0.03));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    font-size: 0.9375rem; color: var(--muted); text-align: center; word-break: keep-all;
+  }
+
+  /* ---------- 제품 쇼케이스 ---------- */
+  .showcase-group { margin: 72px 0 0; }
+  .showcase-group:first-of-type { margin-top: 0; }
+  .group-label {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 36px;
+  }
+  .group-label .eyebrow { flex: none; }
+  .group-label::after { content: ""; flex: 1; height: 1px; background: var(--hairline); }
+  .group-label h3 { font-size: 1.25rem; letter-spacing: -0.03em; flex: none; }
+
+  .showcase-item { margin-bottom: 68px; }
+  .showcase-item:last-child { margin-bottom: 0; }
+  .showcase-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+  .showcase-head .feature-no {
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--brand);
+  }
+  .showcase-head h4 {
+    margin: 0; font-size: 1.375rem; font-weight: 800;
+    letter-spacing: -0.03em; color: #fff; word-break: keep-all; text-wrap: balance;
+  }
+  .showcase-head p { color: var(--muted); font-size: 0.9688rem; max-width: 68ch; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .chip {
+    border-radius: 999px; padding: 6px 14px;
+    font-size: 0.8125rem; color: var(--muted);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    white-space: nowrap;
+  }
+  .chip strong { color: var(--brand-soft); font-weight: 700; }
+
+  .shot-frame {
+    border-radius: 1rem; overflow: hidden;
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09),
+      0 32px 64px -28px rgba(0, 0, 0, 0.9),
+      0 24px 60px -24px rgba(255, 90, 0, 0.14);
+    transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+  }
+  .shot-frame:hover {
+    transform: translateY(-3px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.11),
+      0 32px 64px -28px rgba(0, 0, 0, 0.9),
+      0 28px 64px -20px rgba(255, 90, 0, 0.30);
+  }
+  .shot-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .shot-bar .dots { display: flex; gap: 6px; }
+  .shot-bar .dots span { width: 10px; height: 10px; border-radius: 50%; background: rgba(255, 255, 255, 0.14); }
+  .shot-bar .url {
+    flex: 1; max-width: 340px; margin: 0 auto;
+    border-radius: 999px; padding: 4px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.6875rem; letter-spacing: 0.04em; color: var(--faint);
+    text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    font-variant-numeric: tabular-nums;
+  }
+  .shot-frame img { display: block; width: 100%; height: auto; }
+
+  /* ---------- BM ---------- */
+  .tracks { display: grid; gap: 14px; margin-bottom: 64px; }
+  .track { display: grid; grid-template-columns: 56px 1fr; gap: 22px; align-items: start; }
+  .track-key {
+    font-size: 1.5rem; font-weight: 800; color: var(--brand);
+    line-height: 1; padding-top: 2px; letter-spacing: -0.02em;
+  }
+  .track h3 { margin-bottom: 8px; }
+
+  .plans { display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 16px; align-items: stretch; }
+  .plan { display: flex; flex-direction: column; padding: 30px 28px; }
+  .plan-name { font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+  .plan-price { margin: 16px 0 4px; font-size: 2rem; font-weight: 800; letter-spacing: -0.04em; color: #fff; font-variant-numeric: tabular-nums; }
+  .plan-price .per { font-size: 0.875rem; font-weight: 500; color: var(--faint); letter-spacing: -0.01em; }
+  .plan-target { font-size: 0.875rem; color: var(--muted); }
+  .plan ul { list-style: none; margin: 22px 0 0; padding: 22px 0 0; border-top: 1px solid var(--hairline); display: grid; gap: 10px; }
+  .plan li { position: relative; padding-left: 18px; font-size: 0.875rem; color: var(--muted); word-break: keep-all; }
+  .plan li::before { content: ""; position: absolute; left: 0; top: 0.58em; width: 7px; height: 2px; border-radius: 2px; background: var(--brand); }
+  .plan--featured {
+    background: linear-gradient(160deg, rgba(255, 90, 0, 0.14), rgba(255, 90, 0, 0.03) 55%, var(--glass));
+    box-shadow: inset 0 1px 0 rgba(255, 165, 112, 0.35), 0 24px 48px -24px rgba(0, 0, 0, 0.8), 0 16px 44px -16px rgba(255, 90, 0, 0.30);
+  }
+  .plan--featured .plan-name { color: var(--brand-hot); }
+  .plan-flag {
+    align-self: flex-start;
+    font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    color: #fff; background: var(--brand);
+    border-radius: 999px; padding: 4px 12px; margin-bottom: 18px;
+    box-shadow: 0 12px 32px -12px rgba(255, 90, 0, 0.6);
+  }
+  .plans-note { margin-top: 20px; font-size: 0.875rem; color: var(--faint); word-break: keep-all; }
+  .plans-note strong { color: var(--muted); }
+
+  .why-wins { margin-top: 64px; }
+  .why-wins-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 26px; }
+  .why-wins-grid .glass h3 { font-size: 0.9688rem; }
+
+  /* ---------- 강점 ---------- */
+  .strengths { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* ---------- GTM ---------- */
+  .gtm { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .gtm .glass { padding: 30px 28px; }
+  .gtm-step {
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--brand); margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+  }
+  .gtm-step::after { content: ""; flex: 1; height: 1px; background: var(--hairline); }
+  .gtm h3 { margin-bottom: 10px; }
+
+  /* ---------- 로드맵 타임라인 ---------- */
+  .timeline { position: relative; display: grid; gap: 0; }
+  .timeline::before {
+    content: ""; position: absolute; left: 7px; top: 14px; bottom: 14px;
+    width: 1px; background: var(--hairline);
+  }
+  .tl-item { position: relative; padding: 0 0 40px 42px; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-item::before {
+    content: ""; position: absolute; left: 0; top: 7px;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--brand);
+    box-shadow: 0 0 16px rgba(255, 90, 0, 0.5);
+  }
+  .tl-item--dim::before { border-color: rgba(255, 255, 255, 0.25); box-shadow: none; }
+  .tl-phase { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brand-soft); }
+  .tl-item--dim .tl-phase { color: var(--faint); }
+  .tl-item h3 { margin: 8px 0 8px; }
+  .tl-item p { font-size: 0.9375rem; color: var(--muted); max-width: 62ch; }
+
+  /* ---------- 클로징 ---------- */
+  .closing { text-align: center; padding: 110px 0 96px; position: relative; }
+  .closing .display { font-size: clamp(1.875rem, 4.5vw, 2.875rem); max-width: 22ch; margin: 18px auto 0; }
+  .closing .lede { margin: 26px auto 0; }
+  .closing-orb {
+    position: absolute; left: 50%; top: 40%;
+    width: 620px; height: 380px; transform: translate(-50%, -50%);
+    background: radial-gradient(ellipse, rgba(255, 90, 0, 0.22) 0%, rgba(255, 90, 0, 0) 70%);
+    filter: blur(30px); pointer-events: none;
+  }
+  .closing-inner { position: relative; }
+
+  footer.colophon {
+    border-top: 1px solid var(--hairline);
+    padding: 30px 0 56px;
+    display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+    font-size: 0.75rem; color: var(--faint); letter-spacing: 0.02em;
+  }
+
+  /* ---------- 스크롤 리빌 ---------- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(1.75rem);
+    filter: blur(6px);
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease), filter 0.7s var(--ease);
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); filter: blur(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; filter: none; transition: none; }
+    .orb-1, .orb-2 { animation: none; }
+    .glass, .glass:hover { transform: none; transition: none; }
+  }
+
+  /* ---------- 반응형 ---------- */
+  @media (max-width: 860px) {
+    section { padding: 68px 0; }
+    .hero { padding: 88px 0 72px; }
+    .hero-defs, .sides, .strengths, .gtm, .plans,
+    .problem-grid, .why-wins-grid { grid-template-columns: 1fr; }
+    .problem-list .glass { grid-template-columns: 1fr; gap: 8px; }
+    .track { grid-template-columns: 40px 1fr; gap: 14px; }
+    .bubble-bar { height: 52px; }
+  }
+
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 4px;
+  }
+
+  /* ---------- PDF 저장 버튼 ---------- */
+  .pdf-fab {
+    position: fixed; right: 22px; bottom: 22px; z-index: 50;
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 0; cursor: pointer;
+    border-radius: 999px; padding: 12px 22px;
+    font: inherit; font-size: 0.875rem; font-weight: 700; color: #fff;
+    background: var(--brand);
+    box-shadow: 0 12px 32px -12px rgba(255, 90, 0, 0.65);
+    transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  }
+  .pdf-fab:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -12px rgba(255, 90, 0, 0.8); }
+
+  /* ---------- 인쇄(PDF 저장) ---------- */
+  @media print {
+    html, body { background: #0a0a0b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .pdf-fab, .orb, .closing-orb { display: none !important; }
+    .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+    section { padding: 48px 0; }
+    .hero { padding: 60px 0 48px; }
+    .showcase-item, .glass, .plan, .tl-item, .shot-frame { break-inside: avoid; }
+    .shot-frame:hover, .glass:hover { transform: none; }
+    a { color: inherit; text-decoration: none; }
+    @page { size: A4; margin: 0; }
+  }
+</style>
+
+<div class="orb orb-1"></div>
+
+<header class="hero">
+  <div class="wrap hero-inner">
+    <div class="hero-meta reveal">
+      <span class="logo">XO<em>NG</em></span>
+      <span class="divider"></span>
+      <span class="eyebrow eyebrow--ghost">Business Plan · 2026.07</span>
+    </div>
+
+    <div class="badge-zero reveal"><span class="dot"></span>매칭 수수료 0% — XONG는 브로커가 아닙니다</div>
+
+    <h1 class="display reveal">
+      연예인 섭외의 거품을 걷어내는<br>
+      <span class="line-accent">부킹 에이전시 OS</span>
+    </h1>
+
+    <p class="lede reveal">
+      광고주에게는 매칭 수수료 0%의 직거래 창구, 소속사에게는
+      인입부터 견적·계약·일정·정산까지 하나로 묶는 운영 인프라.
+      XONG는 연예인·인플루언서 섭외를 가장 빠르게 연결합니다.
+    </p>
+
+    <div class="hero-defs">
+      <div class="glass reveal">
+        <span class="eyebrow">Demand · 광고주</span>
+        <h3>수수료 없는 공식 직거래 창구</h3>
+        <p>브로커를 거치지 않고 소속사 공식 창구와 직접 협의합니다. 완전 무료.</p>
+      </div>
+      <div class="glass reveal">
+        <span class="eyebrow">Supply · 소속사</span>
+        <h3>카톡+엑셀을 대체하는 부킹 OS</h3>
+        <p>인박스·홀드·데일리 시트·정산 자동화 — 매니저의 시간을 되돌려줍니다.</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">01 · Problem</span>
+      <h2 class="display">시장은 크고, 도구는 없다</h2>
+    </div>
+
+    <div class="problem-grid">
+      <div class="glass reveal">
+        <div class="stat-value num">+38<span class="unit">%</span></div>
+        <p class="stat-label">섭외 시장의 평균 다단계 브로커 거품</p>
+      </div>
+      <div class="glass reveal">
+        <div class="stat-value">카톡+엑셀</div>
+        <p class="stat-label">한국 기획사의 표준 도구 — 전문 SaaS 부재</p>
+      </div>
+      <div class="glass reveal">
+        <div class="stat-value num">0<span class="unit">곳</span></div>
+        <p class="stat-label">국내 "부킹 에이전시 OS" 경쟁 서비스</p>
+      </div>
+    </div>
+
+    <div class="glass bubble-chart reveal">
+      <span class="eyebrow">출연료 거품 구조 — 대학축제 섭외 기준</span>
+      <p class="chart-title">실출연료 <strong class="num">3,500만원</strong>짜리 섭외가 광고주에게는 <strong class="brand-text num">5,313만원</strong>이 됩니다.</p>
+      <div class="bubble-bar" role="img" aria-label="실출연료 3,500만원에 광고대행사 15%, 행사대행사 20%, 직거래 에이전시 10%가 얹혀 5,313만원이 되는 구조">
+        <div class="seg seg-base" style="width:65.9%"></div>
+        <div class="seg seg-1" style="width:9.9%"></div>
+        <div class="seg seg-2" style="width:15.1%"></div>
+        <div class="seg seg-3" style="width:9.1%"></div>
+      </div>
+      <div class="bubble-legend">
+        <div class="item"><span class="swatch seg-base"></span>실출연료 <span class="amt num">3,500만원</span></div>
+        <div class="item"><span class="swatch seg-1"></span>광고대행사 +15% <span class="amt num">525만원</span></div>
+        <div class="item"><span class="swatch seg-2"></span>행사대행사 +20% <span class="amt num">805만원</span></div>
+        <div class="item"><span class="swatch seg-3"></span>직거래 에이전시 +10% <span class="amt num">483만원</span></div>
+      </div>
+    </div>
+
+    <div class="problem-list">
+      <div class="glass reveal">
+        <span class="tag">다단계 거품</span>
+        <p class="body-copy">광고주는 비싸게 사고, 소속사는 제값을 못 받습니다. 중간의 38%는 아무 가치도 만들지 않는 유통 마진입니다. 소속사 직영 공식 창구가 구조적으로 가치 있는 이유입니다.</p>
+      </div>
+      <div class="glass reveal">
+        <span class="tag">도구의 부재</span>
+        <p class="body-copy">매니저의 최대 공포는 "스케줄 누락 = 방송·공연 펑크". 그런데 카톡과 엑셀로는 더블부킹을 실시간으로 막을 방법이 없습니다. 대형사는 자체 그룹웨어, 나머지는 수기 — 시장 표준 도구가 없습니다.</p>
+      </div>
+      <div class="glass reveal">
+        <span class="tag">경쟁의 공백</span>
+        <p class="body-copy">쇼글(수수료 10%+카드수수료)·헤이비글(역경매·불투명 견적)은 수요자 중심 마켓, 콜마이스타 등은 38% 거품의 당사자인 전통 브로커. 소속사가 자기 살림을 운영하는 도구는 국내 공백 시장입니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">02 · Solution</span>
+      <h2 class="display">양면을 하나의 플라이휠로</h2>
+      <p class="lede">수요는 무료 직거래로 흡수하고, 공급은 운영 인프라로 붙잡습니다. 한쪽이 커질수록 다른 쪽이 커지는 구조입니다.</p>
+    </div>
+
+    <div class="sides">
+      <div class="glass side-card reveal">
+        <span class="eyebrow">Demand Side</span>
+        <div class="side-role">광고주</div>
+        <div class="side-sub">다크 럭셔리 경험 · 완전 무료</div>
+        <ul>
+          <li><strong>탐색</strong> — 카테고리·예산 필터로 아티스트 검색</li>
+          <li><strong>가능일정</strong> — 실시간 캘린더로 가능/불가 확인</li>
+          <li><strong>표준 브리프</strong> — 정형화된 섭외 요청서로 즉시 요청</li>
+          <li><strong>협의</strong> — 채팅 + 견적 라운드로 투명하게 합의</li>
+        </ul>
+      </div>
+      <div class="glass side-card reveal">
+        <span class="eyebrow">Supply Side</span>
+        <div class="side-role">소속사</div>
+        <div class="side-sub">부킹 OS · SaaS 구독</div>
+        <ul>
+          <li><strong>인입</strong> — 통합 인박스 + 아티스트 공개 페이지(EPK)로 CAC 0원</li>
+          <li><strong>실행</strong> — 홀드(가일정)로 더블부킹 차단, 데일리 시트 카톡 전파, 매니저 권한 스코프</li>
+          <li><strong>정산</strong> — 분배율·원천징수 3.3% 자동 계산, 계약서·큐시트·공문 서류함</li>
+          <li><strong>아티스트 셀프</strong> — 본인 수익 확인, 휴가 신청→승인 플로우</li>
+        </ul>
+      </div>
+    </div>
+    <div class="flywheel-note reveal">
+      공개 페이지가 수요를 부르고 → 요청이 인박스에 쌓이고 → 운영이 XONG 위에서 돌아가고 → 데이터가 다시 공급을 강하게 만듭니다.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">03 · Product</span>
+      <h2 class="display">화면으로 보는 XONG</h2>
+      <p class="lede">아래는 목업이 아니라 <strong>지금 동작하는 실제 서비스 화면</strong>입니다. 광고주·소속사·아티스트 세 사용자가 각자의 화면에서 하나의 섭외를 함께 완성합니다.</p>
+    </div>
+
+    <div class="showcase-group">
+      <div class="group-label reveal">
+        <span class="eyebrow">Demand</span>
+        <h3>광고주가 보는 XONG — 다크 럭셔리</h3>
+      </div>
+
+      <div class="showcase-item reveal">
+        <div class="showcase-head">
+          <span class="feature-no">Feature 01 · 광고주 홈</span>
+          <h4>명품관에 들어온 듯한 첫인상, 그리고 "매칭 수수료 0%"</h4>
+          <p>로그인하면 진행 중인 협의 현황과 메시지가 한눈에 보이고, 소속사들의 평균 응답 시간·응답률이 실시간으로 표시됩니다. 검색창 옆 AI 캐스팅 버튼으로 조건만 말하면 후보를 추천받습니다.</p>
+          <div class="chips">
+            <span class="chip"><strong>매칭 수수료 0%</strong> 배지</span>
+            <span class="chip">평균 응답 <strong>12.9시간</strong> 실시간 지표</span>
+            <span class="chip"><strong>AI 캐스팅</strong> 추천</span>
+          </div>
+        </div>
+        <div class="shot-frame">
+          <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr</div></div>
+          <img src="/ir/home.jpg" alt="XONG 광고주 홈 — 다크 테마 콘솔, 매칭 수수료 0% 배지와 진행 현황" loading="lazy">
+        </div>
+      </div>
+
+      <div class="showcase-item reveal">
+        <div class="showcase-head">
+          <span class="feature-no">Feature 02 · 아티스트 찾기</span>
+          <h4>브로커에게 물어보지 말고, 예산으로 거르세요</h4>
+          <p>카테고리·예산 필터에 "다음주 가능한 여자 아이돌" 같은 자연어 검색까지. 구독자 수와 섭외가 범위가 카드에 그대로 공개됩니다 — 기존 시장에서는 브로커에게 전화해야 알 수 있던 정보입니다.</p>
+          <div class="chips">
+            <span class="chip">예산·카테고리 <strong>필터</strong></span>
+            <span class="chip"><strong>자연어 검색</strong></span>
+            <span class="chip">섭외가 <strong>투명 공개</strong></span>
+            <span class="chip">인증 소속사 배지</span>
+          </div>
+        </div>
+        <div class="shot-frame">
+          <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/artists</div></div>
+          <img src="/ir/artists.jpg" alt="XONG 아티스트 찾기 — 예산 필터와 섭외가가 공개된 아티스트 카드 그리드" loading="lazy">
+        </div>
+      </div>
+
+      <div class="showcase-item reveal">
+        <div class="showcase-head">
+          <span class="feature-no">Feature 03 · 아티스트 상세</span>
+          <h4>감이 아니라 데이터로 설득합니다</h4>
+          <p>네이버 기사 수, 검색 트렌드, 유튜브 구독자 추이 — 최근 30일 화제성 실데이터가 프로필에 붙습니다. 섭외가 범위와 "평균 6시간 내 응답"까지 보고 나면, 남은 일은 버튼 하나로 섭외를 요청하는 것뿐입니다.</p>
+          <div class="chips">
+            <span class="chip"><strong>화제성·팬덤</strong> 30일 실데이터</span>
+            <span class="chip">섭외가 <strong>3,000~8,000만원</strong> 공개</span>
+            <span class="chip">평균 <strong>6시간</strong> 내 응답</span>
+            <span class="chip">가능일정 캘린더</span>
+          </div>
+        </div>
+        <div class="shot-frame">
+          <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/artists/lisenne</div></div>
+          <img src="/ir/artist-detail.jpg" alt="XONG 아티스트 상세 — 화제성 데이터와 섭외가, 섭외 요청 버튼" loading="lazy">
+        </div>
+      </div>
+    </div>
+
+    <div class="showcase-group">
+      <div class="group-label reveal">
+        <span class="eyebrow">Supply</span>
+        <h3>소속사가 쓰는 부킹 OS — 카톡+엑셀의 끝</h3>
+      </div>
+
+      <div class="showcase-item reveal">
+        <div class="showcase-head">
+          <span class="feature-no">Feature 04 · 대시보드</span>
+          <h4>출근하면 이 화면 하나로 하루가 정리됩니다</h4>
+          <p>새 요청·협의 중·평균 응답·이번 달 확정을 한눈에. 최근 7일 기사 증감률로 소속 아티스트의 화제성 급증을 포착하고, 아티스트 조합 번들 상품과 프로필 완성도까지 관리합니다.</p>
+          <div class="chips">
+            <span class="chip">요청 파이프라인 <strong>한눈에</strong></span>
+            <span class="chip"><strong>화제성 급증</strong> Top 3</span>
+            <span class="chip">번들 상품 · 전환율 2배</span>
+          </div>
+        </div>
+        <div class="shot-frame">
+          <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/agency</div></div>
+          <img src="/ir/agency-dashboard.jpg" alt="XONG 소속사 대시보드 — 요청 현황, 화제성 급증, 번들 상품" loading="lazy">
+        </div>
+      </div>
+
+      <div class="showcase-item reveal">
+        <div class="showcase-head">
+          <span class="feature-no">Feature 05 · 섭외 인박스</span>
+          <h4>공문 PDF를 던지면 AI가 요청 카드로 만들어줍니다</h4>
+          <p>이메일·카톡·공문으로 흩어지던 섭외 문의가 하나의 파이프라인으로 모입니다. AI 공문 인식이 PDF에서 날짜·출연료·담당자를 추출하고, 미인증 주최자는 경고 배지로 걸러내며, 아티스트별 견적 프리셋으로 원클릭 회신합니다.</p>
+          <div class="chips">
+            <span class="chip"><strong>AI 공문 인식</strong> PDF→요청 카드</span>
+            <span class="chip">미인증 주최자 <strong>신뢰 경고</strong></span>
+            <span class="chip">견적 <strong>프리셋 원클릭</strong></span>
+            <span class="chip">협의·수락·검토 상태 관리</span>
+          </div>
+        </div>
+        <div class="shot-frame">
+          <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/agency/inbox</div></div>
+          <img src="/ir/agency-inbox.jpg" alt="XONG 섭외 인박스 — AI 공문 인식, 미인증 주최자 경고, 견적 회신" loading="lazy">
+        </div>
+      </div>
+
+      <div class="showcase-item reveal">
+        <div class="showcase-head">
+          <span class="feature-no">Feature 06 · 데일리 시트</span>
+          <h4>매니저의 하루를 그대로 옮긴 스케줄표 — 카톡으로 전파</h4>
+          <p>픽업→도착→리허설→본방까지 아티스트별 타임라인에 날씨 예보, 담당 매니저, 차량 번호, 주의사항까지. "전체 카톡 전파" 버튼 하나로 팀 전원에게 공유됩니다. 엑셀 스케줄표를 캡처해서 카톡방에 올리던 일이 사라집니다.</p>
+          <div class="chips">
+            <span class="chip">아티스트별 <strong>타임라인</strong></span>
+            <span class="chip"><strong>날씨 예보</strong> 자동 표시</span>
+            <span class="chip"><strong>전체 카톡 전파</strong> 원클릭</span>
+            <span class="chip">담당자·차량 정보</span>
+          </div>
+        </div>
+        <div class="shot-frame">
+          <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/agency/today</div></div>
+          <img src="/ir/agency-today.jpg" alt="XONG 데일리 시트 — 아티스트별 타임라인과 카톡 전파" loading="lazy">
+        </div>
+      </div>
+
+      <div class="showcase-item reveal">
+        <div class="showcase-head">
+          <span class="feature-no">Feature 07 · 일정 관리</span>
+          <h4>더블부킹을 구조적으로 차단하는 가용성 캘린더</h4>
+          <p>가능·부분 가능·협의 필요·불가 4단계로 관리하고, 날짜마다 날씨 예보가 붙어 야외 행사 리스크를 미리 봅니다. 아티스트 휴가 신청을 승인하면 해당 날짜가 자동으로 '불가' 처리되고, .ics 구독으로 구글·애플 캘린더에도 실시간 반영됩니다.</p>
+          <div class="chips">
+            <span class="chip"><strong>4단계 가용성</strong> + 날씨</span>
+            <span class="chip">휴가 승인 → <strong>자동 불가 처리</strong></span>
+            <span class="chip"><strong>.ics 구독</strong> 연동</span>
+            <span class="chip">드래그로 일괄 변경</span>
+          </div>
+        </div>
+        <div class="shot-frame">
+          <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/agency/schedule</div></div>
+          <img src="/ir/agency-schedule.jpg" alt="XONG 일정 관리 — 날씨가 표시되는 가용성 캘린더와 휴가 승인" loading="lazy">
+        </div>
+      </div>
+
+      <div class="showcase-item reveal">
+        <div class="showcase-head">
+          <span class="feature-no">Feature 08 · 정산</span>
+          <h4>분배율·원천징수 3.3%·실지급액, 계산기가 필요 없습니다</h4>
+          <p>총 출연료에서 소속사:아티스트 분배율과 원천징수 3.3%를 자동 계산해 실지급액을 뽑아줍니다. 미수금은 주황색으로 하이라이트되고 입금 리마인더를 보낼 수 있으며, 세금계산서 발행까지 이어집니다.</p>
+          <div class="chips">
+            <span class="chip">분배율 <strong>자동 계산</strong></span>
+            <span class="chip">원천징수 <strong>3.3%</strong></span>
+            <span class="chip"><strong>미수금</strong> 하이라이트 + 리마인더</span>
+            <span class="chip">세금계산서 발행</span>
+          </div>
+        </div>
+        <div class="shot-frame">
+          <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/agency/settlement</div></div>
+          <img src="/ir/agency-settlement.jpg" alt="XONG 정산 — 분배율과 원천징수 자동 계산, 미수금 관리" loading="lazy">
+        </div>
+      </div>
+
+      <div class="showcase-item reveal">
+        <div class="showcase-head">
+          <span class="feature-no">Feature 09 · 서류함</span>
+          <h4>계약서·큐시트·공문·정산서가 한 서랍에</h4>
+          <p>행사마다 흩어지던 서류가 태그로 분류되어 쌓입니다. 전자계약(2차 오픈)으로 체결한 계약서는 자동으로 보관됩니다 — "그 계약서 어디 갔지?"가 사라집니다.</p>
+          <div class="chips">
+            <span class="chip">계약서·큐시트·공문·정산서 <strong>태그 분류</strong></span>
+            <span class="chip">전자계약 <strong>자동 보관</strong></span>
+          </div>
+        </div>
+        <div class="shot-frame">
+          <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/agency/docs</div></div>
+          <img src="/ir/agency-docs.jpg" alt="XONG 서류함 — 계약서, 큐시트, 공문, 정산서 분류 보관" loading="lazy">
+        </div>
+      </div>
+    </div>
+
+    <div class="showcase-group">
+      <div class="group-label reveal">
+        <span class="eyebrow">Artist</span>
+        <h3>아티스트도 자기 화면이 있다</h3>
+      </div>
+
+      <div class="showcase-item reveal">
+        <div class="showcase-head">
+          <span class="feature-no">Feature 10 · 아티스트 셀프</span>
+          <h4>"오늘 콜타임 몇 시예요?"라는 질문이 사라집니다</h4>
+          <p>아티스트 본인 계정으로 오늘의 콜타임·날씨·스탑별 내비 링크를 확인하고, 휴가를 신청하면 소속사 승인 플로우로 이어집니다. 내 정산 내역도 투명하게 열람합니다 — 정산 분쟁이 줄어드는 구조입니다.</p>
+          <div class="chips">
+            <span class="chip">오늘의 <strong>콜타임 카드</strong></span>
+            <span class="chip">스탑별 <strong>내비 버튼</strong></span>
+            <span class="chip"><strong>휴가 신청</strong> → 승인 플로우</span>
+            <span class="chip">내 정산 열람</span>
+          </div>
+        </div>
+        <div class="shot-frame">
+          <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/me</div></div>
+          <img src="/ir/me.jpg" alt="XONG 아티스트 셀프 — 오늘의 콜타임, 내비, 휴가 신청" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">04 · Business Model</span>
+      <h2 class="display">"매칭 수수료가 아니라,<br>매니저의 시간을 판다"</h2>
+      <p class="lede">매출을 <strong>거래</strong>가 아니라 <strong>계정 규모</strong>에 겁니다. 수수료가 0%라 플랫폼 밖에서 거래할 이유가 없고, 밖에서 거래해도 매출은 줄지 않습니다.</p>
+    </div>
+
+    <div class="tracks">
+      <div class="glass track reveal">
+        <div class="track-key">A</div>
+        <div>
+          <h3>매칭 수수료 0% — 브랜드 서약</h3>
+          <p class="body-copy">광고주 완전 무료로 수요를 흡수합니다. "XONG는 브로커가 아니라 인프라"라는 서사가 곧 최강의 차별화이자 탈중개 원천 방어입니다.</p>
+        </div>
+      </div>
+      <div class="glass track reveal">
+        <div class="track-key">B</div>
+        <div>
+          <h3>소속사 SaaS 월 구독 — 핵심 매출</h3>
+          <p class="body-copy">매니저 인건비 대비 압도적으로 저렴한 가격. 벤치마크는 Artist Growth($9~14/seat/월), Salesforce($25~300/user)입니다.</p>
+        </div>
+      </div>
+      <div class="glass track reveal">
+        <div class="track-key">C</div>
+        <div>
+          <h3>사용량 기반 부가 서비스 — 쓸 때만</h3>
+          <p class="body-copy">에스크로 결제 거래액 1%(PG 원가+보험료 수준), 전자계약 건당 5,000원, 선택적 프리미엄 노출.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="plans">
+      <div class="glass plan reveal">
+        <span class="plan-name">Free</span>
+        <div class="plan-price num">0원</div>
+        <div class="plan-target">1인 기획사 · 크리에이터</div>
+        <ul>
+          <li>아티스트 5팀</li>
+          <li>섭외 인박스</li>
+          <li>프로필 · 캘린더</li>
+        </ul>
+      </div>
+      <div class="glass plan plan--featured reveal">
+        <span class="plan-flag">핵심 매출</span>
+        <span class="plan-name">Growth</span>
+        <div class="plan-price num">월 9만원</div>
+        <div class="plan-target">성장하는 소속사</div>
+        <ul>
+          <li>아티스트 20팀</li>
+          <li>데일리 시트 · 카톡 전파</li>
+          <li>정산 자동화</li>
+          <li>매니저 권한 스코프</li>
+        </ul>
+      </div>
+      <div class="glass plan reveal">
+        <span class="plan-name">Enterprise</span>
+        <div class="plan-price num">월 50만원~</div>
+        <div class="plan-target">대형 기획사 · MCN</div>
+        <ul>
+          <li>아티스트 무제한</li>
+          <li>전자계약 · API</li>
+          <li>전담 CS</li>
+        </ul>
+      </div>
+    </div>
+    <p class="plans-note reveal">후원 정신은 이렇게 살립니다 — <strong>"XONG 후원 소속사" 배지</strong>(리퍼럴 기여 브랜딩), <strong>아티스트→팬 크라우드펀딩 부스</strong>(결제 수수료만), <strong>리퍼럴 리워드</strong>(소개 시 무료 이용 개월).</p>
+
+    <div class="why-wins">
+      <div class="reveal">
+        <span class="eyebrow">왜 이 구조가 이기는가</span>
+      </div>
+      <div class="why-wins-grid">
+        <div class="glass reveal">
+          <h3>탈중개 원천 방어</h3>
+          <p>수수료 0%라 밖에서 거래할 이유가 없고, 밖에서 거래해도 SaaS 매출은 줄지 않습니다.</p>
+        </div>
+        <div class="glass reveal">
+          <h3>수요 흡수</h3>
+          <p>광고주 완전 무료 유지. 경쟁사는 광고주 결제가 필요하지만 XONG는 진입 장벽이 없습니다.</p>
+        </div>
+        <div class="glass reveal">
+          <h3>예측 가능한 매출</h3>
+          <p>구독 기반이라 매출이 예측 가능하고, 투자 유치와 확장 계획에 유리합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">05 · Why Us</span>
+      <h2 class="display">우리의 강점</h2>
+    </div>
+
+    <div class="strengths">
+      <div class="glass reveal">
+        <span class="eyebrow">Position</span>
+        <h3>국내 유일 포지션</h3>
+        <p>경쟁사는 전부 "광고주가 고르는 마켓" 또는 "사람 브로커". 소속사 운영 OS와 직거래 창구를 겸하는 곳은 없습니다.</p>
+      </div>
+      <div class="glass reveal">
+        <span class="eyebrow">Pricing</span>
+        <h3>수수료 0%의 구조적 차별화</h3>
+        <p>쇼글 10%와 정반대. 소속사가 안 들어올 이유를 제거했습니다. 수수료가 없으니 탈중개 걱정도 없습니다.</p>
+      </div>
+      <div class="glass reveal">
+        <span class="eyebrow">Playbook</span>
+        <h3>검증된 뼈대의 한국화</h3>
+        <p>Gigwell·Prism.fm·Overture의 인입→홀드→계약→정산 플로우를 카톡 알림톡 전파, 원천징수 3.3%, 공문·큐시트 등 한국형 실무로 로컬라이즈.</p>
+      </div>
+      <div class="glass reveal">
+        <span class="eyebrow">Moat</span>
+        <h3>쌓일수록 복제 불가능한 데이터</h3>
+        <p>화제성 대시보드(네이버·YouTube 시계열), 문의→성사 전환율, 단가 추이 — 프라이싱 인사이트는 시간이 만드는 해자입니다.</p>
+      </div>
+      <div class="glass reveal">
+        <span class="eyebrow">Trust</span>
+        <h3>신뢰 레이어</h3>
+        <p>사업자·기획업 등록번호 검증, 견적 감사추적, 표준계약+전자서명, 에스크로. 38% 거품 시장에서 "검증된 직거래"가 곧 브랜드입니다.</p>
+      </div>
+      <div class="glass reveal">
+        <span class="eyebrow">Execution</span>
+        <h3>계획서가 아니라 제품으로 말한다</h3>
+        <p>Neon DB 기반 소속사 콘솔, 카카오 로그인, 요금제 페이지까지 이미 동작하는 제품이 있습니다. 실행 속도가 곧 증거입니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">06 · Go-to-Market</span>
+      <h2 class="display">공급을 먼저, 수요는 0%로</h2>
+    </div>
+
+    <div class="gtm">
+      <div class="glass reveal">
+        <div class="gtm-step">1단계</div>
+        <h3>공급 선점</h3>
+        <p class="body-copy" style="font-size:0.9375rem">1인 기획사·유튜버를 Free 플랜으로 무료 온보딩. 아티스트 공개 페이지(EPK)를 명함과 카톡 프로필에 걸게 만듭니다 — 공개 페이지가 곧 CAC 0원짜리 인입 채널입니다.</p>
+      </div>
+      <div class="glass reveal">
+        <div class="gtm-step">2단계</div>
+        <h3>수요 유입</h3>
+        <p class="body-copy" style="font-size:0.9375rem">"매칭 수수료 0%" 배지를 앞세워 대학축제·기업행사·지자체 수요를 직거래로 흡수합니다. 브로커 거품 38%가 우리의 마케팅 카피입니다.</p>
+      </div>
+      <div class="glass reveal">
+        <div class="gtm-step">3단계</div>
+        <h3>업셀</h3>
+        <p class="body-copy" style="font-size:0.9375rem">팀이 5팀을 넘거나 정산 자동화가 필요해지는 순간 Growth로 전환. 리퍼럴 시 무료 이용 개월, "XONG 후원 소속사" 배지로 브랜딩 보상.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">07 · Roadmap</span>
+      <h2 class="display">2026 하반기</h2>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item reveal">
+        <span class="tl-phase">Sprint 1 · 인입</span>
+        <h3>신뢰 레이어 + 아티스트 공개 페이지</h3>
+        <p>사업자 검증 등 신뢰 P0, 공개 페이지 <span class="num">/@슬러그</span>, 비로그인 섭외 문의 폼, 카톡 공유 OG 카드. 완료 기준: 소속사가 링크를 명함·카톡 프로필에 건다.</p>
+      </div>
+      <div class="tl-item reveal">
+        <span class="tl-phase">Sprint 2 · 설득</span>
+        <h3>화제성 대시보드</h3>
+        <p>뉴스·검색 트렌드·유튜브 지표의 시계열 축적. 네이버·YouTube API 전부 무료 — 한국 데이터 공백이 우리의 기회이자 해자가 됩니다.</p>
+      </div>
+      <div class="tl-item reveal">
+        <span class="tl-phase">Sprint 3 · 실행</span>
+        <h3>캘린더 + 날씨, 어드밴싱 체크리스트</h3>
+        <p>기상청 무료 API(일 10만콜)로 야외 행사 리스크를 캘린더에 표시. Artist Growth에도 없는 기능으로 매니저의 '펑크 공포'를 직접 타격합니다.</p>
+      </div>
+      <div class="tl-item tl-item--dim reveal">
+        <span class="tl-phase">이후 · 수익화 확장</span>
+        <h3>에스크로·전자계약 상용화</h3>
+        <p>사용량 기반 C-트랙 매출 개시 — 에스크로 거래액 1%, 전자계약 건당 5,000원.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="closing">
+  <div class="closing-orb"></div>
+  <div class="wrap closing-inner">
+    <span class="eyebrow reveal">XONG</span>
+    <h2 class="display reveal">매칭 수수료 0%.<br>브로커가 아니라, 인프라입니다.</h2>
+    <p class="lede reveal" style="text-align:center">연예인·인플루언서 섭외를 가장 빠르게 연결합니다.</p>
+  </div>
+</section>
+
+<div class="wrap">
+  <footer class="colophon">
+    <span>XONG Business Plan · 2026.07</span>
+    <span>근거: REVENUE · RESEARCH · ROADMAP · TRUST (내부 문서)</span>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var items = document.querySelectorAll(".reveal");
+    if (reduced || !("IntersectionObserver" in window)) {
+      items.forEach(function (el) { el.classList.add("in"); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add("in");
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    items.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+
+<button class="pdf-fab" onclick="window.print()" type="button">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  PDF로 저장
+</button>
+</body>
+</html>

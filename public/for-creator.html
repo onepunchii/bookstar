@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XONG — 유튜브 문의 메일함에서 벗어나세요</title>
+<meta name="description" content="비즈니스 문의, 아직 지메일로 받으세요? 예산·날짜 필수 브리프, 섭외가 공개, 수수료 0%. 크리에이터 평생 무료.">
+<meta property="og:title" content="내 섭외 전용 페이지, 무료로 — XONG">
+<meta property="og:description" content="협찬 스팸에 파묻힌 진짜 섭외를 건져내세요. 수수료 0% · 평생 무료.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --ink: rgba(255, 255, 255, 0.92);
+    --muted: rgba(255, 255, 255, 0.58);
+    --faint: rgba(255, 255, 255, 0.40);
+    --hairline: rgba(255, 255, 255, 0.08);
+    --glass: rgba(255, 255, 255, 0.024);
+    --brand: #FF5A00;
+    --brand-hot: #ff7d38;
+    --brand-soft: #ffa470;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: var(--bg); color: var(--ink); }
+  body {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+      "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
+    letter-spacing: -0.01em; line-height: 1.7; font-size: 16px;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  ::selection { background: rgba(255, 90, 0, 0.35); color: #fff; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 28px; }
+  p { word-break: keep-all; }
+  strong { color: var(--ink); font-weight: 700; }
+
+  .eyebrow {
+    font-size: 0.6875rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--brand);
+  }
+  .display {
+    word-break: keep-all; line-height: 1.12; letter-spacing: -0.03em;
+    font-weight: 700; text-wrap: balance; color: #fff;
+  }
+  .lede { font-size: 1.125rem; color: var(--muted); max-width: 60ch; }
+
+  section { padding: 84px 0; border-top: 1px solid var(--hairline); }
+  .section-head { margin-bottom: 40px; }
+  .section-head h2 { font-size: clamp(1.625rem, 4vw, 2.25rem); margin-top: 14px; }
+  .section-head .lede { margin-top: 16px; }
+
+  /* 히어로 */
+  .hero { position: relative; padding: 108px 0 88px; border-top: none; overflow: visible; }
+  .orb {
+    position: absolute; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(255, 90, 0, 0.55) 0%, rgba(255, 90, 0, 0) 70%);
+    filter: blur(40px); opacity: 0.45;
+  }
+  .orb-1 { width: 480px; height: 480px; top: -200px; right: -120px; animation: float 8s ease-in-out infinite; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(22px); } }
+  .hero-inner { position: relative; }
+  .logo { font-size: 1.375rem; font-weight: 800; letter-spacing: -0.04em; color: #fff; margin-bottom: 36px; display: inline-block; }
+  .logo em { font-style: normal; color: var(--brand); }
+  .logo small { font-size: 0.75rem; font-weight: 600; color: var(--faint); letter-spacing: 0.08em; margin-left: 10px; }
+  .hero h1 { font-size: clamp(2.125rem, 6vw, 3.5rem); margin: 0 0 24px; }
+  .hero h1 .accent { color: var(--brand); }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px; border-radius: 999px;
+    padding: 8px 18px; font-size: 0.8125rem; font-weight: 700; color: #fff;
+    background: linear-gradient(120deg, rgba(255, 90, 0, 0.28), rgba(255, 90, 0, 0.10));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 12px 32px -12px rgba(255, 90, 0, 0.45);
+    margin-bottom: 28px;
+  }
+  .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--brand-hot); box-shadow: 0 0 12px rgba(255, 90, 0, 0.9); }
+
+  /* 글래스 */
+  .glass {
+    background: var(--glass);
+    backdrop-filter: blur(13px) saturate(1.15);
+    -webkit-backdrop-filter: blur(13px) saturate(1.15);
+    border-radius: 1rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 24px 48px -24px rgba(0, 0, 0, 0.8);
+    padding: 26px 28px;
+  }
+
+  /* 비교 */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
+  .compare-col h3 {
+    font-size: 0.9375rem; font-weight: 700; letter-spacing: -0.01em;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 18px;
+  }
+  .compare-col.now h3 { color: var(--faint); }
+  .compare-col.xong h3 { color: var(--brand-hot); }
+  .compare-col ul { list-style: none; display: grid; gap: 14px; }
+  .compare-col li {
+    position: relative; padding-left: 26px;
+    font-size: 0.9375rem; color: var(--muted); word-break: keep-all;
+  }
+  .compare-col li::before {
+    position: absolute; left: 0; top: 0.08em; font-size: 0.875rem; font-weight: 800;
+  }
+  .compare-col.now li::before { content: "✕"; color: rgba(255, 255, 255, 0.25); }
+  .compare-col.xong li::before { content: "✓"; color: var(--brand); }
+  .compare-col.xong {
+    background: linear-gradient(160deg, rgba(255, 90, 0, 0.12), rgba(255, 90, 0, 0.02) 60%, var(--glass));
+    box-shadow: inset 0 1px 0 rgba(255, 165, 112, 0.3), 0 24px 48px -24px rgba(0, 0, 0, 0.8);
+  }
+  .compare-col.xong li strong { color: #fff; }
+
+  /* 스크린샷 */
+  .shot-frame {
+    border-radius: 1rem; overflow: hidden; background: rgba(255, 255, 255, 0.03);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09),
+      0 32px 64px -28px rgba(0, 0, 0, 0.9), 0 24px 60px -24px rgba(255, 90, 0, 0.14);
+  }
+  .shot-bar {
+    display: flex; align-items: center; gap: 12px; padding: 11px 16px;
+    background: rgba(255, 255, 255, 0.02); border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .shot-bar .dots { display: flex; gap: 6px; }
+  .shot-bar .dots span { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, 0.14); }
+  .shot-bar .url {
+    flex: 1; max-width: 300px; margin: 0 auto; border-radius: 999px; padding: 3px 14px;
+    background: rgba(255, 255, 255, 0.05); font-size: 0.6875rem; color: var(--faint); text-align: center;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .shot-frame img { display: block; width: 100%; height: auto; }
+  .feature { margin-bottom: 60px; }
+  .feature:last-child { margin-bottom: 0; }
+  .feature-head { margin-bottom: 20px; }
+  .feature-head .feature-no {
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--brand);
+  }
+  .feature-head h4 {
+    font-size: 1.25rem; font-weight: 800; letter-spacing: -0.03em; color: #fff;
+    margin: 8px 0 8px; word-break: keep-all; text-wrap: balance;
+  }
+  .feature-head p { color: var(--muted); font-size: 0.9375rem; max-width: 66ch; }
+
+  /* 무료 강조 + CTA */
+  .free-strip {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 8px;
+  }
+  .free-strip .glass { text-align: center; padding: 30px 20px; }
+  .free-strip .big {
+    font-size: 2rem; font-weight: 800; letter-spacing: -0.04em; color: #fff;
+    font-variant-numeric: tabular-nums; line-height: 1.1;
+  }
+  .free-strip .big.brand { color: var(--brand); }
+  .free-strip p { margin-top: 8px; font-size: 0.875rem; color: var(--muted); }
+
+  .cta-section { text-align: center; padding: 100px 0 92px; position: relative; }
+  .cta-orb {
+    position: absolute; left: 50%; top: 42%; width: 560px; height: 340px;
+    transform: translate(-50%, -50%); pointer-events: none;
+    background: radial-gradient(ellipse, rgba(255, 90, 0, 0.22) 0%, rgba(255, 90, 0, 0) 70%);
+    filter: blur(30px);
+  }
+  .cta-inner { position: relative; }
+  .cta-section h2 { font-size: clamp(1.75rem, 4.5vw, 2.625rem); max-width: 20ch; margin: 16px auto 0; }
+  .cta-section .lede { margin: 22px auto 36px; }
+  .btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; border-radius: 999px;
+    padding: 14px 30px; font-size: 0.9375rem; font-weight: 700; text-decoration: none;
+    transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  }
+  .btn-primary {
+    color: #fff; background: var(--brand);
+    box-shadow: 0 12px 32px -12px rgba(255, 90, 0, 0.65);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -12px rgba(255, 90, 0, 0.8); }
+  .btn-ghost {
+    color: var(--ink); background: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .btn-ghost:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.08); }
+  .cta-note { margin-top: 20px; font-size: 0.8125rem; color: var(--faint); }
+
+  footer {
+    border-top: 1px solid var(--hairline); padding: 28px 0 52px;
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    font-size: 0.75rem; color: var(--faint);
+  }
+
+  .reveal { opacity: 0; transform: translateY(1.75rem); filter: blur(6px);
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease), filter 0.7s var(--ease); }
+  .reveal.in { opacity: 1; transform: translateY(0); filter: blur(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; filter: none; transition: none; }
+    .orb-1 { animation: none; }
+  }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 4px; }
+  @media (max-width: 760px) {
+    section { padding: 60px 0; }
+    .hero { padding: 80px 0 64px; }
+    .compare, .free-strip { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+
+<header class="hero">
+  <div class="wrap hero-inner">
+    <span class="logo reveal">XO<em>NG</em><small>FOR CREATORS</small></span>
+    <div class="badge reveal"><span class="dot"></span>크리에이터 평생 무료 · 매칭 수수료 0%</div>
+    <h1 class="display reveal">
+      비즈니스 문의,<br>아직 <span class="accent">지메일</span>로 받으세요?
+    </h1>
+    <p class="lede reveal">
+      협찬 스팸 사이에 파묻힌 진짜 섭외, 예산도 안 밝히는 간보기 문의,
+      끝없는 단가 핑퐁. XONG의 <strong>내 섭외 전용 페이지</strong>가 전부 대신 걸러드립니다 —
+      링크 하나를 유튜브 정보란에 걸면 끝입니다.
+    </p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Before / After</span>
+      <h2 class="display">유튜브 이메일 문의 vs XONG</h2>
+    </div>
+    <div class="compare">
+      <div class="glass compare-col now reveal">
+        <h3>지금 — 정보란 이메일</h3>
+        <ul>
+          <li>협찬·광고 스팸에 <strong>진짜 섭외가 파묻힘</strong></li>
+          <li>"단가 어떻게 되세요?" 예산 없는 간보기 문의에 답장만 반나절</li>
+          <li>정체불명 업체 — 노쇼·대금 미지급 리스크를 혼자 감당</li>
+          <li>가능한 날짜 카톡으로 수십 번 조율</li>
+          <li>견적서를 매번 처음부터 다시 작성</li>
+        </ul>
+      </div>
+      <div class="glass compare-col xong reveal">
+        <h3>XONG — 내 섭외 페이지</h3>
+        <ul>
+          <li><strong>예산·날짜·장소 필수 브리프</strong> — 간보기 문의는 아예 못 보냄</li>
+          <li>섭외가 범위 공개로 <strong>단가 후려치기 원천 방어</strong></li>
+          <li>사업자 미인증 주최자는 <strong>자동 경고 배지</strong></li>
+          <li>가능일정 캘린더 공개 — 조율 카톡이 사라짐</li>
+          <li>견적 프리셋 <strong>원클릭 회신</strong> + 협의 채팅 기록 보존</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Product</span>
+      <h2 class="display">화면으로 보는 3가지</h2>
+    </div>
+
+    <div class="feature reveal">
+      <div class="feature-head">
+        <span class="feature-no">01 · 내 공개 프로필</span>
+        <h4>구독자 수·화제성·섭외가가 한 장에 — 움직이는 명함</h4>
+        <p>네이버 기사·검색 트렌드·유튜브 구독자 추이가 실데이터로 붙습니다. 광고주가 "이 사람 요즘 뜨나?"를 스스로 확인하고 예산 맞으면 바로 섭외를 요청합니다.</p>
+      </div>
+      <div class="shot-frame">
+        <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/@내채널</div></div>
+        <img src="/ir/artist-detail.jpg" alt="XONG 공개 프로필 — 화제성 데이터와 섭외가 공개" loading="lazy">
+      </div>
+    </div>
+
+    <div class="feature reveal">
+      <div class="feature-head">
+        <span class="feature-no">02 · 섭외 인박스</span>
+        <h4>문의가 이메일이 아니라 '카드'로 쌓입니다</h4>
+        <p>모든 문의에 예산·날짜·요청 내용이 정리되어 들어오고, 협의 중·수락·검토 상태로 관리됩니다. 공문 PDF는 AI가 읽어서 요청 카드로 만들어줍니다.</p>
+      </div>
+      <div class="shot-frame">
+        <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/agency/inbox</div></div>
+        <img src="/ir/agency-inbox.jpg" alt="XONG 섭외 인박스 — 예산과 날짜가 정리된 요청 카드" loading="lazy">
+      </div>
+    </div>
+
+    <div class="feature reveal">
+      <div class="feature-head">
+        <span class="feature-no">03 · 일정·정산</span>
+        <h4>가능한 날만 열어두고, 들어온 돈은 자동 정리</h4>
+        <p>가능/불가 캘린더로 일정 조율이 끝나고, 출연료는 원천징수 3.3%까지 자동 계산됩니다. 미수금은 리마인더가 대신 독촉합니다.</p>
+      </div>
+      <div class="shot-frame">
+        <div class="shot-bar"><div class="dots"><span></span><span></span><span></span></div><div class="url">xong.kr/agency/schedule</div></div>
+        <img src="/ir/agency-schedule.jpg" alt="XONG 일정 관리 — 가능·불가 캘린더" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Pricing</span>
+      <h2 class="display">얼마냐고요? 0원입니다</h2>
+      <p class="lede">XONG는 크리에이터에게 돈을 받지 않습니다. 섭외가 성사돼도 수수료 0%. 저희는 대형 기획사의 SaaS 구독으로 법니다.</p>
+    </div>
+    <div class="free-strip">
+      <div class="glass reveal">
+        <div class="big brand">0원</div>
+        <p>가입비·월 이용료 없음</p>
+      </div>
+      <div class="glass reveal">
+        <div class="big brand">0%</div>
+        <p>섭외 성사 수수료 없음</p>
+      </div>
+      <div class="glass reveal">
+        <div class="big">3초</div>
+        <p>카카오 로그인으로 시작</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-orb"></div>
+  <div class="wrap cta-inner">
+    <span class="eyebrow reveal">Get Started</span>
+    <h2 class="display reveal">내 섭외 페이지,<br>지금 만들어보세요</h2>
+    <p class="lede reveal">유튜브 정보란의 이메일 주소를 XONG 링크로 바꾸는 순간, 섭외의 격이 달라집니다.</p>
+    <div class="btn-row reveal">
+      <a class="btn btn-primary" href="/join/creator">무료로 시작하기 →</a>
+      <a class="btn btn-ghost" href="/artists/lisenne">샘플 프로필 구경하기</a>
+    </div>
+    <p class="cta-note reveal">카카오 계정만 있으면 됩니다 · 신용카드 불필요</p>
+  </div>
+</section>
+
+<div class="wrap">
+  <footer>
+    <span>XONG — 연예인·인플루언서 섭외를 가장 빠르게</span>
+    <span>hello@xong.kr</span>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var items = document.querySelectorAll(".reveal");
+    if (reduced || !("IntersectionObserver" in window)) {
+      items.forEach(function (el) { el.classList.add("in"); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    items.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+</body>
+</html>

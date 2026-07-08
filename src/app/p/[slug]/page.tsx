@@ -7,6 +7,21 @@ import { getPublicArtistBySlug, getPublicSchedule } from "@/lib/data/artists";
 import { getRatingSummaryBySlug } from "@/lib/mock-data";
 import { fetchYoutubeSubscribers } from "@/lib/youtube";
 import { artistPublicUrl, SITE } from "@/lib/site";
+import { ShareButton } from "./share-button";
+
+// SNS 입력(@핸들 또는 URL) → 실제 링크
+function instagramHref(v?: string): string | null {
+  if (!v) return null;
+  return v.startsWith("http")
+    ? v
+    : `https://instagram.com/${v.replace(/^@/, "")}`;
+}
+function youtubeHref(v?: string): string | null {
+  if (!v) return null;
+  return v.startsWith("http")
+    ? v
+    : `https://youtube.com/${v.startsWith("@") ? v : `@${v}`}`;
+}
 import {
   CATEGORY_LABELS,
   formatBudget,
@@ -17,7 +32,6 @@ import {
   BadgeCheck,
   Clock,
   MessageSquare,
-  Share2,
   Sparkles,
   TrendingUp,
   Users,
@@ -114,6 +128,8 @@ export default async function ArtistPublicPage({ params }: PageProps) {
     : null;
   const followerValue = ytSubs ?? artist.followers;
   const followerLabel = ytSubs ? "구독자" : "팔로워";
+  const instagramUrl = instagramHref(artist.instagram);
+  const youtubeUrl = youtubeHref(artist.youtube);
 
   // 구조화 데이터 (Schema.org) — 검색 리치결과
   const isGroup = artist.gender === "group";
@@ -272,6 +288,26 @@ export default async function ArtistPublicPage({ params }: PageProps) {
             </ul>
           </section>
 
+          {/* 갤러리 */}
+          {artist.galleryUrls && artist.galleryUrls.length > 0 && (
+            <section>
+              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-neutral-500">
+                Photos
+              </h2>
+              <div className="grid grid-cols-3 gap-2">
+                {artist.galleryUrls.map((url) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={url}
+                    src={url}
+                    alt={`${artist.name} 사진`}
+                    className="aspect-square w-full rounded-xl object-cover ring-1 ring-neutral-200/70"
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* 가능 일정 */}
           <section>
             <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-neutral-500">
@@ -301,16 +337,15 @@ export default async function ArtistPublicPage({ params }: PageProps) {
               행사 유형과 조건에 따라 달라져요
             </p>
 
-            <button
-              type="button"
-              disabled
-              className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-500 text-sm font-bold text-white opacity-60"
+            <Link
+              href={`/booking/new?artist=${artist.slug}`}
+              className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-500 text-sm font-bold text-white transition-colors hover:bg-brand-600"
             >
               <MessageSquare className="h-4 w-4" />
               섭외 문의하기
-            </button>
+            </Link>
             <p className="text-center text-[11px] text-neutral-400">
-              문의 폼은 다음 업데이트에서 오픈돼요
+              매칭 수수료 0% · 평균 {artist.responseHours}시간 내 응답
             </p>
 
             <div className="my-4 h-px bg-neutral-100" />
@@ -319,26 +354,29 @@ export default async function ArtistPublicPage({ params }: PageProps) {
               Follow
             </p>
             <div className="flex gap-2">
-              <a
-                href="#"
-                aria-label="Instagram"
-                className="flex h-10 flex-1 items-center justify-center rounded-lg border border-neutral-200 text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
-              >
-                <InstagramIcon className="h-4 w-4" />
-              </a>
-              <a
-                href="#"
-                aria-label="YouTube"
-                className="flex h-10 flex-1 items-center justify-center rounded-lg border border-neutral-200 text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
-              >
-                <YoutubeIcon className="h-4 w-4" />
-              </a>
-              <button
-                aria-label="공유"
-                className="flex h-10 flex-1 items-center justify-center rounded-lg border border-neutral-200 text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
-              >
-                <Share2 className="h-4 w-4" />
-              </button>
+              {instagramUrl && (
+                <a
+                  href={instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="flex h-10 flex-1 items-center justify-center rounded-lg border border-neutral-200 text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+                >
+                  <InstagramIcon className="h-4 w-4" />
+                </a>
+              )}
+              {youtubeUrl && (
+                <a
+                  href={youtubeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="YouTube"
+                  className="flex h-10 flex-1 items-center justify-center rounded-lg border border-neutral-200 text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+                >
+                  <YoutubeIcon className="h-4 w-4" />
+                </a>
+              )}
+              <ShareButton url={artistPublicUrl(slug)} />
             </div>
           </div>
         </aside>
