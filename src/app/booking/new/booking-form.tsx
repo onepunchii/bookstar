@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useBookingsStore } from "@/lib/bookings-store";
 import { useNotificationsStore } from "@/lib/notifications-store";
 import type { Artist, EventType } from "@/lib/types";
 import { formatBudget } from "@/lib/types";
@@ -26,7 +25,6 @@ const FIELD =
 export function BookingForm({ artist }: { artist: Artist }) {
   const [submitted, setSubmitted] = useState(false);
   const [eventType, setEventType] = useState<EventType>("행사");
-  const addBooking = useBookingsStore((s) => s.add);
   const pushNotif = useNotificationsStore((s) => s.push);
 
   if (submitted) {
@@ -66,37 +64,46 @@ export function BookingForm({ artist }: { artist: Artist }) {
   return (
     <form
       className="mt-8 space-y-6"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
         const form = new FormData(e.currentTarget);
-        const created = addBooking({
-          artistId: artist.id,
-          artistName: artist.name,
-          companyName: "(주)브라이트마케팅",
-          companyVerified: true,
-          companyEventCount: 12,
-          eventType,
-          budget: Number(form.get("budget") ?? 0),
-          location: String(form.get("location") ?? ""),
-          date: String(form.get("date") ?? "2026-07-24"),
-          message: String(form.get("message") ?? ""),
-          status: "pending",
-        });
-        pushNotif({
-          type: "new_request",
-          role: "agency",
-          title: "새 섭외 요청",
-          body: `${artist.name} · ${eventType} · 예산 ${form.get("budget") ?? 0}만원`,
-          link: "/agency/inbox",
-        });
-        pushNotif({
-          type: "new_request",
-          role: "company",
-          title: "섭외 요청 접수 완료",
-          body: `${artist.name} · 소속사 응답 대기 중`,
-          link: `/requests/${created.id}`,
-        });
-        setSubmitted(true);
+        const budget = Number(form.get("budget") ?? 0);
+        try {
+          const res = await fetch("/api/booking-requests", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              artistId: artist.id,
+              companyName: "(주)브라이트마케팅",
+              companyVerified: true,
+              companyEventCount: 12,
+              eventType,
+              budget,
+              location: String(form.get("location") ?? ""),
+              eventDate: String(form.get("date") ?? "2026-07-24"),
+              message: String(form.get("message") ?? ""),
+            }),
+          });
+          if (!res.ok) throw new Error();
+          const { id } = (await res.json()) as { id: string };
+          pushNotif({
+            type: "new_request",
+            role: "agency",
+            title: "새 섭외 요청",
+            body: `${artist.name} · ${eventType} · 예산 ${budget}만원`,
+            link: "/agency/inbox",
+          });
+          pushNotif({
+            type: "new_request",
+            role: "company",
+            title: "섭외 요청 접수 완료",
+            body: `${artist.name} · 소속사 응답 대기 중`,
+            link: `/requests/${id}`,
+          });
+          setSubmitted(true);
+        } catch {
+          alert("요청 전송에 실패했어요. 다시 시도해주세요.");
+        }
       }}
     >
       {/* Artist summary */}

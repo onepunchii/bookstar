@@ -7,11 +7,9 @@ import { PremiumArtistCard } from "@/components/premium/premium-artist-card";
 import { PremiumCTA } from "@/components/premium/premium-cta";
 import { Reveal } from "@/components/premium/reveal";
 import { getPublicArtists, getPublicScheduleMap } from "@/lib/data/artists";
-import {
-  BOOKING_REQUESTS,
-  BUNDLES,
-  THREAD_MESSAGES,
-} from "@/lib/mock-data";
+import { getBookingRequests } from "@/lib/data/booking-requests";
+import { getMessages } from "@/lib/data/messages";
+import { BUNDLES } from "@/lib/mock-data";
 import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
 import {
   ArrowUpRight,
@@ -22,22 +20,24 @@ import {
 } from "lucide-react";
 
 export default async function HomePage() {
-  const [ARTISTS, scheduleMap] = await Promise.all([
+  const [ARTISTS, scheduleMap, BOOKING_REQUESTS] = await Promise.all([
     getPublicArtists(),
     getPublicScheduleMap(),
+    getBookingRequests(),
   ]);
   const inProgress = BOOKING_REQUESTS.filter((r) =>
     ["pending", "reviewing", "negotiating"].includes(r.status)
   );
-  const unread = BOOKING_REQUESTS.reduce(
-    (sum, r) => sum + (r.unreadCount ?? 0),
-    0
+  const unread = BOOKING_REQUESTS.filter(
+    (r) => r.status === "negotiating"
+  ).length;
+  const latestRequest = BOOKING_REQUESTS.find(
+    (r) => r.status === "negotiating"
   );
-  const latestMessage = THREAD_MESSAGES.filter(
-    (m) => m.sender !== "system"
-  ).at(-1);
-  const latestRequest = latestMessage
-    ? BOOKING_REQUESTS.find((r) => r.id === latestMessage.requestId)
+  const latestMessage = latestRequest
+    ? (await getMessages(latestRequest.id))
+        .filter((m) => m.sender !== "system")
+        .at(-1)
     : undefined;
   const featured = ARTISTS.slice(0, 4);
   const fastResponders = [...ARTISTS]
