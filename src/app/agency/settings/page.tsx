@@ -1,7 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { getAgencyArtists } from "@/lib/data/artists";
+import { getManagers } from "@/lib/data/managers";
 import { INTEGRATIONS, integrationStatus } from "@/lib/integrations";
-import { ARTISTS, MANAGERS } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import {
   CheckCircle2,
@@ -13,9 +14,13 @@ import {
   UserRound,
 } from "lucide-react";
 
-export default function AgencySettingsPage() {
+export default async function AgencySettingsPage() {
   const status = integrationStatus();
   const connected = Object.values(status).filter(Boolean).length;
+  const [ARTISTS, MANAGERS] = await Promise.all([
+    getAgencyArtists(),
+    getManagers(),
+  ]);
 
   return (
     <div className="space-y-10">

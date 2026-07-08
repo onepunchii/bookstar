@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
-import { MANAGERS } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
-import type { Artist, DaySchedule, DayStop } from "@/lib/types";
+import type { Artist, DaySchedule, DayStop, Manager } from "@/lib/types";
 import { Car, Clock, MapPin, Plus, Trash2, UserRound, X } from "lucide-react";
 
 const EVENT_TYPES = ["방송", "예능", "광고", "축제", "행사", "유튜브", "강연"];
@@ -18,6 +17,7 @@ interface Props {
   initial?: DaySchedule;
   defaultDate?: string;
   artists: Artist[];
+  managers: Manager[];
   onClose: () => void;
   onSaved: (schedule: DaySchedule) => void;
   onDeleted: (id: string) => void;
@@ -28,6 +28,7 @@ export function DayScheduleEditor({
   initial,
   defaultDate,
   artists,
+  managers,
   onClose,
   onSaved,
   onDeleted,
@@ -251,7 +252,7 @@ export function DayScheduleEditor({
                 onChange={(e) => setManager(e.target.value)}
               >
                 <option value="">— 배정 안 함 —</option>
-                {MANAGERS.map((m) => (
+                {managers.map((m) => (
                   <option key={m.id} value={`${m.name} ${m.role}`}>
                     {m.name} {m.role} · {m.phone}
                   </option>

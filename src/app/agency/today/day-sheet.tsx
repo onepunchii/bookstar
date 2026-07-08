@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { DayScheduleEditor } from "@/components/day-schedule-editor";
 import { WeatherBadge } from "@/components/weather-badge";
 import { cn } from "@/lib/utils";
-import type { Artist, DaySchedule } from "@/lib/types";
+import type { Artist, DaySchedule, Manager } from "@/lib/types";
 import {
   Car,
   Check,
@@ -31,9 +31,11 @@ const TODAY = "2026-07-07";
 export function DaySheet({
   initialSchedules,
   artists,
+  managers,
 }: {
   initialSchedules: DaySchedule[];
   artists: Artist[];
+  managers: Manager[];
 }) {
   const [schedules, setSchedules] = useState<DaySchedule[]>(initialSchedules);
   const [dateIdx, setDateIdx] = useState(0);
@@ -285,6 +287,7 @@ export function DaySheet({
             editorState.mode === "create" ? editorState.date : undefined
           }
           artists={artists}
+          managers={managers}
           onClose={() => setEditorState(null)}
           onSaved={handleSaved}
           onDeleted={handleDeleted}
