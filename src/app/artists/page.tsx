@@ -3,13 +3,9 @@ import { Eyebrow } from "@/components/premium/eyebrow";
 import { PremiumArtistCard } from "@/components/premium/premium-artist-card";
 import { Reveal } from "@/components/premium/reveal";
 import { SLACounter } from "@/components/sla-counter";
-import { getPublicArtists, getPublicScheduleMap } from "@/lib/data/artists";
+import { ARTISTS, SCHEDULES } from "@/lib/mock-data";
 import { parseNL } from "@/lib/nl-search";
-import {
-  CATEGORY_LABELS,
-  type ArtistCategory,
-  type ScheduleDay,
-} from "@/lib/types";
+import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";
 import { SearchBar } from "./search-bar";
@@ -21,13 +17,8 @@ const BUDGET_FILTERS = [
   { key: "o5000", label: "5천만원 이상", min: 5000, max: Infinity },
 ];
 
-function hasAvailabilityInRange(
-  scheduleMap: Record<string, ScheduleDay[]>,
-  artistId: string,
-  start: string,
-  end: string
-) {
-  const days = scheduleMap[artistId] ?? [];
+function hasAvailabilityInRange(artistId: string, start: string, end: string) {
+  const days = SCHEDULES[artistId] ?? [];
   return days.some(
     (d) =>
       d.date >= start &&
@@ -48,12 +39,7 @@ export default async function ArtistsPage({
   // 자연어 파싱
   const nl = q ? parseNL(q) : undefined;
 
-  const [artists, scheduleMap] = await Promise.all([
-    getPublicArtists(),
-    getPublicScheduleMap(),
-  ]);
-
-  const filtered = artists.filter((a) => {
+  const filtered = ARTISTS.filter((a) => {
     if (category && !a.categories.includes(category as ArtistCategory))
       return false;
     if (
@@ -79,12 +65,7 @@ export default async function ArtistsPage({
       // NL 시간 범위 → 가능한 날짜 있는지
       if (
         nl.dateRange &&
-        !hasAvailabilityInRange(
-          scheduleMap,
-          a.id,
-          nl.dateRange.start,
-          nl.dateRange.end
-        )
+        !hasAvailabilityInRange(a.id, nl.dateRange.start, nl.dateRange.end)
       )
         return false;
       // NL 남은 키워드 → 이름/소속사/태그 문자열 검색

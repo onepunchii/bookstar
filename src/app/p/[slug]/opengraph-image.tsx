@@ -48,24 +48,41 @@ export default async function Image({
             display: "flex",
           }}
         />
-        {/* 이니셜 타일 */}
-        <div
-          style={{
-            width: 300,
-            height: 380,
-            borderRadius: 44,
-            background: "linear-gradient(140deg, #ff5a00, #7a2a05)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 200,
-            fontWeight: 700,
-            color: "#ffffff",
-            flexShrink: 0,
-          }}
-        >
-          {name.slice(0, 1)}
-        </div>
+        {/* 대표 사진 — 없으면 이니셜 타일 */}
+        {artist?.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={artist.imageUrl}
+            alt=""
+            width={300}
+            height={380}
+            style={{
+              width: 300,
+              height: 380,
+              borderRadius: 44,
+              objectFit: "cover",
+              flexShrink: 0,
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: 300,
+              height: 380,
+              borderRadius: 44,
+              background: "linear-gradient(140deg, #ff5a00, #7a2a05)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 200,
+              fontWeight: 700,
+              color: "#ffffff",
+              flexShrink: 0,
+            }}
+          >
+            {name.slice(0, 1)}
+          </div>
+        )}
         {/* 정보 */}
         <div
           style={{

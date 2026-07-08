@@ -152,10 +152,19 @@ export default async function ArtistPublicPage({ params }: PageProps) {
         <div className="absolute inset-0 bg-gradient-to-br from-brand-500/20 via-transparent to-transparent" />
         <div className="relative mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24">
           <div className="flex flex-col items-start gap-8 sm:flex-row sm:items-center">
-            {/* 사진 자리 (아직 사진 없으면 그라디언트 이니셜) */}
-            <div className="flex h-32 w-32 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-500 to-brand-700 text-5xl font-black text-white shadow-2xl shadow-brand-500/30 sm:h-40 sm:w-40 sm:text-6xl">
-              {artist.name.slice(0, 1)}
-            </div>
+            {/* 대표 사진 — 없으면 그라디언트 이니셜 */}
+            {artist.imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={artist.imageUrl}
+                alt={`${artist.name} 프로필 사진`}
+                className="h-32 w-32 shrink-0 rounded-3xl object-cover shadow-2xl shadow-brand-500/30 sm:h-40 sm:w-40"
+              />
+            ) : (
+              <div className="flex h-32 w-32 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-500 to-brand-700 text-5xl font-black text-white shadow-2xl shadow-brand-500/30 sm:h-40 sm:w-40 sm:text-6xl">
+                {artist.name.slice(0, 1)}
+              </div>
+            )}
             <div className="min-w-0 flex-1">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 {artist.categories.map((c) => (

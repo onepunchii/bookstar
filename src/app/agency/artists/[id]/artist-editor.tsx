@@ -37,6 +37,10 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
     null,
   ]);
   const [converting, setConverting] = useState<number | null>(null);
+  // 대표 사진(idx 0)은 Blob 업로드 → DB 반영. 기존 이미지가 있으면 미리보기.
+  const [coverUrl, setCoverUrl] = useState<string | undefined>(artist.imageUrl);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [coverError, setCoverError] = useState<string | null>(null);
 
   const handlePhoto = async (idx: number, file: File | undefined | null) => {
     if (!file) return;
@@ -44,6 +48,28 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
     try {
       const result = await fileToWebP(file);
       setPhotos((prev) => prev.map((p, i) => (i === idx ? result : p)));
+
+      // 대표 사진은 즉시 Blob+DB에 반영 → 공개 프로필·사이트맵에 노출
+      if (idx === 0) {
+        setUploadingCover(true);
+        setCoverError(null);
+        try {
+          const fd = new FormData();
+          fd.append("slug", artist.slug);
+          fd.append("file", result.blob, result.fileName);
+          const res = await fetch("/api/artists/photo", {
+            method: "POST",
+            body: fd,
+          });
+          if (!res.ok) throw new Error(await res.text());
+          const data = (await res.json()) as { url: string };
+          setCoverUrl(data.url);
+        } catch {
+          setCoverError("대표 사진 저장에 실패했어요. 다시 시도해주세요.");
+        } finally {
+          setUploadingCover(false);
+        }
+      }
     } finally {
       setConverting(null);
     }
@@ -100,6 +126,8 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                 const photo = photos[idx];
                 const isCover = idx === 0;
                 const label = isCover ? "대표 사진 업로드" : null;
+                const previewSrc =
+                  photo?.dataUrl ?? (isCover ? coverUrl : undefined);
                 return (
                   <label
                     key={idx}
@@ -121,28 +149,40 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                         handlePhoto(idx, e.target.files?.[0])
                       }
                     />
-                    {photo ? (
+                    {previewSrc ? (
                       <>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          src={photo.dataUrl}
+                          src={previewSrc}
                           alt={label ?? "artist photo"}
                           className="absolute inset-0 h-full w-full object-cover"
                         />
-                        <span className="absolute bottom-1.5 left-1.5 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-bold text-white">
-                          WebP · {photo.webpKB}KB
-                          {photo.originalKB > photo.webpKB && (
-                            <span className="ml-1 text-brand-300">
-                              −
-                              {Math.round(
-                                ((photo.originalKB - photo.webpKB) /
-                                  photo.originalKB) *
-                                  100
-                              )}
-                              %
-                            </span>
-                          )}
-                        </span>
+                        {photo && (
+                          <span className="absolute bottom-1.5 left-1.5 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-bold text-white">
+                            WebP · {photo.webpKB}KB
+                            {photo.originalKB > photo.webpKB && (
+                              <span className="ml-1 text-brand-300">
+                                −
+                                {Math.round(
+                                  ((photo.originalKB - photo.webpKB) /
+                                    photo.originalKB) *
+                                    100
+                                )}
+                                %
+                              </span>
+                            )}
+                          </span>
+                        )}
+                        {isCover && uploadingCover && (
+                          <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-xs font-bold text-white">
+                            저장 중…
+                          </span>
+                        )}
+                        {isCover && !uploadingCover && coverUrl && (
+                          <span className="absolute right-1.5 top-1.5 rounded-full bg-brand-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                            공개 프로필 반영됨
+                          </span>
+                        )}
                       </>
                     ) : converting === idx ? (
                       <span className="text-xs font-semibold text-neutral-500">
@@ -165,6 +205,11 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                 );
               })}
             </div>
+            {coverError && (
+              <p className="mt-3 text-xs font-semibold text-red-600">
+                {coverError}
+              </p>
+            )}
           </Card>
 
           {/* 기본 정보 */}
