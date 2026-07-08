@@ -146,11 +146,11 @@ export default async function ArtistsPage({
       )}
 
       {/* Category filter */}
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-4 flex gap-2 overflow-x-auto hide-scrollbar">
         <Link
           href={buildQuery({ category: undefined })}
           className={cn(
-            "premium-ease rounded-full px-4 py-1.5 text-sm font-medium",
+            "premium-ease shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium",
             !category
               ? "bg-white text-neutral-900"
               : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-white"
@@ -163,7 +163,7 @@ export default async function ArtistsPage({
             key={c}
             href={buildQuery({ category: c })}
             className={cn(
-              "premium-ease rounded-full px-4 py-1.5 text-sm font-medium",
+              "premium-ease shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium",
               category === c
                 ? "bg-white text-neutral-900"
                 : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-white"
@@ -175,13 +175,13 @@ export default async function ArtistsPage({
       </div>
 
       {/* Budget filter */}
-      <div className="mt-2 flex flex-wrap gap-2">
+      <div className="mt-2 flex gap-2 overflow-x-auto hide-scrollbar">
         {BUDGET_FILTERS.map((b) => (
           <Link
             key={b.key}
             href={buildQuery({ budget: b.key === "all" ? undefined : b.key })}
             className={cn(
-              "premium-ease rounded-full px-4 py-1.5 text-sm font-medium",
+              "premium-ease shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium",
               budgetFilter.key === b.key
                 ? "bg-brand-500 text-white"
                 : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-brand-300 hover:ring-brand-500/30"

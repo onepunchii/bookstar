@@ -18,7 +18,8 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
   },
   title: {
-    default: "xong · 연예인·인플루언서 섭외 — eXperience ON",
+    // 핵심 키워드("연예인 섭외") 전진 배치 + 차별화(섭외가 공개·수수료 0%)
+    default: "연예인 섭외·인플루언서 섭외 — XONG | 섭외가 공개 · 수수료 0%",
     template: "%s · xong",
   },
   description: SITE.description,
@@ -38,19 +39,24 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     locale: SITE.locale,
     url: SITE.url,
-    title: "xong · 연예인·인플루언서 섭외 — eXperience ON",
+    title: "연예인 섭외·인플루언서 섭외 — XONG | 섭외가 공개 · 수수료 0%",
     description: SITE.description,
   },
   twitter: {
     card: "summary_large_image",
     site: SITE.twitter,
-    title: "xong · 연예인·인플루언서 섭외",
+    title: "연예인 섭외·인플루언서 섭외 — XONG",
     description: SITE.description,
   },
   robots: {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
+  verification: {
+    other: {
+      "naver-site-verification": "0ac11df6322e1b95befaf066e8216510902567c1",
+    },
   },
 };
 
@@ -67,6 +73,38 @@ export default async function RootLayout({
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        />
+        {/* 사이트 전역 구조화 데이터 — Organization + WebSite (검색·AI 개요 신뢰 시그널) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                name: "XONG",
+                alternateName: "쏭",
+                url: SITE.url,
+                logo: `${SITE.url}/app.png`,
+                description: SITE.description,
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                name: "XONG",
+                url: SITE.url,
+                inLanguage: "ko",
+                potentialAction: {
+                  "@type": "SearchAction",
+                  target: {
+                    "@type": "EntryPoint",
+                    urlTemplate: `${SITE.url}/artists?q={search_term_string}`,
+                  },
+                  "query-input": "required name=search_term_string",
+                },
+              },
+            ]),
+          }}
         />
       </head>
       <body className="min-h-full bg-white text-neutral-900">

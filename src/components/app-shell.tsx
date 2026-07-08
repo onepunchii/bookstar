@@ -119,7 +119,8 @@ export function AppShell({
     pathname.startsWith("/d/") ||
     pathname.startsWith("/join") ||
     pathname.startsWith("/login") ||
-    pathname.startsWith("/admin")
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/guide")
   ) {
     return <>{children}</>;
   }

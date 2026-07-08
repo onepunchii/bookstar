@@ -1,0 +1,64 @@
+// 가이드 허브 인덱스 — 정보성 콘텐츠 목록.
+import type { Metadata } from "next";
+import Link from "next/link";
+import { GUIDES } from "@/lib/guides";
+import { absoluteUrl } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "연예인·인플루언서 섭외 가이드",
+  description:
+    "섭외 비용 시세, 대학축제 섭외 방법, 인플루언서 협업 절차 — 행사 담당자를 위한 실전 가이드 모음. 견적 거품 없이 섭외하는 법을 정리했습니다.",
+  alternates: { canonical: "/guide" },
+};
+
+export default function GuideIndexPage() {
+  return (
+    <main className="mx-auto max-w-3xl px-5 py-14">
+      <p className="eyebrow text-brand-500">Guide</p>
+      <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-4xl">
+        섭외 가이드
+      </h1>
+      <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-white/55">
+        연예인·인플루언서 섭외를 처음 맡은 담당자를 위해 — 시세, 절차, 그리고
+        견적서에 숨은 거품 구조까지. 업계 리서치를 바탕으로 정리했습니다.
+      </p>
+
+      <div className="mt-10 space-y-4">
+        {GUIDES.map((g) => (
+          <Link
+            key={g.slug}
+            href={`/guide/${g.slug}`}
+            className="group block rounded-2xl bg-white/[0.03] p-6 ring-1 ring-white/10 transition-all hover:-translate-y-0.5 hover:bg-white/[0.05] hover:ring-brand-500/40"
+          >
+            <h2 className="display-kr text-lg font-bold text-white group-hover:text-brand-300 sm:text-xl">
+              {g.title}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-white/50">
+              {g.description}
+            </p>
+            <span className="mt-3 inline-block text-xs font-semibold text-brand-400">
+              읽어보기 →
+            </span>
+          </Link>
+        ))}
+      </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: "연예인·인플루언서 섭외 가이드",
+            url: absoluteUrl("/guide"),
+            hasPart: GUIDES.map((g) => ({
+              "@type": "Article",
+              headline: g.title,
+              url: absoluteUrl(`/guide/${g.slug}`),
+            })),
+          }),
+        }}
+      />
+    </main>
+  );
+}

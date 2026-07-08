@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getPublicArtists } from "@/lib/data/artists";
+import { GUIDES } from "@/lib/guides";
 import { SITE, absoluteUrl, artistPublicUrl } from "@/lib/site";
 import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
 
@@ -40,6 +41,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+  // 1.5) 섭외 가이드 — 정보성 쿼리("연예인 섭외 비용" 등)·AI 개요 인용 타깃
+  const guidePages: MetadataRoute.Sitemap = [
+    {
+      url: absoluteUrl("/guide"),
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    ...GUIDES.map((g) => ({
+      url: absoluteUrl(`/guide/${encodeURIComponent(g.slug)}`),
+      lastModified: new Date(g.updated),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    })),
+  ];
+
   // 2) 카테고리별 아티스트 목록 ("아이돌 섭외" 등 검색 유입)
   const categoryPages: MetadataRoute.Sitemap = (
     Object.keys(CATEGORY_LABELS) as ArtistCategory[]
@@ -67,5 +84,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ],
   }));
 
-  return [...staticPages, ...categoryPages, ...artistPages];
+  return [...staticPages, ...guidePages, ...categoryPages, ...artistPages];
 }

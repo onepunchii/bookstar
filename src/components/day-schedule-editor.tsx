@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { Artist, DaySchedule, DayStop, Manager } from "@/lib/types";
-import { Car, Clock, MapPin, Plus, Trash2, UserRound, X } from "lucide-react";
+import { Car, MapPin, Plus, Trash2, UserRound, X } from "lucide-react";
 
 const EVENT_TYPES = ["방송", "예능", "광고", "축제", "행사", "유튜브", "강연"];
 
@@ -288,18 +288,14 @@ export function DayScheduleEditor({
               {stops.map((stop, i) => (
                 <Card key={i} className="p-3">
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-12">
-                    <div className="sm:col-span-2">
-                      <div className="relative">
-                        <Clock className="pointer-events-none absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-neutral-400" />
-                        <Input
-                          type="time"
-                          value={stop.time}
-                          onChange={(e) =>
-                            updateStop(i, { time: e.target.value })
-                          }
-                          className="pl-6"
-                        />
-                      </div>
+                    <div className="sm:col-span-3">
+                      <Input
+                        type="time"
+                        value={stop.time}
+                        onChange={(e) =>
+                          updateStop(i, { time: e.target.value })
+                        }
+                      />
                     </div>
                     <div className="sm:col-span-4">
                       <Input
@@ -310,7 +306,7 @@ export function DayScheduleEditor({
                         placeholder="라벨 (예: 픽업, 헤메코)"
                       />
                     </div>
-                    <div className="sm:col-span-5">
+                    <div className="sm:col-span-4">
                       <div className="relative">
                         <MapPin className="pointer-events-none absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-neutral-400" />
                         <Input
