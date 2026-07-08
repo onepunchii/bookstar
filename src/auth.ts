@@ -9,6 +9,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Kakao({
       clientId: process.env.KAKAO_CLIENT_ID,
       clientSecret: process.env.KAKAO_CLIENT_SECRET,
+      // 닉네임만 요청 — 이메일 동의는 비즈앱 심사가 필요해 초기 로그인 실패를 유발
+      authorization: { params: { scope: "profile_nickname" } },
     }),
   ],
   pages: {
