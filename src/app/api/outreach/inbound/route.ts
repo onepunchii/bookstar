@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
 import { classifyAndDraft } from "@/lib/outreach/draft";
+import { fetchReceivedEmail } from "@/lib/outreach/resend";
 
 function extractEmail(raw: unknown): string | null {
   if (typeof raw !== "string") {
@@ -27,13 +28,28 @@ export async function POST(req: Request) {
   } | null;
   const d = (payload?.data ?? payload ?? {}) as Record<string, unknown>;
 
-  const fromEmail = extractEmail(d.from);
-  const subject = typeof d.subject === "string" ? d.subject : null;
+  let fromEmail = extractEmail(d.from);
+  let subject = typeof d.subject === "string" ? d.subject : null;
+  let text = typeof d.text === "string" ? d.text : null;
+  let html = typeof d.html === "string" ? d.html : null;
+
+  // Resend email.received 웹훅은 메타데이터만 옴 — 본문은 API로 조회
+  const emailId = typeof d.email_id === "string" ? d.email_id : null;
+  if (!text && !html && emailId) {
+    const full = await fetchReceivedEmail(emailId);
+    if (full) {
+      fromEmail = fromEmail ?? extractEmail(full.from);
+      subject = subject ?? full.subject;
+      text = full.text;
+      html = full.html;
+    }
+  }
+
   const body =
-    typeof d.text === "string" && d.text.trim()
-      ? d.text
-      : typeof d.html === "string"
-        ? d.html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
+    text && text.trim()
+      ? text
+      : html
+        ? html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
         : "";
 
   if (!fromEmail || !body) return NextResponse.json({ ok: true });

@@ -5,6 +5,7 @@ import { Wordmark } from "@/components/wordmark";
 import { Badge } from "@/components/ui/badge";
 import { getPublicArtistBySlug, getPublicSchedule } from "@/lib/data/artists";
 import { getRatingSummaryBySlug } from "@/lib/mock-data";
+import { YoutubeVideos } from "@/components/youtube-videos";
 import { fetchYoutubeSubscribers } from "@/lib/youtube";
 import { artistPublicUrl, SITE } from "@/lib/site";
 import { ShareButton } from "./share-button";
@@ -305,6 +306,16 @@ export default async function ArtistPublicPage({ params }: PageProps) {
                   />
                 ))}
               </div>
+            </section>
+          )}
+
+          {/* 유튜브 최근 영상 — 채널 연동 시 카드 가로 스크롤 */}
+          {artist.youtube && (
+            <section>
+              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-neutral-500">
+                YouTube
+              </h2>
+              <YoutubeVideos channel={artist.youtube} />
             </section>
           )}
 
