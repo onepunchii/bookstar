@@ -22,6 +22,40 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   };
 }
 
+export interface SessionProfile {
+  id: string;
+  name: string;
+  company: string | null;
+  accountType: string; // personal | business
+  phone: string | null;
+  email: string | null;
+}
+
+// 로그인 유저의 전체 프로필 행 (광고주 계정 페이지용)
+export async function getSessionProfile(): Promise<SessionProfile | null> {
+  const session = await auth();
+  const uid = session?.user?.id;
+  if (!uid) return null;
+  try {
+    const db = getDb();
+    const [row] = await db
+      .select({
+        id: schema.users.id,
+        name: schema.users.name,
+        company: schema.users.company,
+        accountType: schema.users.accountType,
+        phone: schema.users.phone,
+        email: schema.users.email,
+      })
+      .from(schema.users)
+      .where(eq(schema.users.id, uid))
+      .limit(1);
+    return row ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export interface SessionAgency {
   id: string;
   companyName: string;

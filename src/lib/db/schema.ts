@@ -55,6 +55,8 @@ export const users = pgTable("users", {
   name: text("name").notNull(),
   phone: text("phone"),
   company: text("company"),
+  // 광고주 구분 — personal(개인) | business(기업·브랜드)
+  accountType: text("account_type").notNull().default("personal"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

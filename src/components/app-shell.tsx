@@ -14,6 +14,7 @@ import {
   Banknote,
   Building2,
   CalendarDays,
+  CircleUserRound,
   Inbox,
   LayoutGrid,
   Palmtree,
@@ -48,25 +49,34 @@ const NAV_BY_ROLE: Record<
 
 const ACCOUNT: Record<
   Role,
-  { initial: string; name: string; label: string; home: string }
+  {
+    initial: string;
+    name: string;
+    label: string;
+    home: string;
+    settings: string; // 프로필 수정 페이지
+  }
 > = {
   company: {
     initial: "브",
     name: "브라이트마케팅",
     label: "광고주 계정",
     home: "/",
+    settings: "/account",
   },
   agency: {
     initial: "스",
     name: "스타원엔터테인먼트",
     label: "소속사 계정",
     home: "/agency",
+    settings: "/agency/account",
   },
   artist: {
     initial: "정",
     name: "정하늘",
     label: "아티스트 계정",
     home: "/me",
+    settings: "/me",
   },
 };
 
@@ -159,10 +169,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             dark ? "border-white/8" : "border-neutral-100"
           )}
         >
-          <div
+          <Link
+            href={account.settings}
+            aria-label="프로필 수정"
             className={cn(
-              "rounded-xl p-3",
-              dark ? "bg-white/[0.04]" : "bg-neutral-50"
+              "block rounded-xl p-3 transition-colors",
+              dark
+                ? "bg-white/[0.04] hover:bg-white/[0.08]"
+                : "bg-neutral-50 hover:bg-neutral-100"
             )}
           >
             <div className="flex items-center gap-3">
@@ -189,11 +203,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     dark ? "text-white/40" : "text-neutral-400"
                   )}
                 >
-                  {account.label}
+                  {account.label} · 프로필 수정
                 </p>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
       </aside>
 
@@ -303,6 +317,25 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
           );
         })}
+        {/* 모바일 계정(프로필 수정) — 아티스트는 /me와 중복이라 제외 */}
+        {role !== "artist" && (
+          <Link
+            href={account.settings}
+            aria-label="내 계정"
+            className="relative flex flex-1 items-center justify-center py-3.5"
+          >
+            <CircleUserRound
+              className={cn(
+                "relative h-5.5 w-5.5 transition-colors",
+                isActive(pathname, account.settings)
+                  ? "text-brand-500 drop-shadow-[0_0_6px_rgba(255,90,0,0.7)]"
+                  : dark
+                    ? "text-white/45"
+                    : "text-neutral-400"
+              )}
+            />
+          </Link>
+        )}
       </nav>
     </div>
   );
