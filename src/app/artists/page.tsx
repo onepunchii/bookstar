@@ -121,7 +121,7 @@ export default async function ArtistsPage({
       </Reveal>
 
       <Reveal delay={60} className="mt-6">
-        <SLACounter variant="inline" dark />
+        <SLACounter variant="inline" dark artists={artists} />
       </Reveal>
 
       <Reveal delay={90} className="mt-4">

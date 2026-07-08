@@ -3,14 +3,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ARTISTS } from "@/lib/mock-data";
-import { CATEGORY_LABELS, formatFollowers, type ArtistCategory } from "@/lib/types";
+import {
+  CATEGORY_LABELS,
+  formatFollowers,
+  type Artist,
+  type ArtistCategory,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight, Search, Sparkles, TrendingUp } from "lucide-react";
 
 const KEYWORDS = ["축제", "광고", "MC", "뷰티", "유튜브", "팬미팅"];
 
-export function HomeSearch() {
+export function HomeSearch({ artists = [] }: { artists?: Artist[] }) {
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
   const [q, setQ] = useState("");
@@ -19,12 +23,14 @@ export function HomeSearch() {
   const results = useMemo(() => {
     const term = q.trim().toLowerCase();
     if (!term) return [];
-    return ARTISTS.filter((a) =>
-      [a.name, a.agencyName, a.tagline, ...a.tags].some((s) =>
-        s.toLowerCase().includes(term)
+    return artists
+      .filter((a) =>
+        [a.name, a.agencyName, a.tagline, ...a.tags].some((s) =>
+          s.toLowerCase().includes(term)
+        )
       )
-    ).slice(0, 5);
-  }, [q]);
+      .slice(0, 5);
+  }, [q, artists]);
 
   useEffect(() => {
     if (!open) return;
@@ -70,7 +76,7 @@ export function HomeSearch() {
                 {results.map((a) => (
                   <li key={a.id}>
                     <Link
-                      href={`/artists/${a.id}`}
+                      href={`/artists/${a.slug}`}
                       onClick={() => setOpen(false)}
                       className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-white/[0.06]"
                     >

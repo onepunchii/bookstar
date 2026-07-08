@@ -3,12 +3,13 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { RatingStars } from "@/components/rating-stars";
-import { getRatingSummary } from "@/lib/mock-data";
+import { getRatingSummaryBySlug } from "@/lib/mock-data";
 import { recommend } from "@/lib/recommend";
 import {
   CATEGORY_LABELS,
   formatBudget,
   formatFollowers,
+  type Artist,
   type ArtistCategory,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -29,7 +30,7 @@ const TAG_SUGGESTIONS = [
   "축제",
 ];
 
-export function CastingRecommender() {
+export function CastingRecommender({ artists }: { artists: Artist[] }) {
   const [budget, setBudget] = useState<string>("3000");
   const [categories, setCategories] = useState<ArtistCategory[]>([]);
   const [gender, setGender] = useState<"any" | "male" | "female" | "group">(
@@ -49,13 +50,16 @@ export function CastingRecommender() {
 
   const results = useMemo(() => {
     if (!submitted) return [];
-    return recommend({
-      budget: Number(budget) || 0,
-      categories,
-      gender,
-      tags,
-    });
-  }, [submitted, budget, categories, gender, tags]);
+    return recommend(
+      {
+        budget: Number(budget) || 0,
+        categories,
+        gender,
+        tags,
+      },
+      artists
+    );
+  }, [submitted, budget, categories, gender, tags, artists]);
 
   const label = "mb-1.5 block text-sm font-medium text-white/70";
 
@@ -187,7 +191,7 @@ export function CastingRecommender() {
           ) : (
             <div className="space-y-3">
               {results.map((r, i) => {
-                const rating = getRatingSummary(r.artist.id);
+                const rating = getRatingSummaryBySlug(r.artist.slug);
                 return (
                   <div
                     key={r.artist.id}
@@ -250,7 +254,7 @@ export function CastingRecommender() {
                           </span>
                         </span>
                         <Link
-                          href={`/artists/${r.artist.id}`}
+                          href={`/artists/${r.artist.slug}`}
                           className="flex items-center gap-1 text-xs font-semibold text-white/60 hover:text-white"
                         >
                           프로필 <ArrowRight className="h-3 w-3" />

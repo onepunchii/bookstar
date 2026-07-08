@@ -1,5 +1,6 @@
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { Reveal } from "@/components/premium/reveal";
+import { getPublicArtists } from "@/lib/data/artists";
 import { Sparkles } from "lucide-react";
 import { CastingRecommender } from "./recommender";
 
@@ -8,7 +9,8 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function RecommendPage() {
+export default async function RecommendPage() {
+  const artists = await getPublicArtists();
   return (
     <div className="adv-dark">
       {/* 프리미엄 헤더 밴드 */}
@@ -40,7 +42,7 @@ export default function RecommendPage() {
 
       <div className="mx-auto max-w-4xl px-5 py-10 sm:px-8">
         <Reveal>
-          <CastingRecommender />
+          <CastingRecommender artists={artists} />
         </Reveal>
       </div>
     </div>

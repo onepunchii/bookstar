@@ -1,4 +1,4 @@
-import { ARTISTS, getRatingSummary } from "./mock-data";
+import { getRatingSummaryBySlug } from "./mock-data";
 import type { Artist, ArtistCategory } from "./types";
 
 export interface RecommendCriteria {
@@ -16,8 +16,11 @@ export interface Recommendation {
 }
 
 // 규칙 기반 스코어링 — 실 데이터/ML 없이도 설명 가능한 추천을 보장.
-export function recommend(criteria: RecommendCriteria): Recommendation[] {
-  const scored = ARTISTS.map((a) => {
+export function recommend(
+  criteria: RecommendCriteria,
+  artists: Artist[]
+): Recommendation[] {
+  const scored = artists.map((a) => {
     const reasons: string[] = [];
     let score = 0;
 
@@ -85,7 +88,7 @@ export function recommend(criteria: RecommendCriteria): Recommendation[] {
     }
 
     // 리뷰 · 응답률 보너스
-    const rating = getRatingSummary(a.id);
+    const rating = getRatingSummaryBySlug(a.slug);
     if (rating.count > 0 && rating.avg >= 4.5) {
       score += 6;
       reasons.push(`리뷰 ${rating.avg}점 (${rating.count}건)`);

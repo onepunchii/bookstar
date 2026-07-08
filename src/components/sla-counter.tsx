@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { ARTISTS } from "@/lib/mock-data";
+import type { Artist } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Clock, TrendingUp, Zap } from "lucide-react";
 
@@ -19,19 +19,24 @@ const RECENT_RESPONSES = [
 export function SLACounter({
   variant = "hero",
   dark = false,
+  artists = [],
 }: {
   variant?: "hero" | "inline";
   dark?: boolean;
+  artists?: Artist[];
 }) {
   const [idx, setIdx] = useState(0);
+  const n = artists.length || 1;
   const avgHours =
-    Math.round(
-      (ARTISTS.reduce((sum, a) => sum + a.responseHours, 0) / ARTISTS.length) *
-        10
-    ) / 10;
-  const avgRate = Math.round(
-    ARTISTS.reduce((sum, a) => sum + a.responseRate, 0) / ARTISTS.length
-  );
+    artists.length > 0
+      ? Math.round(
+          (artists.reduce((sum, a) => sum + a.responseHours, 0) / n) * 10
+        ) / 10
+      : 4.2;
+  const avgRate =
+    artists.length > 0
+      ? Math.round(artists.reduce((sum, a) => sum + a.responseRate, 0) / n)
+      : 96;
   const todayCount = 8; // demo: 오늘 응답 완료 수
 
   useEffect(() => {

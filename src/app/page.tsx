@@ -97,7 +97,7 @@ export default async function HomePage() {
 
           {/* 검색 + AI 캐스팅 — 사진 위에 뜨는 유리바 */}
           <Reveal delay={60} className="relative z-40 mt-8 pb-2 sm:mt-10">
-            <HomeSearch />
+            <HomeSearch artists={ARTISTS} />
           </Reveal>
         </div>
 
