@@ -64,7 +64,7 @@ export function HomeSearch() {
         </form>
 
         {open && (
-          <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-50 overflow-hidden rounded-2xl bg-black/70 shadow-2xl shadow-black/60 ring-1 ring-white/10 backdrop-blur-xl duration-200 animate-in fade-in slide-in-from-top-1">
+          <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-50 overflow-hidden rounded-2xl bg-[#141416] shadow-2xl shadow-black/70 ring-1 ring-white/10 duration-200 animate-in fade-in slide-in-from-top-1">
             {results.length > 0 ? (
               <ul className="p-2">
                 {results.map((a) => (

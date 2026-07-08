@@ -18,7 +18,6 @@ import {
   CalendarCheck,
   Clock,
   MessageSquare,
-  Sparkles,
   TrendingUp,
 } from "lucide-react";
 
@@ -80,7 +79,7 @@ export default function HomePage() {
         </Reveal>
 
         {/* 검색 + AI 캐스팅 */}
-        <Reveal delay={60} className="mt-7">
+        <Reveal delay={60} className="relative z-40 mt-7">
           <HomeSearch />
         </Reveal>
 
@@ -137,37 +136,8 @@ export default function HomePage() {
             </Link>
           </Reveal>
 
-          {/* AI 캐스팅 (풀폭, 오렌지 강조 글래스) */}
-          <Reveal delay={190} className="col-span-2">
-            <Link href="/recommend" className="group block">
-              <div className="glass glass-hover relative flex items-center gap-4 overflow-hidden rounded-[1.5rem] p-5 sm:p-6">
-                <div
-                  aria-hidden
-                  className="glow-orange pointer-events-none absolute -right-6 -top-8 h-40 w-40 rounded-full blur-2xl"
-                />
-                <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-500/20 ring-1 ring-brand-500/40">
-                  <Sparkles className="h-5 w-5 text-brand-400" />
-                </span>
-                <div className="relative min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-black text-white sm:text-lg">
-                      AI 캐스팅 추천
-                    </h3>
-                    <span className="rounded-full bg-brand-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
-                      BETA
-                    </span>
-                  </div>
-                  <p className="mt-0.5 truncate text-sm text-white/55">
-                    예산·이미지 넣으면 5초 만에 딱 맞는 캐스팅
-                  </p>
-                </div>
-                <ArrowUpRight className="premium-ease relative h-5 w-5 shrink-0 text-brand-400 group-hover:translate-x-0.5" />
-              </div>
-            </Link>
-          </Reveal>
-
           {/* SLA 라이브 (풀폭) */}
-          <Reveal delay={230} className="col-span-2">
+          <Reveal delay={190} className="col-span-2">
             <div className="glass flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl px-5 py-3.5 text-sm">
               <span className="flex items-center gap-1.5 text-white/55">
                 <Clock className="h-3.5 w-3.5 text-brand-500" /> 평균 응답{" "}
