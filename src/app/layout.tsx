@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    title: "xong",
+    title: "XONG",
     statusBarStyle: "black-translucent",
   },
   title: {
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   description: SITE.description,
   keywords: [...SITE.keywords],
-  applicationName: SITE.name,
+  applicationName: "XONG",
   authors: [{ name: SITE.name, url: SITE.url }],
   creator: SITE.name,
   publisher: SITE.name,

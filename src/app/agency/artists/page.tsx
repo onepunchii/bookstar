@@ -5,7 +5,8 @@ import { getAgencyArtists } from "@/lib/data/artists";
 import { profileCompleteness } from "@/lib/profile";
 import { CATEGORY_LABELS, formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Camera, Pencil, Plus } from "lucide-react";
+import { Camera, Pencil } from "lucide-react";
+import { NewArtistButton } from "./new-artist-button";
 
 // 매니저 스코프 필터는 매니저 DB 연동(Phase 5) 후 복원 예정.
 export default async function AgencyArtistsPage() {
@@ -19,12 +20,7 @@ export default async function AgencyArtistsPage() {
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {/* 새 아티스트 등록 */}
-        <button className="flex min-h-56 flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-neutral-300 text-neutral-400 transition-colors hover:border-brand-500 hover:text-brand-600">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100">
-            <Plus className="h-5 w-5" />
-          </span>
-          <span className="text-sm font-semibold">새 아티스트 등록</span>
-        </button>
+        <NewArtistButton />
 
         {visible.map((artist) => {
           const { score } = profileCompleteness(artist);
