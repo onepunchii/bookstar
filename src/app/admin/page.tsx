@@ -1,7 +1,7 @@
 // 관리자 허브 — 전체 가입자·유입·섭외 현황. users.role='admin' 전용.
 import Link from "next/link";
-import { getSessionUser } from "@/lib/data/session";
-import { getAdminOverview } from "@/lib/data/admin";
+import { getAdminOverview, requireAdmin } from "@/lib/data/admin";
+import { AdminGate } from "./admin-gate";
 import {
   Building2,
   CircleUserRound,
@@ -38,26 +38,7 @@ function fmtDate(iso: string) {
 }
 
 export default async function AdminHubPage() {
-  const user = await getSessionUser();
-  if (!user || user.role !== "admin") {
-    return (
-      <div className="mx-auto max-w-lg px-6 py-24 text-center">
-        <ShieldAlert className="mx-auto h-8 w-8 text-white/30" />
-        <h1 className="mt-4 text-xl font-black tracking-tight text-white">
-          관리자 전용
-        </h1>
-        <p className="mt-3 text-sm text-white/50">
-          이 페이지는 xong 운영 관리자만 접근할 수 있어요.
-        </p>
-        <Link
-          href="/"
-          className="mt-6 inline-block rounded-full bg-white/10 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/15"
-        >
-          홈으로
-        </Link>
-      </div>
-    );
-  }
+  if (!(await requireAdmin())) return <AdminGate />;
 
   const o = await getAdminOverview();
 

@@ -1,13 +1,16 @@
 // 관리자 영역 셸 — 다크 배경 + 앱 복귀 링크. 앱 셸(AppShell) 밖에서 자체 크롬.
 import Link from "next/link";
 import { Wordmark } from "@/components/wordmark";
+import { requireAdmin } from "@/lib/data/admin";
 import { ArrowLeft } from "lucide-react";
+import { AdminNav } from "./admin-nav";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const admin = await requireAdmin();
   return (
     <div className="min-h-dvh bg-[#0a0a0b] text-white">
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-white/8 bg-[#0a0a0b]/85 px-4 backdrop-blur sm:px-6">
@@ -26,6 +29,7 @@ export default function AdminLayout({
           <ArrowLeft className="h-3.5 w-3.5" /> 앱으로
         </Link>
       </header>
+      {admin && <AdminNav />}
       {children}
     </div>
   );
