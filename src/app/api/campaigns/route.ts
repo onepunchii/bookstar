@@ -2,7 +2,6 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { createCampaign } from "@/lib/data/campaigns";
-import { getSessionProfile } from "@/lib/data/session";
 
 const UUID = /^[0-9a-f-]{36}$/;
 
@@ -33,9 +32,8 @@ export async function POST(req: Request) {
         { status: 400 }
       );
 
-    const profile = await getSessionProfile();
     const companyName =
-      b.companyName?.trim() || profile?.company || profile?.name || null;
+      b.companyName?.trim() || session.user?.name || null;
 
     const id = await createCampaign({
       companyUserId: uid,
