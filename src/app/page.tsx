@@ -213,7 +213,7 @@ export default async function HomePage() {
           <div className="mt-6 grid grid-cols-1 gap-3 sm:gap-6 lg:grid-cols-3">
             {BUNDLES.map((b, i) => (
               <Reveal key={b.id} delay={i * 60}>
-                <LineupBundleCard bundle={b} dark />
+                <LineupBundleCard bundle={b} dbArtists={ARTISTS} dark />
               </Reveal>
             ))}
           </div>

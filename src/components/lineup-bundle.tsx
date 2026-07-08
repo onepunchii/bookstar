@@ -2,20 +2,31 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { getArtist } from "@/lib/mock-data";
-import { formatBudget, type LineupBundle } from "@/lib/types";
+import { formatBudget, type Artist, type LineupBundle } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Package } from "lucide-react";
 
 interface Props {
   bundle: LineupBundle;
+  dbArtists?: Artist[];
   className?: string;
   dark?: boolean;
 }
 
-export function LineupBundleCard({ bundle, className, dark = false }: Props) {
+export function LineupBundleCard({
+  bundle,
+  dbArtists = [],
+  className,
+  dark = false,
+}: Props) {
+  // 번들 멤버(mock id) → 슬러그로 DB 아티스트 매칭(사진·실데이터). 없으면 목.
   const artists = bundle.artistIds
-    .map((id) => getArtist(id))
-    .filter(Boolean) as NonNullable<ReturnType<typeof getArtist>>[];
+    .map((id) => {
+      const mock = getArtist(id);
+      if (!mock) return undefined;
+      return dbArtists.find((a) => a.slug === mock.slug) ?? mock;
+    })
+    .filter(Boolean) as Artist[];
 
   const inner = (
     <>
@@ -49,20 +60,34 @@ export function LineupBundleCard({ bundle, className, dark = false }: Props) {
 
       {/* 아티스트 썸네일 스택 */}
       <div className="mt-4 flex -space-x-2">
-        {artists.map((a) => (
-          <div
-            key={a.id}
-            title={a.name}
-            className={cn(
-              "flex h-10 w-10 items-center justify-center rounded-full text-sm font-black",
-              dark
-                ? "bg-white/10 text-white/70 ring-2 ring-[#141416]"
-                : "bg-gradient-to-br from-neutral-100 to-brand-50 text-neutral-400 ring-2 ring-white"
-            )}
-          >
-            {a.name.slice(0, 1)}
-          </div>
-        ))}
+        {artists.map((a) =>
+          a.imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={a.id}
+              src={a.imageUrl}
+              alt={a.name}
+              title={a.name}
+              className={cn(
+                "h-10 w-10 rounded-full object-cover ring-2",
+                dark ? "ring-[#141416]" : "ring-white"
+              )}
+            />
+          ) : (
+            <div
+              key={a.id}
+              title={a.name}
+              className={cn(
+                "flex h-10 w-10 items-center justify-center rounded-full text-sm font-black",
+                dark
+                  ? "bg-white/10 text-white/70 ring-2 ring-[#141416]"
+                  : "bg-gradient-to-br from-neutral-100 to-brand-50 text-neutral-400 ring-2 ring-white"
+              )}
+            >
+              {a.name.slice(0, 1)}
+            </div>
+          )
+        )}
       </div>
 
       <div

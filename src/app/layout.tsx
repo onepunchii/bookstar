@@ -1,10 +1,21 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/app-shell";
 import { SITE } from "@/lib/site";
 
+export const viewport: Viewport = {
+  // 스플래시·주소창 배경 블랙
+  themeColor: "#000000",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "xong",
+    statusBarStyle: "black-translucent",
+  },
   title: {
     default: "xong · 연예인·인플루언서 섭외 — eXperience ON",
     template: "%s · xong",
@@ -16,7 +27,11 @@ export const metadata: Metadata = {
   creator: SITE.name,
   publisher: SITE.name,
   alternates: { canonical: "/" },
-  icons: { icon: "/xong1.webp", apple: "/xong1.webp" },
+  icons: {
+    icon: [{ url: "/app.png", type: "image/png" }],
+    shortcut: "/app.png",
+    apple: "/app.png",
+  },
   openGraph: {
     type: "website",
     siteName: SITE.name,
