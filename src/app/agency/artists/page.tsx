@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { getAgencyArtists } from "@/lib/data/artists";
 import { getSessionAgency } from "@/lib/data/session";
+import { artistLimit } from "@/lib/plan";
 import { profileCompleteness } from "@/lib/profile";
 import { CATEGORY_LABELS, formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -25,10 +26,24 @@ export default async function AgencyArtistsPage() {
           </div>
         </div>
       )}
-      <div className="mb-5 flex items-center justify-between">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-neutral-500">
-          소속 아티스트 {visible.length}팀 · 프로필과 사진은 여기서 관리해요
+          소속 아티스트 {visible.length}팀
+          {agency &&
+            Number.isFinite(artistLimit(agency.agencyType)) &&
+            ` / ${artistLimit(agency.agencyType)}팀`}{" "}
+          · 프로필과 사진은 여기서 관리해요
         </p>
+        {agency &&
+          agency.agencyType === "solo" &&
+          visible.length >= artistLimit(agency.agencyType) && (
+            <Link
+              href="/agency/account"
+              className="rounded-full bg-brand-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-brand-600"
+            >
+              여러 팀 관리 → 소속사로 업그레이드
+            </Link>
+          )}
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {/* 새 아티스트 등록 */}

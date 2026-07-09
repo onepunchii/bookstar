@@ -13,9 +13,19 @@ export function NewArtistButton() {
     setCreating(true);
     try {
       const res = await fetch("/api/artists/create", { method: "POST" });
-      if (!res.ok) throw new Error();
-      const { slug } = (await res.json()) as { slug: string };
-      router.push(`/agency/artists/${slug}`);
+      const data = (await res.json().catch(() => ({}))) as {
+        slug?: string;
+        error?: string;
+        upgrade?: boolean;
+      };
+      if (res.status === 403 && data.upgrade) {
+        if (confirm(`${data.error}\n\n계정·요금제로 이동할까요?`))
+          router.push("/agency/account");
+        setCreating(false);
+        return;
+      }
+      if (!res.ok || !data.slug) throw new Error();
+      router.push(`/agency/artists/${data.slug}`);
     } catch {
       alert("등록에 실패했어요. 다시 시도해주세요.");
       setCreating(false);

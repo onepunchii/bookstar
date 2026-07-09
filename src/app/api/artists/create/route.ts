@@ -1,24 +1,37 @@
-import { desc } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { getDb, schema } from "@/lib/db";
+import { getSessionAgency } from "@/lib/data/session";
+import { artistLimit } from "@/lib/plan";
 
-// 새 아티스트 등록 — 빈 프로필 생성 후 편집 화면으로. (소속사 인증 필요)
+// 새 아티스트 등록 — 세션 소속사 스코프 + 유형별 한도. (소속사 인증 필요)
 export async function POST() {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+  const agency = await getSessionAgency();
+  if (!agency) {
+    return NextResponse.json(
+      { error: "소속사 인증이 필요해요" },
+      { status: 401 }
+    );
   }
   try {
     const db = getDb();
-    // 소속 소속사(데모: 첫 소속사)
-    const [agency] = await db
-      .select({ id: schema.agencies.id, companyName: schema.agencies.companyName })
-      .from(schema.agencies)
-      .limit(1);
-    if (!agency) {
-      return NextResponse.json({ error: "소속사 없음" }, { status: 400 });
+
+    // 유형별 한도 확인 — solo는 1팀
+    const [{ n }] = await db
+      .select({ n: sql<number>`count(*)::int` })
+      .from(schema.artists)
+      .where(eq(schema.artists.agencyId, agency.id));
+    const limit = artistLimit(agency.agencyType);
+    if (Number(n) >= limit) {
+      return NextResponse.json(
+        {
+          error:
+            "1인 기획사는 아티스트 1팀까지 등록할 수 있어요. 여러 팀을 관리하려면 계정·요금제에서 소속사(기업·MCN)로 전환해주세요.",
+          upgrade: true,
+        },
+        { status: 403 }
+      );
     }
 
     // 고유 슬러그

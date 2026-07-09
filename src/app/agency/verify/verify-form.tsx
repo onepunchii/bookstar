@@ -68,7 +68,9 @@ export function VerifyForm({
 
   const submit = async () => {
     if (!companyName.trim()) return setError("소속사명을 입력해주세요");
-    if (!docUrl) return setError("사업자등록증 등 인증 서류를 첨부해주세요");
+    // 기업·MCN(company)만 사업자등록증 필수. 1인·인플루언서(solo)는 서류 없이 즉시 인증.
+    if (agencyType === "company" && !docUrl)
+      return setError("사업자등록증 등 인증 서류를 첨부해주세요");
     setSaving(true);
     setError(null);
     try {
@@ -153,10 +155,20 @@ export function VerifyForm({
         />
       </label>
 
-      {/* 서류 */}
+      {/* 서류 — 기업·MCN만 필수, 1인·인플루언서는 선택 */}
       <div>
         <p className="mb-1.5 text-sm font-semibold text-neutral-700">
-          인증 서류 * <span className="font-normal text-neutral-400">사업자등록증 · 아티스트 권리 증빙 (PDF·이미지)</span>
+          인증 서류{" "}
+          {agencyType === "company" ? (
+            <span className="text-brand-500">*</span>
+          ) : (
+            <span className="font-normal text-neutral-400">(선택)</span>
+          )}{" "}
+          <span className="font-normal text-neutral-400">
+            {agencyType === "company"
+              ? "사업자등록증 (PDF·이미지)"
+              : "개인은 서류 없이 바로 시작할 수 있어요"}
+          </span>
         </p>
         <input
           ref={fileRef}

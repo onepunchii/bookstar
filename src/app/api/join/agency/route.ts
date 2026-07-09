@@ -101,8 +101,9 @@ export async function POST(req: Request) {
 
     const companyName =
       body.companyName?.trim() || `${session.user?.name ?? "내"} 엔터테인먼트`;
-    // 서류 첨부 시 즉시 자동 인증 (지금은 전면 무료 — 관리자 사후 검수)
-    const autoVerified = !!body.businessDocUrl;
+    const agencyType = body.agencyType === "company" ? "company" : "solo";
+    // 1인·인플루언서(solo)는 서류 없이 즉시 인증. 기업·MCN(company)은 서류 확인 시 자동 인증.
+    const autoVerified = agencyType === "solo" || !!body.businessDocUrl;
     const [agency] = await db
       .insert(schema.agencies)
       .values({
@@ -110,7 +111,7 @@ export async function POST(req: Request) {
         companyName,
         manager: body.manager?.trim() || null,
         phone: body.phone?.trim() || null,
-        agencyType: body.agencyType === "company" ? "company" : "solo",
+        agencyType,
         businessDocUrl: body.businessDocUrl ?? null,
         businessNumber: body.businessNumber?.trim() || null,
         businessType: body.businessType?.trim() || null,
