@@ -206,10 +206,11 @@ export function VerifyForm({
         className="flex w-full items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 py-3.5 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
       >
         {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-        인증 신청하기
+        인증하고 바로 시작하기
       </button>
       <p className="text-center text-xs text-neutral-400">
-        제출 후 운영팀 검토를 거쳐 승인되면 소속사 센터가 열립니다. 검토 중에도 콘솔은 미리 둘러볼 수 있어요.
+        서류가 자동 확인되면 즉시 소속사 센터가 열려요. 지금은 모든 기능이
+        무료입니다.
       </p>
     </div>
   );

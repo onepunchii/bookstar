@@ -52,7 +52,7 @@ export default async function AgencyVerifyPage() {
         <p className="mt-2 text-sm text-neutral-500">
           {agency?.verificationStatus === "rejected"
             ? "이전 신청이 반려됐어요. 서류를 다시 확인해 제출해주세요."
-            : "아티스트를 관리하려면 소속사 인증이 필요해요. 서류 제출 후 승인되면 콘솔이 열립니다."}
+            : "아티스트를 관리하려면 소속사 인증이 필요해요. 서류가 확인되면 즉시 콘솔이 열립니다."}
         </p>
       </div>
       <VerifyForm
