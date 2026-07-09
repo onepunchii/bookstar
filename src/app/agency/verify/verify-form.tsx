@@ -25,8 +25,10 @@ export function VerifyForm({
   const [companyName, setCompanyName] = useState(initial.companyName);
   const [manager, setManager] = useState(initial.manager);
   const [phone, setPhone] = useState(initial.phone);
+  const [bizNumber, setBizNumber] = useState("");
   const [docUrl, setDocUrl] = useState<string | null>(null);
   const [docName, setDocName] = useState<string | null>(null);
+  const [ocrFilled, setOcrFilled] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,6 +44,18 @@ export function VerifyForm({
       if (!res.ok) throw new Error(data.error ?? "업로드 실패");
       setDocUrl(data.url);
       setDocName(file.name);
+      // OCR 자동 입력 — 서류에서 인식된 값으로 빈 칸 채움
+      const ocr = data.ocr as {
+        companyName?: string | null;
+        repName?: string | null;
+        bizNumber?: string | null;
+      } | null;
+      if (ocr && (ocr.companyName || ocr.repName || ocr.bizNumber)) {
+        if (ocr.companyName) setCompanyName((v) => v.trim() || ocr.companyName!);
+        if (ocr.repName) setManager((v) => v.trim() || ocr.repName!);
+        if (ocr.bizNumber) setBizNumber((v) => v.trim() || ocr.bizNumber!);
+        setOcrFilled(true);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "서류 업로드 실패");
     } finally {
@@ -64,6 +78,7 @@ export function VerifyForm({
           phone: phone || undefined,
           agencyType,
           businessDocUrl: docUrl,
+          businessNumber: bizNumber || undefined,
         }),
       });
       const data = await res.json();
@@ -119,6 +134,21 @@ export function VerifyForm({
         </label>
       </div>
 
+      <label className="block">
+        <span className="mb-1.5 block text-sm font-semibold text-neutral-700">
+          사업자등록번호{" "}
+          <span className="font-normal text-neutral-400">
+            (서류 첨부 시 자동 인식)
+          </span>
+        </span>
+        <input
+          value={bizNumber}
+          onChange={(e) => setBizNumber(e.target.value)}
+          placeholder="000-00-00000"
+          className={field}
+        />
+      </label>
+
       {/* 서류 */}
       <div>
         <p className="mb-1.5 text-sm font-semibold text-neutral-700">
@@ -136,12 +166,20 @@ export function VerifyForm({
           }}
         />
         {docUrl ? (
-          <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
-            <FileText className="h-5 w-5 shrink-0 text-emerald-600" />
-            <span className="min-w-0 flex-1 truncate text-sm font-medium text-emerald-800">{docName}</span>
-            <button type="button" onClick={() => { setDocUrl(null); setDocName(null); }} aria-label="삭제" className="text-emerald-600 hover:text-emerald-800">
-              <X className="h-4 w-4" />
-            </button>
+          <div>
+            <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+              <FileText className="h-5 w-5 shrink-0 text-emerald-600" />
+              <span className="min-w-0 flex-1 truncate text-sm font-medium text-emerald-800">{docName}</span>
+              <button type="button" onClick={() => { setDocUrl(null); setDocName(null); setOcrFilled(false); }} aria-label="삭제" className="text-emerald-600 hover:text-emerald-800">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            {ocrFilled && (
+              <p className="mt-1.5 text-xs font-medium text-brand-600">
+                ✨ 서류에서 상호·대표자·사업자번호를 자동 입력했어요 — 확인 후
+                제출해 주세요
+              </p>
+            )}
           </div>
         ) : (
           <button

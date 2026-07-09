@@ -49,7 +49,14 @@ export default async function AdminAgenciesPage() {
           const vs = VS[a.verificationStatus] ?? VS.pending;
           return (
             <tr key={a.id}>
-              <Td className="font-medium">{a.companyName}</Td>
+              <Td className="font-medium">
+                {a.companyName}
+                {a.businessNumber && (
+                  <span className="ml-1.5 text-[11px] tabular-nums text-white/40">
+                    {a.businessNumber}
+                  </span>
+                )}
+              </Td>
               <Td>
                 <Pill tone={vs.tone}>{vs.label}</Pill>
               </Td>

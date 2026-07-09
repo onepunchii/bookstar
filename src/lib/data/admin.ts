@@ -188,6 +188,7 @@ export interface AdminAgencyRow {
   verified: boolean;
   verificationStatus: string;
   businessDocUrl: string | null;
+  businessNumber: string | null;
   artistCount: number;
   createdAt: string;
 }
@@ -206,6 +207,7 @@ export async function getAdminAgencies(): Promise<AdminAgencyRow[]> {
       verified: schema.agencies.verified,
       verificationStatus: schema.agencies.verificationStatus,
       businessDocUrl: schema.agencies.businessDocUrl,
+      businessNumber: schema.agencies.businessNumber,
       createdAt: schema.agencies.createdAt,
       artistCount: sql<number>`(
         select count(*)::int from ${schema.artists}
@@ -229,6 +231,7 @@ export async function getAdminAgencies(): Promise<AdminAgencyRow[]> {
     verified: a.verified,
     verificationStatus: a.verificationStatus,
     businessDocUrl: a.businessDocUrl,
+    businessNumber: a.businessNumber,
     artistCount: Number(a.artistCount),
     createdAt: a.createdAt.toISOString(),
   }));

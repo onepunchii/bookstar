@@ -77,6 +77,7 @@ export const agencies = pgTable("agencies", {
   // 소속사 인증 상태 — 셀프 가입 시 pending(심사 대기), 관리자 승인 시 verified
   verificationStatus: text("verification_status").notNull().default("pending"), // pending | verified | rejected
   businessDocUrl: text("business_doc_url"), // 사업자등록증 등 첨부 서류(Blob)
+  businessNumber: text("business_number"), // 사업자등록번호 — OCR 자동 인식/수동 입력
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
