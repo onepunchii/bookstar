@@ -238,9 +238,9 @@ export default async function AgencyDashboardPage() {
             <Package className="h-3.5 w-3.5 text-brand-500" /> 번들 상품{" "}
             {BUNDLES.length}개
           </h2>
-          <button className="flex shrink-0 items-center gap-1 whitespace-nowrap text-xs font-semibold text-brand-600 hover:text-brand-700">
-            <Plus className="h-3 w-3" /> 새 번들 만들기
-          </button>
+          <span className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] font-semibold text-neutral-400">
+            새 번들 만들기 · 준비 중
+          </span>
         </div>
         <p className="mt-1 text-xs text-neutral-400">
           아티스트 조합을 세트로 팔면 단건보다 전환율 2배

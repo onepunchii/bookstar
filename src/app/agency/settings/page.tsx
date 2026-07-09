@@ -7,7 +7,7 @@ export default async function AgencySettingsPage() {
   const agency = await getSessionAgency();
   const [artists, managers] = await Promise.all([
     getAgencyArtists(agency?.id),
-    getManagers(),
+    getManagers(agency?.id),
   ]);
 
   return (

@@ -10,7 +10,7 @@ export default async function AgencyTodayPage() {
   const [schedules, artists, managers] = await Promise.all([
     getDaySchedules(agency?.id),
     getAgencyArtists(agency?.id),
-    getManagers(),
+    getManagers(agency?.id),
   ]);
   return (
     <DaySheet

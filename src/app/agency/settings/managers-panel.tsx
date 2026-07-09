@@ -131,6 +131,18 @@ export function ManagersPanel({
         </Card>
       )}
 
+      {managers.length === 0 && (
+        <div className="rounded-2xl border border-dashed border-neutral-300 py-12 text-center">
+          <p className="text-sm font-semibold text-neutral-700">
+            아직 등록된 매니저가 없어요
+          </p>
+          <p className="mt-1 text-xs text-neutral-400">
+            &lsquo;매니저 초대&rsquo;로 담당자를 추가하면 담당 아티스트별로 권한을
+            나눌 수 있어요.
+          </p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {managers.map((m) => (
           <Card key={m.id} className="p-5">

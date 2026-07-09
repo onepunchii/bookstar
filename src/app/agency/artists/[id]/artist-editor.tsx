@@ -20,8 +20,22 @@ import {
   Check,
   CheckCircle2,
   ImagePlus,
+  Plus,
   X,
 } from "lucide-react";
+
+// 카테고리별 추천 태그 — 뭘 적을지 모를 때 클릭으로 바로 추가.
+const TAG_SUGGESTIONS: Record<ArtistCategory, string[]> = {
+  idol: ["축제", "행사", "팬미팅", "라이브공연", "브랜드모델", "예능", "댄스"],
+  actor: ["광고촬영", "브랜드모델", "화보", "행사", "토크쇼", "내레이션"],
+  model: ["화보", "런웨이", "광고촬영", "브랜드모델", "SNS협업", "피팅"],
+  mc: ["행사MC", "기업행사", "시상식", "결혼식", "쇼호스트", "진행"],
+  influencer: ["유튜브출연", "SNS협업", "제품리뷰", "라이브커머스", "브이로그", "챌린지"],
+  athlete: ["행사", "강연", "광고촬영", "브랜드모델", "원포인트레슨"],
+  speaker: ["강연", "세미나", "기업특강", "동기부여", "북토크", "패널토론"],
+};
+// 카테고리 무관 공통 태그
+const COMMON_TAGS = ["기업행사", "신년회", "브랜드협업", "지방가능", "당일확정"];
 
 export function ArtistEditor({ artist }: { artist: Artist }) {
   const [categories, setCategories] = useState<ArtistCategory[]>(
@@ -342,10 +356,47 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                     }
                   }}
                   onBlur={addTag}
-                  placeholder="입력 후 Enter"
-                  className="h-8 w-32 rounded-lg border border-neutral-200 px-2.5 text-sm placeholder:text-neutral-300 focus:border-brand-500 focus:outline-none"
+                  placeholder="직접 입력 후 Enter"
+                  className="h-8 w-36 rounded-lg border border-neutral-200 px-2.5 text-sm placeholder:text-neutral-300 focus:border-brand-500 focus:outline-none"
                 />
               </div>
+              {/* 카테고리 기반 추천 태그 — 클릭으로 추가 */}
+              {(() => {
+                const pool = [
+                  ...categories.flatMap((c) => TAG_SUGGESTIONS[c] ?? []),
+                  ...COMMON_TAGS,
+                ];
+                const suggestions = [...new Set(pool)].filter(
+                  (t) => !tags.includes(t)
+                );
+                if (suggestions.length === 0) return null;
+                return (
+                  <div className="mt-2.5">
+                    <p className="mb-1.5 text-xs font-medium text-neutral-400">
+                      {categories.length === 0
+                        ? "추천 태그 (카테고리를 고르면 더 정확해져요)"
+                        : "추천 태그 — 눌러서 추가"}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {suggestions.slice(0, 12).map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() =>
+                            setTags((prev) =>
+                              prev.includes(t) ? prev : [...prev, t]
+                            )
+                          }
+                          className="inline-flex items-center gap-1 rounded-full border border-dashed border-neutral-300 px-2.5 py-1 text-xs font-medium text-neutral-500 transition-colors hover:border-brand-500 hover:bg-brand-50 hover:text-brand-600"
+                        >
+                          <Plus className="h-3 w-3" />
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </Card>
 
