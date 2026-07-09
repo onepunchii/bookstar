@@ -4,12 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRoleStore, type Role } from "@/lib/role-store";
 import { cn } from "@/lib/utils";
-import { ChevronDown } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 
-const ROLES: { key: Role; label: string; home: string; initial: string }[] = [
-  { key: "company", label: "광고주", home: "/", initial: "브" },
-  { key: "agency", label: "소속사", home: "/agency", initial: "스" },
-  { key: "artist", label: "아티스트", home: "/me", initial: "정" },
+const ROLES: { key: Role; label: string; home: string; desc: string }[] = [
+  { key: "company", label: "광고주", home: "/", desc: "아티스트 섭외" },
+  { key: "agency", label: "소속사", home: "/agency", desc: "아티스트 관리" },
+  { key: "artist", label: "아티스트", home: "/me", desc: "내 일정·정산" },
 ];
 
 export function RoleSwitcher({
@@ -50,43 +50,37 @@ export function RoleSwitcher({
 
   return (
     <div ref={ref} className="relative">
-      {/* 컴팩트 pill */}
+      {/* 컴팩트 pill — 역할명 항상 표시 (모바일 포함) */}
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label="계정 전환"
+        aria-expanded={open}
         className={cn(
-          "premium-ease flex h-9 items-center gap-1.5 rounded-full pl-1 pr-2.5 text-sm font-semibold",
+          "premium-ease flex h-9 items-center gap-2 rounded-full px-3.5 text-[13px] font-bold",
           dark
-            ? "bg-white/8 text-white hover:bg-white/12"
-            : "bg-neutral-100 text-neutral-900 hover:bg-neutral-200",
-          open && "opacity-0"
+            ? "bg-white/8 text-white ring-1 ring-white/10 hover:bg-white/12"
+            : "bg-neutral-100 text-neutral-900 ring-1 ring-neutral-200/60 hover:bg-neutral-200"
         )}
       >
-        <span
-          className={cn(
-            "flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold text-white",
-            role === "company" ? "bg-brand-500" : "bg-neutral-900"
-          )}
-        >
-          {current.initial}
-        </span>
-        <span className="hidden sm:inline">{current.label}</span>
+        <span className="h-2 w-2 shrink-0 rounded-full bg-brand-500 shadow-[0_0_6px_rgba(255,90,0,0.7)]" />
+        {current.label}
         <ChevronDown
           className={cn(
-            "h-3.5 w-3.5",
+            "premium-ease h-3.5 w-3.5",
+            open && "rotate-180",
             dark ? "text-white/50" : "text-neutral-400"
           )}
         />
       </button>
 
-      {/* 펼침 세그먼트 토글 */}
+      {/* 드롭다운 — 역할 카드 */}
       {open && (
         <div
           className={cn(
-            "absolute right-0 top-0 z-50 flex h-9 items-center gap-0.5 rounded-full p-1 shadow-xl duration-300 animate-in fade-in slide-in-from-right-2",
+            "absolute right-0 top-11 z-50 w-48 rounded-2xl p-1.5 shadow-2xl duration-200 animate-in fade-in slide-in-from-top-1",
             dark
-              ? "bg-black/60 shadow-black/50 ring-1 ring-white/10 backdrop-blur-xl"
-              : "bg-white shadow-neutral-900/10 ring-1 ring-neutral-200"
+              ? "bg-[#151517]/95 shadow-black/60 ring-1 ring-white/10 backdrop-blur-xl"
+              : "bg-white shadow-neutral-900/15 ring-1 ring-neutral-200"
           )}
         >
           {ROLES.map((r) => {
@@ -96,20 +90,39 @@ export function RoleSwitcher({
                 key={r.key}
                 onClick={() => switchTo(r.key)}
                 className={cn(
-                  "premium-ease flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm font-semibold",
+                  "premium-ease flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left",
                   active
-                    ? "bg-brand-500 text-white"
+                    ? dark
+                      ? "bg-brand-500/15"
+                      : "bg-brand-50"
                     : dark
-                      ? "text-white/55 hover:text-white"
-                      : "text-neutral-400 hover:text-neutral-900"
+                      ? "hover:bg-white/5"
+                      : "hover:bg-neutral-50"
                 )}
               >
-                {active && (
-                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-white/25 text-[9px]">
-                    {r.initial}
-                  </span>
-                )}
-                {r.label}
+                <div className="min-w-0 flex-1">
+                  <p
+                    className={cn(
+                      "text-sm font-bold",
+                      active
+                        ? "text-brand-500"
+                        : dark
+                          ? "text-white"
+                          : "text-neutral-900"
+                    )}
+                  >
+                    {r.label}
+                  </p>
+                  <p
+                    className={cn(
+                      "text-[11px]",
+                      dark ? "text-white/40" : "text-neutral-400"
+                    )}
+                  >
+                    {r.desc}
+                  </p>
+                </div>
+                {active && <Check className="h-4 w-4 shrink-0 text-brand-500" />}
               </button>
             );
           })}
