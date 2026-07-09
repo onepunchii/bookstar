@@ -121,13 +121,24 @@ export function DocsLibrary({ documents }: { documents: DocumentItem[] }) {
         {visible.map((doc) => (
           <Card
             key={doc.id}
-            className="flex items-center gap-4 p-4 transition-colors hover:border-neutral-400"
+            className={
+              doc.demo
+                ? "flex items-center gap-4 p-4 opacity-60"
+                : "flex items-center gap-4 p-4 transition-colors hover:border-neutral-400"
+            }
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-neutral-100">
               <FileText className="h-4.5 w-4.5 text-neutral-500" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">{doc.name}</p>
+              <div className="flex items-center gap-1.5">
+                <p className="truncate text-sm font-semibold">{doc.name}</p>
+                {doc.demo && (
+                  <span className="shrink-0 rounded-full bg-neutral-200 px-1.5 py-0.5 text-[10px] font-bold text-neutral-500">
+                    예시
+                  </span>
+                )}
+              </div>
               <p className="mt-0.5 truncate text-xs text-neutral-400">
                 {[doc.eventTitle, doc.artistName, doc.date]
                   .filter(Boolean)
@@ -137,7 +148,14 @@ export function DocsLibrary({ documents }: { documents: DocumentItem[] }) {
             <Badge variant={doc.type === "계약서" ? "brand" : "default"}>
               {doc.type}
             </Badge>
-            {doc.fileUrl ? (
+            {doc.demo ? (
+              <span
+                title="예시 문서"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-neutral-200"
+              >
+                <Download className="h-4 w-4" />
+              </span>
+            ) : doc.fileUrl ? (
               <a
                 href={doc.fileUrl}
                 target="_blank"
@@ -158,6 +176,17 @@ export function DocsLibrary({ documents }: { documents: DocumentItem[] }) {
             )}
           </Card>
         ))}
+        {visible.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-neutral-300 py-12 text-center">
+            <p className="text-sm font-semibold text-neutral-700">
+              아직 보관된 서류가 없어요
+            </p>
+            <p className="mt-1 text-xs text-neutral-400">
+              문서 업로드로 계약서·큐시트·정산서를 보관하세요. 전자계약으로
+              체결한 계약서는 자동으로 쌓여요.
+            </p>
+          </div>
+        )}
       </div>
 
       <p className="mt-4 text-xs text-neutral-400">

@@ -27,6 +27,6 @@ export async function getManagers(agencyId?: string): Promise<Manager[]> {
   } catch {
     /* 폴백 */
   }
-  // 데모 폴백 — 샘플 1개
-  return MOCK.slice(0, 1);
+  // 데모 폴백 — 예시 1개만, demo 마킹
+  return MOCK.slice(0, 1).map((m) => ({ ...m, demo: true }));
 }

@@ -156,6 +156,7 @@ export interface DocumentItem {
   artistName: string;
   date: string;
   fileUrl?: string;
+  demo?: boolean; // 데모 예시(실데이터 아님) — 표기+비활성
 }
 
 // ── 라인업 번들 ──
@@ -187,6 +188,7 @@ export interface Manager {
   role: string; // 실장, 팀장, 로드매니저
   phone: string;
   artistIds: string[];
+  demo?: boolean; // 데모 예시(실데이터 아님) — 표기+비활성
 }
 
 export const CATEGORY_LABELS: Record<ArtistCategory, string> = {

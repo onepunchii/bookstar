@@ -145,7 +145,7 @@ export function ManagersPanel({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {managers.map((m) => (
-          <Card key={m.id} className="p-5">
+          <Card key={m.id} className={m.demo ? "p-5 opacity-60" : "p-5"}>
             <div className="flex items-center gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-900 text-white">
                 <UserRound className="h-5 w-5" />
@@ -156,6 +156,11 @@ export function ManagersPanel({
                   <Badge variant={m.role === "실장" ? "dark" : "default"}>
                     {m.role}
                   </Badge>
+                  {m.demo && (
+                    <span className="rounded-full bg-neutral-200 px-1.5 py-0.5 text-[10px] font-bold text-neutral-500">
+                      예시
+                    </span>
+                  )}
                 </div>
                 {m.phone && (
                   <p className="mt-0.5 flex items-center gap-1 text-xs text-neutral-400">
@@ -185,16 +190,22 @@ export function ManagersPanel({
                     </button>
                   ) : null;
                 })}
-                <button
-                  onClick={() =>
-                    setAssignFor((v) => (v === m.id ? null : m.id))
-                  }
-                  className="rounded-full border border-dashed border-neutral-300 px-2.5 py-0.5 text-xs font-medium text-neutral-400 transition-colors hover:border-brand-500 hover:text-brand-600"
-                >
-                  + 배정
-                </button>
+                {m.demo ? (
+                  <span className="rounded-full border border-dashed border-neutral-200 px-2.5 py-0.5 text-xs text-neutral-300">
+                    예시 · 초대 후 배정 가능
+                  </span>
+                ) : (
+                  <button
+                    onClick={() =>
+                      setAssignFor((v) => (v === m.id ? null : m.id))
+                    }
+                    className="rounded-full border border-dashed border-neutral-300 px-2.5 py-0.5 text-xs font-medium text-neutral-400 transition-colors hover:border-brand-500 hover:text-brand-600"
+                  >
+                    + 배정
+                  </button>
+                )}
               </div>
-              {assignFor === m.id && (
+              {assignFor === m.id && !m.demo && (
                 <div className="mt-2 flex flex-wrap gap-1.5 rounded-xl bg-neutral-50 p-2.5">
                   {artists
                     .filter((a) => !m.artistIds.includes(a.id))
