@@ -231,21 +231,24 @@ export default async function AgencyDashboardPage() {
         </Link>
       </Card>
 
-      {/* 번들 상품 */}
+      {/* 번들 상품 — 미리보기(준비 중, 아래는 예시) */}
       <Card className="p-6 md:col-span-2">
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
-            <Package className="h-3.5 w-3.5 text-brand-500" /> 번들 상품{" "}
-            {BUNDLES.length}개
+            <Package className="h-3.5 w-3.5 text-brand-500" /> 번들 상품
+            <span className="rounded-full bg-neutral-200 px-1.5 py-0.5 text-[10px] font-bold text-neutral-500">
+              미리보기
+            </span>
           </h2>
           <span className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] font-semibold text-neutral-400">
             새 번들 만들기 · 준비 중
           </span>
         </div>
         <p className="mt-1 text-xs text-neutral-400">
-          아티스트 조합을 세트로 팔면 단건보다 전환율 2배
+          여러 아티스트를 세트로 묶어 파는 기능이에요 · 곧 제공됩니다. 아래는
+          예시입니다.
         </p>
-        <div className="mt-3 space-y-2">
+        <div className="mt-3 space-y-2 opacity-60">
           {BUNDLES.map((b) => (
             <div
               key={b.id}
