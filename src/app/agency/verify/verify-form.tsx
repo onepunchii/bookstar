@@ -160,15 +160,17 @@ export function VerifyForm({
         <p className="mb-1.5 text-sm font-semibold text-neutral-700">
           인증 서류{" "}
           {agencyType === "company" ? (
-            <span className="text-brand-500">*</span>
+            <>
+              <span className="text-brand-500">*</span>{" "}
+              <span className="font-normal text-neutral-400">
+                사업자등록증 (PDF·이미지)
+              </span>
+            </>
           ) : (
-            <span className="font-normal text-neutral-400">(선택)</span>
-          )}{" "}
-          <span className="font-normal text-neutral-400">
-            {agencyType === "company"
-              ? "사업자등록증 (PDF·이미지)"
-              : "개인은 서류 없이 바로 시작할 수 있어요"}
-          </span>
+            <span className="font-bold text-brand-600">
+              (선택) 개인은 서류 없이 바로 시작할 수 있어요 ✨
+            </span>
+          )}
         </p>
         <input
           ref={fileRef}
