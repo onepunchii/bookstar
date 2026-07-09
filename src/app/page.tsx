@@ -1,12 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { HomeSearch } from "@/components/home-search";
 import { LineupBundleCard } from "@/components/lineup-bundle";
+import { LiveSignal } from "@/components/live-signal";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { PremiumArtistCard } from "@/components/premium/premium-artist-card";
 import { PremiumCTA } from "@/components/premium/premium-cta";
 import { Reveal } from "@/components/premium/reveal";
-import { getPublicArtists, getPublicScheduleMap } from "@/lib/data/artists";
+import { getPublicArtists } from "@/lib/data/artists";
 import { getBookingRequests } from "@/lib/data/booking-requests";
 import { getCompanyCampaigns } from "@/lib/data/campaigns";
 import { getSessionUser } from "@/lib/data/session";
@@ -15,7 +17,6 @@ import { BUNDLES } from "@/lib/mock-data";
 import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
 import {
   ArrowUpRight,
-  CalendarCheck,
   Clock,
   Megaphone,
   MessageSquare,
@@ -24,9 +25,8 @@ import {
 
 export default async function HomePage() {
   const user = await getSessionUser();
-  const [ARTISTS, scheduleMap, BOOKING_REQUESTS] = await Promise.all([
+  const [ARTISTS, BOOKING_REQUESTS] = await Promise.all([
     getPublicArtists(),
-    getPublicScheduleMap(),
     getBookingRequests(user ? { companyUserId: user.id } : undefined),
   ]);
   const inProgress = BOOKING_REQUESTS.filter((r) =>
@@ -44,17 +44,6 @@ export default async function HomePage() {
         .at(-1)
     : undefined;
   const featured = ARTISTS.slice(0, 4);
-  const fastResponders = [...ARTISTS]
-    .sort((a, b) => a.responseHours - b.responseHours)
-    .slice(0, 4);
-  const availableThisWeek = ARTISTS.map((a) => ({
-    artist: a,
-    days: (scheduleMap[a.id] ?? [])
-      .slice(6, 13)
-      .filter((d) => d.availability === "available").length,
-  }))
-    .sort((x, y) => y.days - x.days)
-    .slice(0, 4);
   const avgHours =
     Math.round(
       (ARTISTS.reduce((s, a) => s + a.responseHours, 0) / ARTISTS.length) * 10
@@ -250,51 +239,10 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── 인사이트 2열 ──────────────────────── */}
-        <section className="mt-14 sm:mt-20">
-          <div className="grid grid-cols-1 gap-3 sm:gap-6 md:grid-cols-2">
-            <Reveal>
-              <div className="glass h-full rounded-[1.5rem] p-6">
-                <Eyebrow>Fast Response</Eyebrow>
-                <div className="mt-4 divide-y divide-white/8">
-                  {fastResponders.map((a) => (
-                    <Link
-                      key={a.id}
-                      href={`/artists/${a.slug}`}
-                      className="premium-ease flex items-center justify-between py-3 text-white/80 first:pt-0 last:pb-0 hover:text-brand-400"
-                    >
-                      <span className="font-semibold">{a.name}</span>
-                      <span className="text-sm text-white/40">
-                        평균 {a.responseHours}시간
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </Reveal>
-            <Reveal delay={80}>
-              <div className="glass h-full rounded-[1.5rem] p-6">
-                <Eyebrow>
-                  <CalendarCheck className="h-3 w-3" /> This Week
-                </Eyebrow>
-                <div className="mt-4 divide-y divide-white/8">
-                  {availableThisWeek.map(({ artist, days }) => (
-                    <Link
-                      key={artist.id}
-                      href={`/artists/${artist.slug}`}
-                      className="premium-ease flex items-center justify-between py-3 text-white/80 first:pt-0 last:pb-0 hover:text-brand-400"
-                    >
-                      <span className="font-semibold">{artist.name}</span>
-                      <span className="text-sm font-bold text-brand-400">
-                        {days}일 가능
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </Reveal>
-          </div>
-        </section>
+        {/* ── 라이브 시그널 — 네이버·유튜브 실측 화제성 (실데이터 없으면 미노출) ── */}
+        <Suspense fallback={null}>
+          <LiveSignal artists={ARTISTS} />
+        </Suspense>
 
         {/* ── CTA 밴드 ──────────────────────────── */}
         <section className="mt-14 sm:mt-20">
