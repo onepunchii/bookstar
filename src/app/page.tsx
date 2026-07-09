@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
+import { FeedbackBox } from "@/components/feedback-box";
 import { HomeSearch } from "@/components/home-search";
 import { LineupBundleCard } from "@/components/lineup-bundle";
 import { LiveSignal } from "@/components/live-signal";
@@ -265,6 +266,13 @@ export default async function HomePage() {
                 </div>
               </div>
             </div>
+          </Reveal>
+        </section>
+
+        {/* ── 건의함 — 제휴·버그·개선 (최하단) ── */}
+        <section className="mt-14 sm:mt-20">
+          <Reveal>
+            <FeedbackBox role="company" dark />
           </Reveal>
         </section>
       </div>

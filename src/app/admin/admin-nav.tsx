@@ -11,6 +11,7 @@ const TABS = [
   { href: "/admin/agencies", label: "소속사" },
   { href: "/admin/artists", label: "아티스트" },
   { href: "/admin/bookings", label: "섭외" },
+  { href: "/admin/feedback", label: "건의함" },
   { href: "/admin/outreach", label: "아웃리치" },
 ];
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { todayKST } from "@/lib/date";
+import { FeedbackBox } from "@/components/feedback-box";
 import { Sparkline } from "@/components/sparkline";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
@@ -348,6 +349,11 @@ export default async function AgencyDashboardPage() {
           ))}
         </div>
       </Card>
+      </div>
+
+      {/* 건의함 — 제휴·버그·개선 (최하단) */}
+      <div className="mt-6">
+        <FeedbackBox role="agency" />
       </div>
     </>
   );

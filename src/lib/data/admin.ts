@@ -285,6 +285,43 @@ export async function getAdminArtists(): Promise<AdminArtistRow[]> {
   }));
 }
 
+// ── 건의함 ───────────────────────────────
+export interface AdminFeedbackRow {
+  id: string;
+  role: string;
+  category: string;
+  body: string;
+  contact: string | null;
+  userName: string | null;
+  status: string;
+  createdAt: string;
+}
+
+export async function getAdminFeedback(): Promise<AdminFeedbackRow[]> {
+  const db = getDb();
+  const rows = await db
+    .select({
+      f: schema.feedbacks,
+      userName: schema.users.name,
+    })
+    .from(schema.feedbacks)
+    .leftJoin(schema.users, eq(schema.feedbacks.userId, schema.users.id))
+    .orderBy(
+      sql`case when ${schema.feedbacks.status} = 'new' then 0 else 1 end`,
+      desc(schema.feedbacks.createdAt)
+    );
+  return rows.map(({ f, userName }) => ({
+    id: f.id,
+    role: f.role,
+    category: f.category,
+    body: f.body,
+    contact: f.contact,
+    userName: userName ?? null,
+    status: f.status,
+    createdAt: f.createdAt.toISOString(),
+  }));
+}
+
 // ── 섭외 요청 상세 (아티스트명 조인) ─────────
 export interface AdminBookingRow {
   id: string;

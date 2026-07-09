@@ -318,6 +318,19 @@ export const notifications = pgTable("notifications", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// ---------- 건의함 (제휴·버그·개선) ----------
+// 광고주 홈·소속사 대시보드 하단에서 접수 → 관리자 탭에서 처리.
+export const feedbacks = pgTable("feedbacks", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id), // 로그인 시 자동 연결
+  role: text("role").notNull().default("company"), // company | agency — 접수 위치
+  category: text("category").notNull(), // 제휴 | 버그 | 개선 | 기타
+  body: text("body").notNull(),
+  contact: text("contact"), // 회신 받을 이메일·연락처(선택)
+  status: text("status").notNull().default("new"), // new | done
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 // ---------- 오픈 캠페인 (역방향 캐스팅) ----------
 // 광고주가 니즈를 공개하면 소속사/아티스트가 역으로 지원 → 선정 시 booking_requests로 전환.
 export const campaignStatus = pgEnum("campaign_status", [
