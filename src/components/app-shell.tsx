@@ -3,9 +3,12 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuthUi } from "@/lib/auth-ui-store";
 import { useRoleStore, type Role } from "@/lib/role-store";
 import { cn } from "@/lib/utils";
+import { LoginModal } from "./login-modal";
 import { NotificationsPanel } from "./notifications-panel";
+import { RoleChoiceModal } from "./role-choice-modal";
 import { RoleSwitcher } from "./role-switcher";
 import { SampleHint } from "./sample-hint";
 import { SampleLauncher } from "./sample-launcher";
@@ -90,17 +93,26 @@ export function AppShell({
   children,
   isAdmin = false,
   agencyCapability = "none",
+  viewer = { loggedIn: false, name: null, onboarded: true },
 }: {
   children: React.ReactNode;
   isAdmin?: boolean;
   agencyCapability?: string;
+  viewer?: { loggedIn: boolean; name: string | null; onboarded: boolean };
 }) {
   const pathname = usePathname();
   const { role: storedRole, setRole } = useRoleStore();
+  const { setLoggedIn, openLogin, openRole } = useAuthUi();
 
   useEffect(() => {
     useRoleStore.persist.rehydrate();
   }, []);
+
+  // 실제 로그인 상태를 전역 스토어에 반영 + 최초 로그인이면 역할선택 모달
+  useEffect(() => {
+    setLoggedIn(viewer.loggedIn);
+    if (viewer.loggedIn && !viewer.onboarded) openRole();
+  }, [viewer.loggedIn, viewer.onboarded, setLoggedIn, openRole]);
 
   // 역할은 URL이 진실 — 로그인 리다이렉트·직접 링크로 진입해도
   // 크롬(다크/라이트)·토글이 화면과 항상 일치하게 한다.
@@ -131,6 +143,12 @@ export function AppShell({
 
   const nav = NAV_BY_ROLE[role];
   const account = ACCOUNT[role];
+  // 실제 로그인 유저 반영 — 하드코딩 이름 대신 세션 이름/이니셜
+  const displayName =
+    viewer.loggedIn && viewer.name ? viewer.name : account.name;
+  const displayInitial =
+    viewer.loggedIn && viewer.name ? viewer.name.slice(0, 1) : account.initial;
+  const displayLabel = viewer.loggedIn ? account.label : "로그인 전 · 둘러보기";
 
   // 광고주는 다크 럭셔리 크롬, 소속사·아티스트는 라이트
   const dark = role === "company";
@@ -192,45 +210,60 @@ export function AppShell({
             dark ? "border-white/8" : "border-neutral-100"
           )}
         >
-          <Link
-            href={account.settings}
-            aria-label="프로필 수정"
-            className={cn(
-              "block rounded-xl p-3 transition-colors",
+          {(() => {
+            const boxClass = cn(
+              "block w-full rounded-xl p-3 text-left transition-colors",
               dark
                 ? "bg-white/[0.04] hover:bg-white/[0.08]"
                 : "bg-neutral-50 hover:bg-neutral-100"
-            )}
-          >
-            <div className="flex items-center gap-3">
-              <span
-                className={cn(
-                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white",
-                  role === "company" ? "bg-brand-500" : "bg-neutral-900"
-                )}
-              >
-                {account.initial}
-              </span>
-              <div className="min-w-0">
-                <p
+            );
+            const inner = (
+              <div className="flex items-center gap-3">
+                <span
                   className={cn(
-                    "truncate text-sm font-semibold",
-                    dark && "text-white"
+                    "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white",
+                    role === "company" ? "bg-brand-500" : "bg-neutral-900"
                   )}
                 >
-                  {account.name}
-                </p>
-                <p
-                  className={cn(
-                    "text-xs",
-                    dark ? "text-white/40" : "text-neutral-400"
-                  )}
-                >
-                  {account.label} · 프로필 수정
-                </p>
+                  {viewer.loggedIn ? displayInitial : "?"}
+                </span>
+                <div className="min-w-0">
+                  <p
+                    className={cn(
+                      "truncate text-sm font-semibold",
+                      dark && "text-white"
+                    )}
+                  >
+                    {viewer.loggedIn ? displayName : "로그인하고 시작"}
+                  </p>
+                  <p
+                    className={cn(
+                      "text-xs",
+                      dark ? "text-white/40" : "text-neutral-400"
+                    )}
+                  >
+                    {viewer.loggedIn
+                      ? `${displayLabel} · 프로필 수정`
+                      : "카카오 간편가입"}
+                  </p>
+                </div>
               </div>
-            </div>
-          </Link>
+            );
+            return viewer.loggedIn ? (
+              <Link href={account.settings} aria-label="프로필 수정" className={boxClass}>
+                {inner}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => openLogin()}
+                aria-label="로그인"
+                className={boxClass}
+              >
+                {inner}
+              </button>
+            );
+          })()}
         </div>
       </aside>
 
@@ -310,6 +343,10 @@ export function AppShell({
 
       {/* 샘플 시나리오 런처 (전 화면 공용) */}
       <SampleLauncher />
+
+      {/* 로그인 게이트 · 최초 역할선택 모달 */}
+      <LoginModal />
+      <RoleChoiceModal />
 
       {/* Mobile bottom nav — 하단 밀착 · 아이콘 전용 + 오렌지 스포트라이트 */}
       <nav

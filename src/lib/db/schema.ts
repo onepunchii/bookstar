@@ -57,6 +57,8 @@ export const users = pgTable("users", {
   company: text("company"),
   // 광고주 구분 — personal(개인) | business(기업·브랜드)
   accountType: text("account_type").notNull().default("personal"),
+  // 최초 로그인 후 역할 선택(광고주/소속사) 완료 여부 — false면 역할 선택 모달 노출
+  onboarded: boolean("onboarded").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

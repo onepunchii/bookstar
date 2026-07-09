@@ -22,6 +22,47 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   };
 }
 
+// 앱 셸/온보딩용 뷰어 — 실제 로그인 유저 반영(하드코딩 제거) + 역할선택 필요 여부.
+export interface Viewer {
+  loggedIn: boolean;
+  name: string | null;
+  onboarded: boolean;
+  role: string;
+}
+export async function getViewer(): Promise<Viewer> {
+  const session = await auth();
+  const id = session?.user?.id;
+  if (!id || !/^[0-9a-f-]{36}$/.test(id))
+    return { loggedIn: false, name: null, onboarded: true, role: "company" };
+  try {
+    const db = getDb();
+    const [u] = await db
+      .select({
+        name: schema.users.name,
+        onboarded: schema.users.onboarded,
+        role: schema.users.role,
+      })
+      .from(schema.users)
+      .where(eq(schema.users.id, id))
+      .limit(1);
+    if (!u)
+      return {
+        loggedIn: true,
+        name: session.user?.name ?? null,
+        onboarded: true,
+        role: "company",
+      };
+    return { loggedIn: true, name: u.name, onboarded: u.onboarded, role: u.role };
+  } catch {
+    return {
+      loggedIn: true,
+      name: session.user?.name ?? null,
+      onboarded: true,
+      role: "company",
+    };
+  }
+}
+
 export interface SessionProfile {
   id: string;
   name: string;

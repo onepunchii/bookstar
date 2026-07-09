@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/app-shell";
 import { auth } from "@/auth";
-import { getAgencyCapability } from "@/lib/data/session";
+import { getAgencyCapability, getViewer } from "@/lib/data/session";
 import { SITE } from "@/lib/site";
 
 export const viewport: Viewport = {
@@ -71,6 +71,7 @@ export default async function RootLayout({
   const agencyCapability = session?.user
     ? await getAgencyCapability()
     : "none";
+  const viewer = await getViewer();
   return (
     <html lang="ko" className="h-full antialiased">
       <head>
@@ -112,7 +113,11 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full bg-white text-neutral-900">
-        <AppShell isAdmin={isAdmin} agencyCapability={agencyCapability}>
+        <AppShell
+          isAdmin={isAdmin}
+          agencyCapability={agencyCapability}
+          viewer={viewer}
+        >
           {children}
         </AppShell>
       </body>

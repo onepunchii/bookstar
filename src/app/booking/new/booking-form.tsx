@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useAuthUi } from "@/lib/auth-ui-store";
 import { useNotificationsStore } from "@/lib/notifications-store";
 import type { Artist, EventType } from "@/lib/types";
 import { formatBudget } from "@/lib/types";
@@ -38,6 +39,7 @@ export function BookingForm({
   const [submitted, setSubmitted] = useState(false);
   const [eventType, setEventType] = useState<EventType>("행사");
   const pushNotif = useNotificationsStore((s) => s.push);
+  const { isLoggedIn, openLogin } = useAuthUi();
 
   if (submitted) {
     return (
@@ -78,6 +80,11 @@ export function BookingForm({
       className="mt-8 space-y-6"
       onSubmit={async (e) => {
         e.preventDefault();
+        // 로그인 게이트 — 비로그인 시 모달로 카카오 간편가입 유도(요청이 데모로 새는 것 방지)
+        if (!isLoggedIn) {
+          openLogin("섭외 요청을 보내려면 로그인이 필요해요");
+          return;
+        }
         const form = new FormData(e.currentTarget);
         const budget = Number(form.get("budget") ?? 0);
         try {

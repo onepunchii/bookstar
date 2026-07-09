@@ -8,6 +8,7 @@ import {
   EVENT_TYPES,
   defaultDeadline,
 } from "@/lib/campaign-options";
+import { useAuthUi } from "@/lib/auth-ui-store";
 import { fileToWebP } from "@/lib/image";
 import { CATEGORY_LABELS } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,7 @@ const input =
 
 export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
   const router = useRouter();
+  const { openLogin } = useAuthUi();
   const fileRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -106,12 +108,13 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
         <p className="mt-1 text-xs text-white/45">
           아티스트·기획사가 직접 지원하는 오픈 캐스팅이에요.
         </p>
-        <a
-          href="/login"
+        <button
+          type="button"
+          onClick={() => openLogin("캠페인을 올리려면 로그인이 필요해요")}
           className="mt-4 inline-block rounded-full bg-brand-500 px-5 py-2.5 text-sm font-bold text-white hover:opacity-90"
         >
           카카오로 시작하기
-        </a>
+        </button>
       </div>
     );
   }
