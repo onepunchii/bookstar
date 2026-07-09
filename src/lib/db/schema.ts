@@ -78,6 +78,7 @@ export const agencies = pgTable("agencies", {
   verificationStatus: text("verification_status").notNull().default("pending"), // pending | verified | rejected
   businessDocUrl: text("business_doc_url"), // 사업자등록증 등 첨부 서류(Blob)
   businessNumber: text("business_number"), // 사업자등록번호 — OCR 자동 인식/수동 입력
+  businessType: text("business_type"), // 업태·종목(OCR) — 대행사 위장 심사 단서
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

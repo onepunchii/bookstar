@@ -7,6 +7,7 @@ export interface BizLicenseFields {
   repName: string | null; // 대표자
   bizNumber: string | null; // 사업자등록번호
   address: string | null; // 사업장 소재지
+  bizType: string | null; // 업태 · 종목 — 대행사 위장 심사 단서
 }
 
 interface OcrField {
@@ -57,6 +58,8 @@ export async function extractBizLicense(
             repName?: OcrField[];
             registerNumber?: OcrField[];
             bisAddress?: OcrField[];
+            bisType?: OcrField[]; // 업태
+            bisItem?: OcrField[]; // 종목
           };
         };
       }[];
@@ -69,12 +72,14 @@ export async function extractBizLicense(
     const pick = (fields?: OcrField[]) =>
       fields?.map((f) => f.text?.trim()).filter(Boolean).join(" ") || null;
 
+    const bizTypeParts = [pick(r.bisType), pick(r.bisItem)].filter(Boolean);
     return {
       // 법인은 corpName, 개인사업자는 companyName에 상호가 실림
       companyName: pick(r.companyName) ?? pick(r.corpName),
       repName: pick(r.repName),
       bizNumber: pick(r.registerNumber),
       address: pick(r.bisAddress),
+      bizType: bizTypeParts.length ? bizTypeParts.join(" · ") : null,
     };
   } catch (e) {
     console.error("[clova-ocr]", e instanceof Error ? e.message : e);

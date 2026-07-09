@@ -20,6 +20,7 @@ export async function POST(req: Request) {
       agencyType?: string;
       businessDocUrl?: string;
       businessNumber?: string;
+      businessType?: string;
     };
     const db = getDb();
 
@@ -39,6 +40,8 @@ export async function POST(req: Request) {
       if (body.phone?.trim()) patch.phone = body.phone.trim();
       if (body.businessNumber?.trim())
         patch.businessNumber = body.businessNumber.trim();
+      if (body.businessType?.trim())
+        patch.businessType = body.businessType.trim();
       if (body.businessDocUrl) {
         patch.businessDocUrl = body.businessDocUrl;
         // 서류 재제출 → 심사 대기(반려됐던 경우 재심사)
@@ -71,6 +74,7 @@ export async function POST(req: Request) {
         agencyType: body.agencyType === "company" ? "company" : "solo",
         businessDocUrl: body.businessDocUrl ?? null,
         businessNumber: body.businessNumber?.trim() || null,
+        businessType: body.businessType?.trim() || null,
         verified: false,
         verificationStatus: "pending",
       })

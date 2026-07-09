@@ -26,6 +26,7 @@ export function VerifyForm({
   const [manager, setManager] = useState(initial.manager);
   const [phone, setPhone] = useState(initial.phone);
   const [bizNumber, setBizNumber] = useState("");
+  const [bizType, setBizType] = useState<string | null>(null); // 업태·종목(OCR) — 심사용, 폼 노출 없음
   const [docUrl, setDocUrl] = useState<string | null>(null);
   const [docName, setDocName] = useState<string | null>(null);
   const [ocrFilled, setOcrFilled] = useState(false);
@@ -49,6 +50,7 @@ export function VerifyForm({
         companyName?: string | null;
         repName?: string | null;
         bizNumber?: string | null;
+        bizType?: string | null;
       } | null;
       if (ocr && (ocr.companyName || ocr.repName || ocr.bizNumber)) {
         if (ocr.companyName) setCompanyName((v) => v.trim() || ocr.companyName!);
@@ -56,6 +58,7 @@ export function VerifyForm({
         if (ocr.bizNumber) setBizNumber((v) => v.trim() || ocr.bizNumber!);
         setOcrFilled(true);
       }
+      if (ocr?.bizType) setBizType(ocr.bizType);
     } catch (e) {
       setError(e instanceof Error ? e.message : "서류 업로드 실패");
     } finally {
@@ -79,6 +82,7 @@ export function VerifyForm({
           agencyType,
           businessDocUrl: docUrl,
           businessNumber: bizNumber || undefined,
+          businessType: bizType || undefined,
         }),
       });
       const data = await res.json();

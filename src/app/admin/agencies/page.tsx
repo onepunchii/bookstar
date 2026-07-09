@@ -17,6 +17,14 @@ const VS: Record<string, { label: string; tone: "green" | "brand" | "red" | "mut
   rejected: { label: "반려", tone: "red" },
 };
 
+// 업태·종목이 광고대행 계열인데 연예·매니지먼트 표기가 없으면 위장 소속사 의심
+function agencySuspect(bizType: string | null): boolean {
+  if (!bizType) return false;
+  const isAd = /광고|대행|마케팅/.test(bizType);
+  const isEnt = /연예|엔터|매니지먼트|기획사|음반|공연/.test(bizType);
+  return isAd && !isEnt;
+}
+
 export const dynamic = "force-dynamic";
 export const metadata = { title: "관리자 · 소속사" };
 
@@ -50,11 +58,21 @@ export default async function AdminAgenciesPage() {
           return (
             <tr key={a.id}>
               <Td className="font-medium">
-                {a.companyName}
-                {a.businessNumber && (
-                  <span className="ml-1.5 text-[11px] tabular-nums text-white/40">
-                    {a.businessNumber}
-                  </span>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {a.companyName}
+                  {a.businessNumber && (
+                    <span className="text-[11px] tabular-nums text-white/40">
+                      {a.businessNumber}
+                    </span>
+                  )}
+                  {agencySuspect(a.businessType) && (
+                    <Pill tone="red">대행사 의심</Pill>
+                  )}
+                </div>
+                {a.businessType && (
+                  <p className="mt-0.5 text-[11px] text-white/40">
+                    {a.businessType}
+                  </p>
                 )}
               </Td>
               <Td>
