@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { getDb, schema } from "@/lib/db";
+import { sessionUserExists, STALE_SESSION_MSG } from "@/lib/data/session";
 
 // 소속사 셀프 가입 — 로그인 유저 소유 소속사 생성(심사 대기) + 역할 부여.
 // 서류(사업자등록증 등) 첨부 시 관리자 승인 → verification_status=verified.
@@ -12,6 +13,8 @@ export async function POST(req: Request) {
   if (!uid) {
     return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
   }
+  if (!(await sessionUserExists(uid)))
+    return NextResponse.json({ error: STALE_SESSION_MSG }, { status: 401 });
   try {
     const body = (await req.json().catch(() => ({}))) as {
       companyName?: string;

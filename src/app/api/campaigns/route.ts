@@ -2,6 +2,7 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { createCampaign } from "@/lib/data/campaigns";
+import { sessionUserExists, STALE_SESSION_MSG } from "@/lib/data/session";
 
 const UUID = /^[0-9a-f-]{36}$/;
 
@@ -11,6 +12,9 @@ export async function POST(req: Request) {
   const uid = session?.user?.id;
   if (!uid || !UUID.test(uid))
     return NextResponse.json({ error: "로그인이 필요해요" }, { status: 401 });
+  // 유령 세션(삭제된 계정을 가리키는 토큰) → FK 위반 전에 명확히 안내
+  if (!(await sessionUserExists(uid)))
+    return NextResponse.json({ error: STALE_SESSION_MSG }, { status: 401 });
 
   try {
     const b = (await req.json()) as {
@@ -55,11 +59,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, id });
   } catch (e) {
     console.error("[campaigns:create]", e);
-    // 임시 진단: 실제 원인을 화면에 노출 (원인 확인 후 일반 메시지로 복구)
-    const msg = e instanceof Error ? e.message : String(e);
-    return NextResponse.json(
-      { error: `생성 실패: ${msg}` },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "생성에 실패했어요" }, { status: 500 });
   }
 }

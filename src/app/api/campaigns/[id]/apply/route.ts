@@ -2,7 +2,11 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { applyToCampaign } from "@/lib/data/campaigns";
-import { getSessionAgency } from "@/lib/data/session";
+import {
+  getSessionAgency,
+  sessionUserExists,
+  STALE_SESSION_MSG,
+} from "@/lib/data/session";
 
 const UUID = /^[0-9a-f-]{36}$/;
 
@@ -15,6 +19,8 @@ export async function POST(
   const uid = session?.user?.id;
   if (!uid || !UUID.test(uid))
     return NextResponse.json({ error: "로그인이 필요해요" }, { status: 401 });
+  if (!(await sessionUserExists(uid)))
+    return NextResponse.json({ error: STALE_SESSION_MSG }, { status: 401 });
 
   try {
     const { id } = await params;

@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/auth";
 import { getDb, schema } from "@/lib/db";
 import { notify } from "@/lib/data/notify";
+import { sessionUserExists } from "@/lib/data/session";
 
 const UUID = /^[0-9a-f-]{36}$/;
 const CATEGORIES = new Set(["제휴", "버그", "개선", "기타"]);
@@ -29,7 +30,9 @@ export async function POST(req: Request) {
 
     const session = await auth();
     const uid = session?.user?.id;
-    const userId = uid && UUID.test(uid) ? uid : null;
+    // 유령 세션이면 계정 연결 없이 익명 접수(접수 자체는 항상 성공)
+    const userId =
+      uid && UUID.test(uid) && (await sessionUserExists(uid)) ? uid : null;
 
     const db = getDb();
     await db.insert(schema.feedbacks).values({

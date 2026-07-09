@@ -22,6 +22,24 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   };
 }
 
+// 세션 uid가 실제 users 행인지 확인 — 삭제된 계정을 가리키는 유령 토큰(FK 위반) 방어.
+export async function sessionUserExists(uid: string): Promise<boolean> {
+  try {
+    const db = getDb();
+    const [u] = await db
+      .select({ id: schema.users.id })
+      .from(schema.users)
+      .where(eq(schema.users.id, uid))
+      .limit(1);
+    return !!u;
+  } catch {
+    return false;
+  }
+}
+
+export const STALE_SESSION_MSG =
+  "로그인 정보가 오래됐어요. 로그아웃 후 다시 로그인해 주세요.";
+
 // 앱 셸/온보딩용 뷰어 — 실제 로그인 유저 반영(하드코딩 제거) + 역할선택 필요 여부.
 export interface Viewer {
   loggedIn: boolean;
