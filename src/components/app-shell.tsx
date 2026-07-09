@@ -12,6 +12,7 @@ import { RoleChoiceModal } from "./role-choice-modal";
 import { RoleSwitcher } from "./role-switcher";
 import { SampleHint } from "./sample-hint";
 import { SampleLauncher } from "./sample-launcher";
+import { StaleSessionBanner } from "./stale-session-banner";
 import { Wordmark } from "./wordmark";
 import {
   Banknote,
@@ -98,7 +99,12 @@ export function AppShell({
   children: React.ReactNode;
   isAdmin?: boolean;
   agencyCapability?: string;
-  viewer?: { loggedIn: boolean; name: string | null; onboarded: boolean };
+  viewer?: {
+    loggedIn: boolean;
+    name: string | null;
+    onboarded: boolean;
+    stale?: boolean;
+  };
 }) {
   const pathname = usePathname();
   const { role: storedRole, setRole } = useRoleStore();
@@ -347,6 +353,9 @@ export function AppShell({
       {/* 로그인 게이트 · 최초 역할선택 모달 */}
       <LoginModal />
       <RoleChoiceModal />
+
+      {/* 유령 세션 감지 — 원클릭 재로그인 배너 */}
+      {viewer.stale && <StaleSessionBanner />}
 
       {/* Mobile bottom nav — 하단 밀착 · 아이콘 전용 + 오렌지 스포트라이트 */}
       <nav

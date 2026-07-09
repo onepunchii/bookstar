@@ -46,6 +46,7 @@ export interface Viewer {
   name: string | null;
   onboarded: boolean;
   role: string;
+  stale?: boolean; // 토큰이 삭제된 계정을 가리킴 → 재로그인 필요
 }
 export async function getViewer(): Promise<Viewer> {
   const session = await auth();
@@ -64,11 +65,13 @@ export async function getViewer(): Promise<Viewer> {
       .where(eq(schema.users.id, id))
       .limit(1);
     if (!u)
+      // 유령 세션 — 행이 없음. 배너로 재로그인 유도.
       return {
         loggedIn: true,
         name: session.user?.name ?? null,
         onboarded: true,
         role: "company",
+        stale: true,
       };
     return { loggedIn: true, name: u.name, onboarded: u.onboarded, role: u.role };
   } catch {
