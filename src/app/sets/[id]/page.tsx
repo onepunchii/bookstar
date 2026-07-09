@@ -3,9 +3,8 @@ import { notFound } from "next/navigation";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { PremiumCTA } from "@/components/premium/premium-cta";
 import { Reveal } from "@/components/premium/reveal";
-import { getPublicArtists } from "@/lib/data/artists";
-import { getArtist, getBundle } from "@/lib/mock-data";
-import { CATEGORY_LABELS, formatBudget, type Artist } from "@/lib/types";
+import { getPublicBundle } from "@/lib/data/bundles";
+import { formatBudget } from "@/lib/types";
 import { ArrowLeft, ChevronRight, Package, Percent } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -16,17 +15,8 @@ export default async function SetDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const bundle = getBundle(id);
+  const bundle = await getPublicBundle(id);
   if (!bundle) notFound();
-
-  const dbArtists = await getPublicArtists();
-  const members = bundle.artistIds
-    .map((mid) => {
-      const mock = getArtist(mid);
-      if (!mock) return undefined;
-      return dbArtists.find((a) => a.slug === mock.slug) ?? mock;
-    })
-    .filter(Boolean) as Artist[];
 
   return (
     <div className="adv-dark min-h-dvh">
@@ -42,39 +32,43 @@ export default async function SetDetailPage({
         <Reveal>
           <div className="flex items-center gap-2">
             <Package className="h-4 w-4 text-brand-500" />
-            <Eyebrow>{members.length}인 세트</Eyebrow>
-            {bundle.discountPct && (
+            <Eyebrow>{bundle.artists.length}인 세트</Eyebrow>
+            {bundle.discountPct ? (
               <span className="flex items-center gap-0.5 rounded-full bg-brand-500 px-2.5 py-0.5 text-xs font-bold text-white">
                 <Percent className="h-3 w-3" />
                 {bundle.discountPct} 세트 할인
               </span>
-            )}
+            ) : null}
           </div>
           <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-4xl">
             {bundle.title}
           </h1>
-          <p className="mt-2 text-sm text-white/55">{bundle.subtitle}</p>
+          {bundle.subtitle && (
+            <p className="mt-2 text-sm text-white/55">{bundle.subtitle}</p>
+          )}
 
-          <div className="mt-4 flex flex-wrap gap-1.5">
-            {bundle.eventTypes.map((t) => (
-              <span
-                key={t}
-                className="rounded-full bg-white/8 px-3 py-1 text-xs font-medium text-white/70"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
+          {bundle.eventTypes.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-1.5">
+              {bundle.eventTypes.map((t) => (
+                <span
+                  key={t}
+                  className="rounded-full bg-white/8 px-3 py-1 text-xs font-medium text-white/70"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          )}
         </Reveal>
 
         {/* 구성 아티스트 */}
         <Reveal delay={80} className="mt-8">
           <p className="mb-3 text-sm font-bold text-white/80">구성 아티스트</p>
           <div className="space-y-2.5">
-            {members.map((a) => (
+            {bundle.artists.map((a) => (
               <Link
                 key={a.id}
-                href={`/p/${a.slug}`}
+                href={a.slug ? `/p/${a.slug}` : "#"}
                 className="adv-card adv-card-hover flex items-center gap-4 rounded-2xl p-4"
               >
                 <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-white/[0.06]">
@@ -93,16 +87,6 @@ export default async function SetDetailPage({
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-bold text-white">{a.name}</p>
-                  <p className="mt-0.5 truncate text-xs text-white/45">
-                    {a.agencyName} ·{" "}
-                    {a.categories
-                      .map(
-                        (c) =>
-                          CATEGORY_LABELS[c as keyof typeof CATEGORY_LABELS] ??
-                          c
-                      )
-                      .join(", ")}
-                  </p>
                 </div>
                 <ChevronRight className="h-4 w-4 shrink-0 text-white/25" />
               </Link>
@@ -113,19 +97,21 @@ export default async function SetDetailPage({
         {/* 세트 예산 + CTA */}
         <Reveal delay={140} className="mt-8">
           <div className="adv-card rounded-[1.75rem] p-6">
-            <div className="flex items-baseline justify-between">
-              <span className="text-sm text-white/40">세트 예산</span>
-              <span className="text-2xl font-black text-white">
-                {formatBudget(bundle.totalBudget[0])}
-                <span className="text-base font-bold text-white/30"> ~ </span>
-                {formatBudget(bundle.totalBudget[1])}
-              </span>
-            </div>
-            {bundle.discountPct && (
+            {bundle.budgetMax ? (
+              <div className="flex items-baseline justify-between">
+                <span className="text-sm text-white/40">세트 예산</span>
+                <span className="text-2xl font-black text-white">
+                  {formatBudget(bundle.budgetMin ?? 0)}
+                  <span className="text-base font-bold text-white/30"> ~ </span>
+                  {formatBudget(bundle.budgetMax)}
+                </span>
+              </div>
+            ) : null}
+            {bundle.discountPct ? (
               <p className="mt-1.5 text-right text-xs text-brand-300">
                 세트로 묶으면 개별 섭외 대비 약 {bundle.discountPct}% 절감
               </p>
-            )}
+            ) : null}
             <div className="mt-5">
               <PremiumCTA
                 href={`/booking/new?set=${bundle.id}`}

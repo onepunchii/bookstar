@@ -1,32 +1,19 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { getArtist } from "@/lib/mock-data";
-import { formatBudget, type Artist, type LineupBundle } from "@/lib/types";
+import type { AgencyBundle } from "@/lib/data/bundles";
+import { formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Package } from "lucide-react";
 
 interface Props {
-  bundle: LineupBundle;
-  dbArtists?: Artist[];
+  bundle: AgencyBundle; // 구성 아티스트가 이미 해석된 실 번들
   className?: string;
   dark?: boolean;
 }
 
-export function LineupBundleCard({
-  bundle,
-  dbArtists = [],
-  className,
-  dark = false,
-}: Props) {
-  // 번들 멤버(mock id) → 슬러그로 DB 아티스트 매칭(사진·실데이터). 없으면 목.
-  const artists = bundle.artistIds
-    .map((id) => {
-      const mock = getArtist(id);
-      if (!mock) return undefined;
-      return dbArtists.find((a) => a.slug === mock.slug) ?? mock;
-    })
-    .filter(Boolean) as Artist[];
+export function LineupBundleCard({ bundle, className, dark = false }: Props) {
+  const artists = bundle.artists;
 
   const inner = (
     <>
@@ -37,16 +24,23 @@ export function LineupBundleCard({
             <span className="text-xs font-bold text-brand-500">
               {artists.length}인 세트
             </span>
-            {bundle.discountPct && (
+            {bundle.discountPct ? (
               <Badge variant="solid">-{bundle.discountPct}%</Badge>
-            )}
+            ) : null}
           </div>
           <h3 className={cn("mt-1 text-base font-black", dark && "text-white")}>
             {bundle.title}
           </h3>
-          <p className={cn("mt-0.5 text-xs", dark ? "text-white/45" : "text-neutral-500")}>
-            {bundle.subtitle}
-          </p>
+          {bundle.subtitle && (
+            <p
+              className={cn(
+                "mt-0.5 text-xs",
+                dark ? "text-white/45" : "text-neutral-500"
+              )}
+            >
+              {bundle.subtitle}
+            </p>
+          )}
         </div>
         <ArrowRight
           className={cn(
@@ -106,38 +100,42 @@ export function LineupBundleCard({
         ))}
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        {bundle.eventTypes.map((t) => (
-          <span
-            key={t}
-            className={cn(
-              "rounded-full px-2.5 py-0.5 text-xs font-medium",
-              dark ? "bg-white/8 text-white/70" : "bg-neutral-100 text-neutral-600"
-            )}
-          >
-            {t}
-          </span>
-        ))}
-      </div>
+      {bundle.eventTypes.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {bundle.eventTypes.map((t) => (
+            <span
+              key={t}
+              className={cn(
+                "rounded-full px-2.5 py-0.5 text-xs font-medium",
+                dark ? "bg-white/8 text-white/70" : "bg-neutral-100 text-neutral-600"
+              )}
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      )}
 
-      <div
-        className={cn(
-          "mt-4 flex items-baseline justify-between border-t pt-3",
-          dark ? "border-white/8" : "border-neutral-100"
-        )}
-      >
-        <span className={cn("text-xs", dark ? "text-white/40" : "text-neutral-400")}>
-          세트 예산
-        </span>
-        <span className={cn("text-lg font-black", dark && "text-white")}>
-          {formatBudget(bundle.totalBudget[0])}
-          <span className={cn("text-sm font-bold", dark ? "text-white/40" : "text-neutral-400")}>
-            {" "}
-            ~{" "}
+      {bundle.budgetMax ? (
+        <div
+          className={cn(
+            "mt-4 flex items-baseline justify-between border-t pt-3",
+            dark ? "border-white/8" : "border-neutral-100"
+          )}
+        >
+          <span className={cn("text-xs", dark ? "text-white/40" : "text-neutral-400")}>
+            세트 예산
           </span>
-          {formatBudget(bundle.totalBudget[1])}
-        </span>
-      </div>
+          <span className={cn("text-lg font-black", dark && "text-white")}>
+            {formatBudget(bundle.budgetMin ?? 0)}
+            <span className={cn("text-sm font-bold", dark ? "text-white/40" : "text-neutral-400")}>
+              {" "}
+              ~{" "}
+            </span>
+            {formatBudget(bundle.budgetMax)}
+          </span>
+        </div>
+      ) : null}
     </>
   );
 

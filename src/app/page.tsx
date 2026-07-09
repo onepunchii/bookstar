@@ -11,10 +11,10 @@ import { PremiumCTA } from "@/components/premium/premium-cta";
 import { Reveal } from "@/components/premium/reveal";
 import { getPublicArtists } from "@/lib/data/artists";
 import { getBookingRequests } from "@/lib/data/booking-requests";
+import { getPublicBundles } from "@/lib/data/bundles";
 import { getCompanyCampaigns } from "@/lib/data/campaigns";
 import { getSessionUser } from "@/lib/data/session";
 import { getMessages } from "@/lib/data/messages";
-import { BUNDLES } from "@/lib/mock-data";
 import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
 import {
   ArrowUpRight,
@@ -26,9 +26,10 @@ import {
 
 export default async function HomePage() {
   const user = await getSessionUser();
-  const [ARTISTS, BOOKING_REQUESTS] = await Promise.all([
+  const [ARTISTS, BOOKING_REQUESTS, bundles] = await Promise.all([
     getPublicArtists(),
     getBookingRequests(user ? { companyUserId: user.id } : undefined),
+    getPublicBundles(),
   ]);
   const inProgress = BOOKING_REQUESTS.filter((r) =>
     ["pending", "reviewing", "negotiating"].includes(r.status)
@@ -223,22 +224,24 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── 세트 라인업 ───────────────────────── */}
-        <section className="mt-14 sm:mt-20">
-          <Reveal>
-            <Eyebrow>Curated Sets</Eyebrow>
-            <h2 className="display-kr mt-3 text-xl font-black text-white sm:text-3xl">
-              세트로 섭외하면 더 완성도 높게
-            </h2>
-          </Reveal>
-          <div className="mt-6 grid grid-cols-1 gap-3 sm:gap-6 lg:grid-cols-3">
-            {BUNDLES.map((b, i) => (
-              <Reveal key={b.id} delay={i * 60}>
-                <LineupBundleCard bundle={b} dbArtists={ARTISTS} dark />
-              </Reveal>
-            ))}
-          </div>
-        </section>
+        {/* ── 세트 라인업 (실 번들) ───────────────── */}
+        {bundles.length > 0 && (
+          <section className="mt-14 sm:mt-20">
+            <Reveal>
+              <Eyebrow>Curated Sets</Eyebrow>
+              <h2 className="display-kr mt-3 text-xl font-black text-white sm:text-3xl">
+                세트로 섭외하면 더 완성도 높게
+              </h2>
+            </Reveal>
+            <div className="mt-6 grid grid-cols-1 gap-3 sm:gap-6 lg:grid-cols-3">
+              {bundles.map((b, i) => (
+                <Reveal key={b.id} delay={i * 60}>
+                  <LineupBundleCard bundle={b} dark />
+                </Reveal>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ── 라이브 시그널 — 네이버·유튜브 실측 화제성 (실데이터 없으면 미노출) ── */}
         <Suspense fallback={null}>

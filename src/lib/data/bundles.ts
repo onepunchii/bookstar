@@ -78,6 +78,74 @@ export async function getAgencyBundles(
   }));
 }
 
+// 구성 아티스트 일괄 조회 → id별 맵
+async function resolveArtists(bundleRows: (typeof schema.bundles.$inferSelect)[]) {
+  const db = getDb();
+  const ids = [
+    ...new Set(bundleRows.flatMap((b) => (b.artistIds as string[]) ?? [])),
+  ];
+  const arts = ids.length
+    ? await db
+        .select({
+          id: schema.artists.id,
+          name: schema.artists.name,
+          slug: schema.artists.slug,
+          imageUrl: schema.artists.imageUrl,
+        })
+        .from(schema.artists)
+        .where(inArray(schema.artists.id, ids))
+    : [];
+  return new Map(arts.map((a) => [a.id, a]));
+}
+
+function toBundle(
+  b: typeof schema.bundles.$inferSelect,
+  byId: Map<string, BundleArtist>
+): AgencyBundle {
+  return {
+    id: b.id,
+    title: b.title,
+    subtitle: b.subtitle,
+    eventTypes: (b.eventTypes as string[]) ?? [],
+    budgetMin: b.budgetMin,
+    budgetMax: b.budgetMax,
+    discountPct: b.discountPct,
+    artists: ((b.artistIds as string[]) ?? [])
+      .map((id) => byId.get(id))
+      .filter(Boolean) as BundleArtist[],
+    createdAt: b.createdAt.toISOString(),
+  };
+}
+
+// 공개 노출용 — active 번들 전체 (광고주 홈·세트 목록)
+export async function getPublicBundles(): Promise<AgencyBundle[]> {
+  const db = getDb();
+  const rows = await db
+    .select()
+    .from(schema.bundles)
+    .where(eq(schema.bundles.status, "active"))
+    .orderBy(desc(schema.bundles.createdAt));
+  if (rows.length === 0) return [];
+  const byId = await resolveArtists(rows);
+  // 구성 아티스트가 2팀 미만으로 깨진 건 노출 제외
+  return rows.map((b) => toBundle(b, byId)).filter((b) => b.artists.length >= 2);
+}
+
+// 세트 상세용 단건
+export async function getPublicBundle(
+  id: string
+): Promise<AgencyBundle | null> {
+  const db = getDb();
+  const [b] = await db
+    .select()
+    .from(schema.bundles)
+    .where(eq(schema.bundles.id, id))
+    .limit(1);
+  if (!b) return null;
+  const byId = await resolveArtists([b]);
+  return toBundle(b, byId);
+}
+
 export async function createBundle(input: BundleInput): Promise<string> {
   const db = getDb();
   const [row] = await db

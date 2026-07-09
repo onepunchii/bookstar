@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { getPublicArtistBySlug } from "@/lib/data/artists";
-import { getArtist, getBundle } from "@/lib/mock-data";
+import { getPublicBundle } from "@/lib/data/bundles";
 import { BookingForm, type SetInfo } from "./booking-form";
 
 // 섭외 요청 폼 → 색인 제외
@@ -17,20 +17,17 @@ export default async function NewBookingPage({
 }) {
   const { artist: slug, set: setId } = await searchParams;
 
-  // 세트 문의: 번들 → 구성원 이름 + 대표(첫) 아티스트로 폼 진입
+  // 세트 문의: 실 번들 → 구성원 이름 + 대표(첫) 아티스트로 폼 진입
   let leadSlug = slug;
   let setInfo: SetInfo | undefined;
   if (setId) {
-    const bundle = getBundle(setId);
-    if (bundle) {
-      const members = bundle.artistIds
-        .map((id) => getArtist(id))
-        .filter(Boolean) as { name: string; slug: string }[];
-      leadSlug = leadSlug ?? members[0]?.slug;
+    const bundle = await getPublicBundle(setId);
+    if (bundle && bundle.artists.length > 0) {
+      leadSlug = leadSlug ?? bundle.artists[0].slug ?? undefined;
       setInfo = {
         title: bundle.title,
-        members: members.map((m) => m.name).join(" · "),
-        budgetMin: bundle.totalBudget[0],
+        members: bundle.artists.map((m) => m.name).join(" · "),
+        budgetMin: bundle.budgetMin ?? 0,
       };
     }
   }
