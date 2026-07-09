@@ -156,9 +156,11 @@ export default async function ArtistDetailPage({
           <Reveal>
             <Eyebrow className="mb-4">Momentum</Eyebrow>
             <MomentumCard
-              artistId={bridgeId}
               artistName={artist.name}
+              categories={artist.categories}
               youtubeSubscribers={ytSubs}
+              instagram={artist.instagram}
+              followers={artist.followers}
               dark
             />
           </Reveal>

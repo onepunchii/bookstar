@@ -13,7 +13,8 @@ function ymd(d: Date): string {
 }
 
 export async function fetchNaverMomentum(
-  name: string
+  name: string,
+  categoryHint?: string | null
 ): Promise<NaverMomentum | null> {
   const id = process.env.NAVER_CLIENT_ID;
   const secret = process.env.NAVER_CLIENT_SECRET;
@@ -23,6 +24,9 @@ export async function fetchNaverMomentum(
     "X-Naver-Client-Id": id,
     "X-Naver-Client-Secret": secret,
   };
+  // 기사 검색은 카테고리를 결합해 관련도↑ (예: "원팀 아이돌" — 동명 단어 오매핑 완화).
+  // 검색 트렌드는 사람들이 실제로 검색하는 이름 그대로.
+  const newsQuery = categoryHint ? `"${name}" ${categoryHint}` : name;
 
   try {
     // 1) 데이터랩 검색 트렌드 (최근 30일 일별)
@@ -45,7 +49,7 @@ export async function fetchNaverMomentum(
       }),
       fetch(
         `https://openapi.naver.com/v1/search/news.json?query=${encodeURIComponent(
-          name
+          newsQuery
         )}&display=1`,
         { headers, next: { revalidate: 3600 } }
       ),
