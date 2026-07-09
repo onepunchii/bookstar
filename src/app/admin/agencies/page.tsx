@@ -9,15 +9,16 @@ import {
   Td,
   Th,
 } from "../ui";
+import { AgencyVerifyActions } from "./verify-actions";
+
+const VS: Record<string, { label: string; tone: "green" | "brand" | "red" | "muted" }> = {
+  verified: { label: "인증됨", tone: "green" },
+  pending: { label: "심사 대기", tone: "brand" },
+  rejected: { label: "반려", tone: "red" },
+};
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "관리자 · 소속사" };
-
-const PLAN_LABEL: Record<string, string> = {
-  free: "무료",
-  growth: "그로스",
-  enterprise: "엔터프라이즈",
-};
 
 export default async function AdminAgenciesPage() {
   if (!(await requireAdmin())) return <AdminGate />;
@@ -31,45 +32,57 @@ export default async function AdminAgenciesPage() {
         desc="가입한 기획사와 소속 아티스트 수, 요금제 현황입니다."
       />
       <AdminTable
-        minWidth={760}
+        minWidth={860}
         head={
           <>
             <Th>소속사</Th>
+            <Th>인증</Th>
             <Th>유형</Th>
-            <Th>요금제</Th>
             <Th>아티스트</Th>
             <Th>담당자</Th>
-            <Th>연락처</Th>
+            <Th>서류·처리</Th>
             <Th>가입일</Th>
           </>
         }
       >
-        {agencies.map((a) => (
-          <tr key={a.id}>
-            <Td className="font-medium">
-              {a.companyName}
-              {a.verified && (
-                <span className="ml-1.5 text-[11px] text-brand-400">인증</span>
-              )}
-            </Td>
-            <Td className="text-xs text-white/60">
-              {a.agencyType === "solo" ? "1인" : "기업"}
-            </Td>
-            <Td>
-              <Pill tone={a.plan === "enterprise" ? "brand" : "muted"}>
-                {PLAN_LABEL[a.plan] ?? a.plan}
-              </Pill>
-            </Td>
-            <Td className="tabular-nums">{a.artistCount}</Td>
-            <Td className="text-xs text-white/70">{a.manager ?? "—"}</Td>
-            <Td className="text-xs text-white/60">
-              {a.phone ?? a.email ?? "—"}
-            </Td>
-            <Td className="text-xs tabular-nums text-white/50">
-              {fmtDateTime(a.createdAt)}
-            </Td>
-          </tr>
-        ))}
+        {agencies.map((a) => {
+          const vs = VS[a.verificationStatus] ?? VS.pending;
+          return (
+            <tr key={a.id}>
+              <Td className="font-medium">{a.companyName}</Td>
+              <Td>
+                <Pill tone={vs.tone}>{vs.label}</Pill>
+              </Td>
+              <Td className="text-xs text-white/60">
+                {a.agencyType === "solo" ? "1인" : "기업"}
+              </Td>
+              <Td className="tabular-nums">{a.artistCount}</Td>
+              <Td className="text-xs text-white/70">{a.manager ?? "—"}</Td>
+              <Td>
+                <div className="flex items-center gap-2">
+                  {a.businessDocUrl ? (
+                    <a
+                      href={a.businessDocUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-semibold text-brand-400 hover:underline"
+                    >
+                      서류 보기
+                    </a>
+                  ) : (
+                    <span className="text-xs text-white/30">서류 없음</span>
+                  )}
+                  {a.verificationStatus !== "verified" && (
+                    <AgencyVerifyActions agencyId={a.id} />
+                  )}
+                </div>
+              </Td>
+              <Td className="text-xs tabular-nums text-white/50">
+                {fmtDateTime(a.createdAt)}
+              </Td>
+            </tr>
+          );
+        })}
       </AdminTable>
     </div>
   );

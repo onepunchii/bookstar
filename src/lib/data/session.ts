@@ -64,6 +64,8 @@ export interface SessionAgency {
   manager: string | null;
   phone: string | null;
   email: string | null;
+  verificationStatus: string; // pending | verified | rejected
+  businessDocUrl: string | null;
 }
 
 // 로그인 유저가 소유한 소속사 (없으면 null → 데모)
@@ -82,6 +84,8 @@ export async function getSessionAgency(): Promise<SessionAgency | null> {
         manager: schema.agencies.manager,
         phone: schema.agencies.phone,
         email: schema.agencies.email,
+        verificationStatus: schema.agencies.verificationStatus,
+        businessDocUrl: schema.agencies.businessDocUrl,
       })
       .from(schema.agencies)
       .where(eq(schema.agencies.ownerId, uid))
@@ -90,6 +94,14 @@ export async function getSessionAgency(): Promise<SessionAgency | null> {
   } catch {
     return null;
   }
+}
+
+// 소속사 자격 상태 — 토글/가드용. none = 소속사 미신청.
+export type AgencyCapability = "none" | "pending" | "verified" | "rejected";
+export async function getAgencyCapability(): Promise<AgencyCapability> {
+  const a = await getSessionAgency();
+  if (!a) return "none";
+  return (a.verificationStatus as AgencyCapability) ?? "pending";
 }
 
 // 로그인 유저에 연결된 아티스트 (크리에이터 계정, 없으면 null → 데모)

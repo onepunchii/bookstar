@@ -186,6 +186,8 @@ export interface AdminAgencyRow {
   phone: string | null;
   email: string | null;
   verified: boolean;
+  verificationStatus: string;
+  businessDocUrl: string | null;
   artistCount: number;
   createdAt: string;
 }
@@ -202,6 +204,8 @@ export async function getAdminAgencies(): Promise<AdminAgencyRow[]> {
       phone: schema.agencies.phone,
       email: schema.agencies.email,
       verified: schema.agencies.verified,
+      verificationStatus: schema.agencies.verificationStatus,
+      businessDocUrl: schema.agencies.businessDocUrl,
       createdAt: schema.agencies.createdAt,
       artistCount: sql<number>`(
         select count(*)::int from ${schema.artists}
@@ -209,7 +213,11 @@ export async function getAdminAgencies(): Promise<AdminAgencyRow[]> {
       )`,
     })
     .from(schema.agencies)
-    .orderBy(desc(schema.agencies.createdAt));
+    // 심사 대기 먼저
+    .orderBy(
+      sql`case when ${schema.agencies.verificationStatus} = 'pending' then 0 else 1 end`,
+      desc(schema.agencies.createdAt)
+    );
   return rows.map((a) => ({
     id: a.id,
     companyName: a.companyName,
@@ -219,6 +227,8 @@ export async function getAdminAgencies(): Promise<AdminAgencyRow[]> {
     phone: a.phone,
     email: a.email,
     verified: a.verified,
+    verificationStatus: a.verificationStatus,
+    businessDocUrl: a.businessDocUrl,
     artistCount: Number(a.artistCount),
     createdAt: a.createdAt.toISOString(),
   }));

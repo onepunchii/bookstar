@@ -89,9 +89,11 @@ function isActive(pathname: string, href: string) {
 export function AppShell({
   children,
   isAdmin = false,
+  agencyCapability = "none",
 }: {
   children: React.ReactNode;
   isAdmin?: boolean;
+  agencyCapability?: string;
 }) {
   const pathname = usePathname();
   const { role: storedRole, setRole } = useRoleStore();
@@ -278,7 +280,7 @@ export function AppShell({
               </Link>
             )}
             <NotificationsPanel dark={dark} />
-            <RoleSwitcher dark={dark} />
+            <RoleSwitcher dark={dark} agencyCapability={agencyCapability} />
           </div>
         </header>
 

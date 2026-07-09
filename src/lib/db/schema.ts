@@ -72,6 +72,9 @@ export const agencies = pgTable("agencies", {
   email: text("email"),
   logoUrl: text("logo_url"),
   verified: boolean("verified").notNull().default(false),
+  // 소속사 인증 상태 — 셀프 가입 시 pending(심사 대기), 관리자 승인 시 verified
+  verificationStatus: text("verification_status").notNull().default("pending"), // pending | verified | rejected
+  businessDocUrl: text("business_doc_url"), // 사업자등록증 등 첨부 서류(Blob)
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

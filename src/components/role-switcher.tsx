@@ -12,7 +12,13 @@ const ROLES: { key: Role; label: string; home: string; initial: string }[] = [
   { key: "artist", label: "아티스트", home: "/me", initial: "정" },
 ];
 
-export function RoleSwitcher({ dark = false }: { dark?: boolean }) {
+export function RoleSwitcher({
+  dark = false,
+  agencyCapability = "none",
+}: {
+  dark?: boolean;
+  agencyCapability?: string;
+}) {
   const { role, setRole } = useRoleStore();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -33,6 +39,12 @@ export function RoleSwitcher({ dark = false }: { dark?: boolean }) {
     setOpen(false);
     if (next === role) return;
     setRole(next);
+    // 소속사 전환 — 인증 자격에 따라 진입점 분기
+    // 인증됨/심사중 → 콘솔 바로, 미신청·반려 → 인증 셋업
+    if (next === "agency" && (agencyCapability === "none" || agencyCapability === "rejected")) {
+      router.push("/agency/verify");
+      return;
+    }
     router.push(ROLES.find((r) => r.key === next)!.home);
   };
 
