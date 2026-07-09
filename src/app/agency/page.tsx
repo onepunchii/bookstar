@@ -10,7 +10,9 @@ import { getBookingRequests } from "@/lib/data/booking-requests";
 import { countOpenCampaigns } from "@/lib/data/campaigns";
 import { getSessionAgency } from "@/lib/data/session";
 import { generateMetrics, recentDelta } from "@/lib/metrics";
-import { ARTISTS as MOCK_ARTISTS, BUNDLES, mockIdForSlug } from "@/lib/mock-data";
+import { mockIdForSlug } from "@/lib/mock-data";
+import { getAgencyBundles } from "@/lib/data/bundles";
+import { BundlesPanel } from "./bundles-panel";
 import { profileCompleteness } from "@/lib/profile";
 import { AVAILABILITY_LABELS, formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -22,8 +24,6 @@ import {
   Clock,
   Flame,
   Inbox,
-  Package,
-  Plus,
   TrendingUp,
 } from "lucide-react";
 
@@ -31,12 +31,13 @@ const TODAY = todayKST();
 
 export default async function AgencyDashboardPage() {
   const agency = await getSessionAgency();
-  const [ARTISTS, BOOKING_REQUESTS, scheduleMap, openCampaigns] =
+  const [ARTISTS, BOOKING_REQUESTS, scheduleMap, openCampaigns, bundles] =
     await Promise.all([
       getAgencyArtists(agency?.id),
       getBookingRequests(agency ? { agencyId: agency.id } : undefined),
       getPublicScheduleMap(),
       countOpenCampaigns(),
+      agency ? getAgencyBundles(agency.id) : Promise.resolve([]),
     ]);
   const pending = BOOKING_REQUESTS.filter((r) => r.status === "pending");
   const negotiating = BOOKING_REQUESTS.filter(
@@ -231,50 +232,12 @@ export default async function AgencyDashboardPage() {
         </Link>
       </Card>
 
-      {/* 번들 상품 — 미리보기(준비 중, 아래는 예시) */}
-      <Card className="p-6 md:col-span-2">
-        <div className="flex items-center justify-between">
-          <h2 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
-            <Package className="h-3.5 w-3.5 text-brand-500" /> 번들 상품
-            <span className="rounded-full bg-neutral-200 px-1.5 py-0.5 text-[10px] font-bold text-neutral-500">
-              미리보기
-            </span>
-          </h2>
-          <span className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] font-semibold text-neutral-400">
-            새 번들 만들기 · 준비 중
-          </span>
-        </div>
-        <p className="mt-1 text-xs text-neutral-400">
-          여러 아티스트를 세트로 묶어 파는 기능이에요 · 곧 제공됩니다. 아래는
-          예시입니다.
-        </p>
-        <div className="mt-3 space-y-2 opacity-60">
-          {BUNDLES.map((b) => (
-            <div
-              key={b.id}
-              className="flex items-center gap-3 rounded-xl border border-neutral-100 bg-neutral-50/60 px-4 py-3"
-            >
-              <div className="flex -space-x-1.5">
-                {b.artistIds.slice(0, 3).map((id) => (
-                  <span
-                    key={id}
-                    className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-200 text-[10px] font-black text-neutral-500 ring-2 ring-white"
-                  >
-                    {(MOCK_ARTISTS.find((a) => a.id === id)?.name || "?").slice(0, 1)}
-                  </span>
-                ))}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold">{b.title}</p>
-                <p className="text-xs text-neutral-400">{b.eventTypes.join(" · ")}</p>
-              </div>
-              {b.discountPct && (
-                <Badge variant="solid">-{b.discountPct}%</Badge>
-              )}
-            </div>
-          ))}
-        </div>
-      </Card>
+      {/* 번들 상품 — 실제 생성/삭제 (company 전용) */}
+      <BundlesPanel
+        bundles={bundles}
+        artists={ARTISTS}
+        agencyType={agency?.agencyType ?? "solo"}
+      />
 
       {/* 화제성 급증 */}
       <Card className="p-6">

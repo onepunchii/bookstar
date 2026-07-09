@@ -318,6 +318,24 @@ export const notifications = pgTable("notifications", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// ---------- 번들 상품 (아티스트 세트) ----------
+// 소속사가 자기 아티스트 2팀+ 를 세트로 묶어 판매. company(기업·MCN) 전용.
+export const bundles = pgTable("bundles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  agencyId: uuid("agency_id")
+    .notNull()
+    .references(() => agencies.id),
+  title: text("title").notNull(),
+  subtitle: text("subtitle"),
+  artistIds: jsonb("artist_ids").$type<string[]>().notNull().default([]), // 소속 아티스트 uuid
+  eventTypes: jsonb("event_types").$type<string[]>().notNull().default([]),
+  budgetMin: integer("budget_min"), // 만원
+  budgetMax: integer("budget_max"),
+  discountPct: integer("discount_pct"), // 세트 할인율
+  status: text("status").notNull().default("active"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 // ---------- 건의함 (제휴·버그·개선) ----------
 // 광고주 홈·소속사 대시보드 하단에서 접수 → 관리자 탭에서 처리.
 export const feedbacks = pgTable("feedbacks", {
