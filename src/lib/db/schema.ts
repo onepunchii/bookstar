@@ -467,3 +467,27 @@ export const outreachReplies = pgTable("outreach_replies", {
   sentAt: timestamp("sent_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+// ---------- 에러 수집 ----------
+// 서버(onRequestError)·클라이언트(window 리스너·error boundary)에서 올라온 런타임 에러.
+// fingerprint = 소스+메시지+최상단 스택 프레임 → 같은 버그는 한 행으로 묶고 count만 증가.
+export const errorLogs = pgTable(
+  "error_logs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    fingerprint: text("fingerprint").notNull(),
+    source: text("source").notNull().default("server"), // server | client
+    message: text("message").notNull(),
+    stack: text("stack"),
+    digest: text("digest"), // Next.js 에러 digest (프로덕션 서버 에러 대조용)
+    url: text("url"), // 발생 경로
+    method: text("method"), // GET | POST | render …
+    userId: uuid("user_id").references(() => users.id), // 로그인 사용자면 연결
+    userAgent: text("user_agent"),
+    status: text("status").notNull().default("open"), // open | resolved | ignored
+    count: integer("count").notNull().default(1),
+    firstSeen: timestamp("first_seen").notNull().defaultNow(),
+    lastSeen: timestamp("last_seen").notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("error_logs_fingerprint_unique").on(t.fingerprint)]
+);

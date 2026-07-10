@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/app-shell";
+import { ErrorReporter } from "@/components/error-reporter";
 import { auth } from "@/auth";
 import { getAgencyCapability, getViewer } from "@/lib/data/session";
 import { SITE } from "@/lib/site";
@@ -120,6 +121,7 @@ export default async function RootLayout({
         >
           {children}
         </AppShell>
+        <ErrorReporter />
       </body>
     </html>
   );

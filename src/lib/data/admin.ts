@@ -370,3 +370,51 @@ export async function getAdminBookings(): Promise<AdminBookingRow[]> {
     createdAt: b.createdAt.toISOString(),
   }));
 }
+
+// ---------- 에러 수집 ----------
+export interface AdminErrorRow {
+  id: string;
+  fingerprint: string;
+  source: string; // server | client
+  message: string;
+  stack: string | null;
+  digest: string | null;
+  url: string | null;
+  method: string | null;
+  userName: string | null;
+  userAgent: string | null;
+  status: string; // open | resolved | ignored
+  count: number;
+  firstSeen: string;
+  lastSeen: string;
+}
+
+// 미해결 우선 → 최근 발생 순. 오래된 해결·무시 건은 뒤로 밀린다.
+export async function getAdminErrors(): Promise<AdminErrorRow[]> {
+  const db = getDb();
+  const rows = await db
+    .select({ e: schema.errorLogs, userName: schema.users.name })
+    .from(schema.errorLogs)
+    .leftJoin(schema.users, eq(schema.errorLogs.userId, schema.users.id))
+    .orderBy(
+      sql`case when ${schema.errorLogs.status} = 'open' then 0 when ${schema.errorLogs.status} = 'resolved' then 1 else 2 end`,
+      desc(schema.errorLogs.lastSeen)
+    )
+    .limit(200);
+  return rows.map(({ e, userName }) => ({
+    id: e.id,
+    fingerprint: e.fingerprint,
+    source: e.source,
+    message: e.message,
+    stack: e.stack,
+    digest: e.digest,
+    url: e.url,
+    method: e.method,
+    userName: userName ?? null,
+    userAgent: e.userAgent,
+    status: e.status,
+    count: e.count,
+    firstSeen: e.firstSeen.toISOString(),
+    lastSeen: e.lastSeen.toISOString(),
+  }));
+}
