@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { sql } from "drizzle-orm";
+import { desc, sql } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
 
 // 슈퍼관리자 요약 — 외부 통합 대시보드용 스냅샷.
@@ -22,6 +22,30 @@ async function safeCount(
   }
 }
 
+// 목록 조회도 같은 원칙 — 실패하면 빈 배열로 응답을 지킨다.
+async function safeList<T>(run: () => Promise<T[]>): Promise<T[]> {
+  try {
+    return await run();
+  } catch (e) {
+    console.error("[super-summary]", e);
+    return [];
+  }
+}
+
+// 개인 식별정보 마스킹 — 이메일·전화번호·UUID를 지우고 120자로 자른다.
+// 건의/에러 내용 자체는 보여주되 식별자는 대시보드로 내보내지 않는다.
+function sanitize(text: string): string {
+  return text
+    .replace(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g, "[이메일]")
+    .replace(/(\+82[- ]?|0)\d{1,2}[- .]?\d{3,4}[- .]?\d{4}/g, "[전화]")
+    .replace(
+      /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi,
+      "[ID]"
+    )
+    .trim()
+    .slice(0, 120);
+}
+
 export async function GET(req: Request) {
   // 인증은 엄격히 — 시크릿 미설정이거나 헤더 불일치면 무조건 401.
   const secret = process.env.SUPER_ADMIN_SECRET;
@@ -29,6 +53,8 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const db = getDb();
+  // ?detail=1 — 통합 대시보드에서 건의·에러 목록까지 볼 때만 추가 조회
+  const detail = new URL(req.url).searchParams.get("detail") === "1";
 
   const [
     usersTotal,
@@ -94,23 +120,64 @@ export async function GET(req: Request) {
     ),
   ]);
 
-  return NextResponse.json(
-    {
-      ts: new Date().toISOString(),
-      members: { total: usersTotal, today: usersToday },
-      metrics: [
-        { label: "아티스트", value: artistsTotal },
-        { label: "소속사", value: agenciesTotal },
-        { label: "24시간 섭외 요청", value: bookings24h },
-      ],
-      pending: [
-        { label: "섭외 대기", count: bookingsPending },
-        { label: "건의 미처리", count: feedbackNew },
-        { label: "소속사 인증 대기", count: agenciesVerifyPending },
-        { label: "아웃리치 답장 승인 대기", count: repliesPending },
-      ].filter((p) => p.count > 0),
-      errors24h,
-    },
-    { headers: { "Cache-Control": "no-store" } }
-  );
+  const body: Record<string, unknown> = {
+    ts: new Date().toISOString(),
+    members: { total: usersTotal, today: usersToday },
+    metrics: [
+      { label: "아티스트", value: artistsTotal },
+      { label: "소속사", value: agenciesTotal },
+      { label: "24시간 섭외 요청", value: bookings24h },
+    ],
+    pending: [
+      { label: "섭외 대기", count: bookingsPending },
+      { label: "건의 미처리", count: feedbackNew },
+      { label: "소속사 인증 대기", count: agenciesVerifyPending },
+      { label: "아웃리치 답장 승인 대기", count: repliesPending },
+    ].filter((p) => p.count > 0),
+    errors24h,
+  };
+
+  if (detail) {
+    // 건의함 최근 10건 — 최신순, done=처리 완료 여부
+    const [feedbackRows, errorRows] = await Promise.all([
+      safeList(() =>
+        db
+          .select({
+            when: schema.feedbacks.createdAt,
+            text: schema.feedbacks.body,
+            status: schema.feedbacks.status,
+          })
+          .from(schema.feedbacks)
+          .orderBy(desc(schema.feedbacks.createdAt))
+          .limit(10)
+      ),
+      // 에러 최근 10그룹 — fingerprint 단위로 이미 그룹핑되어 count 누적됨
+      safeList(() =>
+        db
+          .select({
+            when: schema.errorLogs.lastSeen,
+            message: schema.errorLogs.message,
+            count: schema.errorLogs.count,
+          })
+          .from(schema.errorLogs)
+          .orderBy(desc(schema.errorLogs.lastSeen))
+          .limit(10)
+      ),
+    ]);
+
+    body.feedbackRecent = feedbackRows.map((r) => ({
+      when: r.when.toISOString(),
+      text: sanitize(r.text),
+      done: r.status === "done",
+    }));
+    body.errorRecent = errorRows.map((r) => ({
+      when: r.when.toISOString(),
+      message: sanitize(r.message),
+      count: r.count,
+    }));
+  }
+
+  return NextResponse.json(body, {
+    headers: { "Cache-Control": "no-store" },
+  });
 }
