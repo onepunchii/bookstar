@@ -61,6 +61,7 @@ export async function GET(req: Request) {
     usersToday,
     artistsTotal,
     agenciesTotal,
+    advertisersTotal,
     bookings24h,
     bookingsPending,
     feedbackNew,
@@ -77,6 +78,13 @@ export async function GET(req: Request) {
     ),
     safeCount(() => db.select({ c: count }).from(schema.artists)),
     safeCount(() => db.select({ c: count }).from(schema.agencies)),
+    // 광고주 = role 'company' 사용자(섭외를 의뢰하는 개인·브랜드)
+    safeCount(() =>
+      db
+        .select({ c: count })
+        .from(schema.users)
+        .where(sql`${schema.users.role} = 'company'`)
+    ),
     safeCount(() =>
       db
         .select({ c: count })
@@ -126,6 +134,7 @@ export async function GET(req: Request) {
     metrics: [
       { label: "아티스트", value: artistsTotal },
       { label: "소속사", value: agenciesTotal },
+      { label: "광고주", value: advertisersTotal },
       { label: "24시간 섭외 요청", value: bookings24h },
     ],
     pending: [
