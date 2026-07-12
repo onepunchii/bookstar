@@ -6,8 +6,24 @@ import { getDb, schema } from "@/lib/db";
 import { notify } from "@/lib/data/notify";
 import { sessionUserExists, STALE_SESSION_MSG } from "@/lib/data/session";
 
+// 업로드된 서류가 이 유저 소유의 실제 Blob인지 검증 — 임의 문자열로 인증 우회 방지.
+// (서류는 /api/join/agency/doc가 agency-docs/{uid}/ 에 저장한다)
+function isOwnBusinessDoc(url: string | undefined, uid: string): boolean {
+  if (!url) return false;
+  try {
+    const u = new URL(url);
+    return (
+      u.protocol === "https:" &&
+      u.hostname.endsWith(".blob.vercel-storage.com") &&
+      u.pathname.includes(`/agency-docs/${uid}/`)
+    );
+  } catch {
+    return false;
+  }
+}
+
 // 소속사 셀프 가입 — 서류(OCR 확인) 첨부 시 즉시 자동 인증 + 역할 부여.
-// 관리자는 사후 검수(대행사 의심 플래그·반려 권한). 반려된 곳의 재제출만 수동 심사(pending).
+// 관리자는 사후 검수(대행사 의심 플래그·반려 권한). 재제출은 자동 승격 금지(수동 심사).
 export async function POST(req: Request) {
   const session = await auth();
   const uid = session?.user?.id;
@@ -67,15 +83,12 @@ export async function POST(req: Request) {
         patch.businessNumber = body.businessNumber.trim();
       if (body.businessType?.trim())
         patch.businessType = body.businessType.trim();
-      if (body.businessDocUrl) {
+      if (isOwnBusinessDoc(body.businessDocUrl, uid)) {
         patch.businessDocUrl = body.businessDocUrl;
-        if (existing.verificationStatus === "rejected") {
-          // 반려됐던 곳의 재제출 → 수동 재심사
+        // 재제출은 자동 승격하지 않는다(반려 우회 방지). 이미 verified면 유지,
+        // 그 외(반려·미완료)는 pending으로 두고 관리자 재심사.
+        if (existing.verificationStatus !== "verified") {
           patch.verificationStatus = "pending";
-        } else if (existing.verificationStatus !== "verified") {
-          // 그 외(미완료)는 서류 첨부 즉시 자동 인증
-          patch.verificationStatus = "verified";
-          patch.verified = true;
         }
       }
       if (Object.keys(patch).length > 0)
@@ -102,8 +115,10 @@ export async function POST(req: Request) {
     const companyName =
       body.companyName?.trim() || `${session.user?.name ?? "내"} 엔터테인먼트`;
     const agencyType = body.agencyType === "company" ? "company" : "solo";
-    // 1인·인플루언서(solo)는 서류 없이 즉시 인증. 기업·MCN(company)은 서류 확인 시 자동 인증.
-    const autoVerified = agencyType === "solo" || !!body.businessDocUrl;
+    // 1인·인플루언서(solo)는 서류 없이 즉시 인증.
+    // 기업·MCN(company)은 본인 소유의 실제 서류(agency-docs/{uid})가 확인될 때만 자동 인증.
+    const hasValidDoc = isOwnBusinessDoc(body.businessDocUrl, uid);
+    const autoVerified = agencyType === "solo" || hasValidDoc;
     const [agency] = await db
       .insert(schema.agencies)
       .values({
@@ -112,7 +127,7 @@ export async function POST(req: Request) {
         manager: body.manager?.trim() || null,
         phone: body.phone?.trim() || null,
         agencyType,
-        businessDocUrl: body.businessDocUrl ?? null,
+        businessDocUrl: hasValidDoc ? body.businessDocUrl : null,
         businessNumber: body.businessNumber?.trim() || null,
         businessType: body.businessType?.trim() || null,
         verified: autoVerified,

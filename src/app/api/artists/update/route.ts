@@ -1,8 +1,9 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { getDb, schema } from "@/lib/db";
+import { getSessionAgency } from "@/lib/data/session";
+import { agencyArtistIdBySlug } from "@/lib/data/ownership";
 import type { ArtistCategory } from "@/lib/types";
 
 // 소속사 아티스트 프로필 저장 → artists UPDATE(slug 기준).
@@ -27,15 +28,21 @@ interface Payload {
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+    const agency = await getSessionAgency();
+    if (!agency) {
+      return NextResponse.json({ error: "소속사 인증이 필요합니다" }, { status: 401 });
     }
 
     const body = (await req.json()) as Payload;
     if (!body.slug) {
       return NextResponse.json({ error: "slug 누락" }, { status: 400 });
     }
+    // 이 slug가 세션 소속사 소유인지 확인 (IDOR 방어)
+    if (!(await agencyArtistIdBySlug(agency.id, body.slug)))
+      return NextResponse.json(
+        { error: "해당 아티스트를 찾을 수 없습니다" },
+        { status: 404 }
+      );
 
     // undefined 필드는 건드리지 않음 (부분 업데이트)
     const patch: Partial<typeof schema.artists.$inferInsert> = {};

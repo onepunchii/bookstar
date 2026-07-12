@@ -1,8 +1,9 @@
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { getDb, schema } from "@/lib/db";
+import { getSessionAgency } from "@/lib/data/session";
+import { agencyOwnsArtist } from "@/lib/data/ownership";
 
 // 홀드 생성(요청 수락 시)·해제 — 소속사 콘솔.
 interface PlaceBody {
@@ -14,13 +15,16 @@ interface PlaceBody {
 }
 
 export async function POST(req: Request) {
-  if (!(await auth())?.user)
-    return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+  const agency = await getSessionAgency();
+  if (!agency)
+    return NextResponse.json({ error: "소속사 인증이 필요합니다" }, { status: 401 });
   try {
     const b = (await req.json()) as PlaceBody;
     if (!b.artistId || !b.date || !b.expiresAt) {
       return NextResponse.json({ error: "필수 항목 누락" }, { status: 400 });
     }
+    if (!(await agencyOwnsArtist(agency.id, b.artistId)))
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     const db = getDb();
     await db.insert(schema.holds).values({
       artistId: b.artistId,
@@ -38,8 +42,9 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  if (!(await auth())?.user)
-    return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+  const agency = await getSessionAgency();
+  if (!agency)
+    return NextResponse.json({ error: "소속사 인증이 필요합니다" }, { status: 401 });
   try {
     const { artistId, date } = (await req.json()) as {
       artistId: string;
@@ -48,6 +53,8 @@ export async function DELETE(req: Request) {
     if (!artistId || !date) {
       return NextResponse.json({ error: "잘못된 요청" }, { status: 400 });
     }
+    if (!(await agencyOwnsArtist(agency.id, artistId)))
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     const db = getDb();
     await db
       .delete(schema.holds)

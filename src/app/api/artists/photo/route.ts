@@ -1,17 +1,18 @@
 import { put } from "@vercel/blob";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { getDb, schema } from "@/lib/db";
+import { getSessionAgency } from "@/lib/data/session";
+import { agencyArtistIdBySlug } from "@/lib/data/ownership";
 
 // 아티스트 사진 업로드 → Vercel Blob → DB 반영.
 // slot 0 = 대표(image_url), slot 1~3 = 갤러리(gallery_urls[slot-1]).
 // 클라이언트에서 이미 WebP로 변환한 Blob을 FormData(file)로 전송한다.
 export async function POST(req: Request) {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+    const agency = await getSessionAgency();
+    if (!agency) {
+      return NextResponse.json({ error: "소속사 인증이 필요합니다" }, { status: 401 });
     }
 
     const form = await req.formData();
@@ -22,6 +23,12 @@ export async function POST(req: Request) {
     if (typeof slug !== "string" || !/^[a-z0-9-]+$/.test(slug)) {
       return NextResponse.json({ error: "잘못된 slug" }, { status: 400 });
     }
+    // 이 slug가 세션 소속사 소유인지 확인 (IDOR — 남의 대표/갤러리 덮어쓰기 방어)
+    if (!(await agencyArtistIdBySlug(agency.id, slug)))
+      return NextResponse.json(
+        { error: "해당 아티스트를 찾을 수 없습니다" },
+        { status: 404 }
+      );
     if (!(file instanceof Blob)) {
       return NextResponse.json({ error: "file 누락" }, { status: 400 });
     }

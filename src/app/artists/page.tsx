@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { PremiumArtistCard } from "@/components/premium/premium-artist-card";
@@ -9,6 +10,29 @@ import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";
 import { SearchBar } from "./search-bar";
+
+// 카테고리별 self-canonical — "아이돌 섭외" 등 카테고리 페이지가 각자 색인되도록
+// (루트 canonical "/" 상속 제거). 카테고리 없으면 /artists 자기 자신.
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>;
+}): Promise<Metadata> {
+  const { category } = await searchParams;
+  const label =
+    category && (CATEGORY_LABELS as Record<string, string>)[category];
+  if (label) {
+    return {
+      title: `${label} 섭외`,
+      description: `${label} 섭외 — 검증된 소속사와 직접, 매칭 수수료 0%로 섭외하세요.`,
+      alternates: { canonical: `/artists?category=${category}` },
+    };
+  }
+  return {
+    title: "아티스트 찾기",
+    alternates: { canonical: "/artists" },
+  };
+}
 
 const BUDGET_FILTERS = [
   { key: "all", label: "전체 예산", min: 0, max: Infinity },

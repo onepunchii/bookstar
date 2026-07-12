@@ -2,7 +2,11 @@ import { notFound } from "next/navigation";
 import { LeaveReviewCard } from "@/components/leave-review-card";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
-import { getBookingRequests } from "@/lib/data/booking-requests";
+import {
+  getBookingRequestById,
+  getRequestParties,
+} from "@/lib/data/booking-requests";
+import { getSessionUser, getSessionAgency } from "@/lib/data/session";
 import { getMessages } from "@/lib/data/messages";
 import { getLatestQuote } from "@/lib/data/quotes";
 import { formatBudget } from "@/lib/types";
@@ -15,8 +19,22 @@ export default async function RequestDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const requests = await getBookingRequests();
-  const request = requests.find((r) => r.id === id);
+
+  // 접근 통제(fail-closed) — 당사자(광고주 본인·담당 소속사)만 열람.
+  // 요청을 못 찾거나 조회 실패면 notFound(협의 채팅·견적·회사명 등 민감정보 보호).
+  const parties = await getRequestParties(id);
+  if (!parties) notFound();
+  const [user, agency] = await Promise.all([
+    getSessionUser(),
+    getSessionAgency(),
+  ]);
+  const isParticipant =
+    !!user &&
+    (parties.companyUserId === user.id ||
+      (!!agency && parties.agencyId === agency.id));
+  if (!isParticipant) notFound();
+
+  const request = await getBookingRequestById(id);
   if (!request) notFound();
   const [thread, quote] = await Promise.all([
     getMessages(id),

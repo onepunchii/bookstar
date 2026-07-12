@@ -14,6 +14,13 @@ export async function POST() {
       { status: 401 }
     );
   }
+  // 인증 완료된 소속사만 아티스트 등록(콘솔 게이트 우회 방지)
+  if (agency.verificationStatus !== "verified") {
+    return NextResponse.json(
+      { error: "소속사 인증이 완료되어야 아티스트를 등록할 수 있어요" },
+      { status: 403 }
+    );
+  }
   try {
     const db = getDb();
 

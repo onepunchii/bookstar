@@ -30,7 +30,8 @@ export const metadata: Metadata = {
   authors: [{ name: SITE.name, url: SITE.url }],
   creator: SITE.name,
   publisher: SITE.name,
-  alternates: { canonical: "/" },
+  // canonical은 페이지별로 지정(홈=page.tsx, /artists·/join 등). 루트에서 "/"로 고정하면
+  // 하위 페이지가 이를 상속해 전부 홈 중복으로 정규화되는 문제가 생긴다.
   icons: {
     icon: [{ url: "/app.png", type: "image/png" }],
     shortcut: "/app.png",

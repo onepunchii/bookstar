@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getPublicArtistBySlug } from "@/lib/data/artists";
 import { getDaySchedulesByArtist } from "@/lib/data/day-schedules";
+import { verifyCalendarToken } from "@/lib/calendar-token";
 
 function escapeText(s: string) {
   return s.replace(/[,;\\]/g, "\\$&").replace(/\n/g, "\\n");
@@ -11,26 +12,42 @@ function formatLocalDT(date: string, time: string) {
   return `${date.replace(/-/g, "")}T${time.replace(":", "")}00`;
 }
 
-// Fold long lines to 75 octets per RFC 5545
+// RFC 5545 라인 폴딩 — 75 옥텟(UTF-8 바이트) 기준. 한글은 1자=3바이트라
+// 문자 길이(UTF-16)로 자르면 물리 라인이 75옥텟을 초과해 엄격 파서에서 깨진다.
+const ENC = new TextEncoder();
 function fold(line: string) {
-  if (line.length <= 75) return line;
-  const parts: string[] = [];
-  let s = line;
-  parts.push(s.slice(0, 75));
-  s = s.slice(75);
-  while (s.length > 74) {
-    parts.push(" " + s.slice(0, 74));
-    s = s.slice(74);
+  if (ENC.encode(line).length <= 75) return line;
+  const out: string[] = [];
+  let cur = "";
+  let curBytes = 0;
+  let first = true;
+  for (const ch of line) {
+    const chBytes = ENC.encode(ch).length;
+    const limit = first ? 75 : 74; // 이어지는 줄은 선행 공백 1옥텟 차지
+    if (curBytes + chBytes > limit) {
+      out.push(first ? cur : " " + cur);
+      first = false;
+      cur = ch;
+      curBytes = chBytes;
+    } else {
+      cur += ch;
+      curBytes += chBytes;
+    }
   }
-  if (s) parts.push(" " + s);
-  return parts.join("\r\n");
+  if (cur) out.push(first ? cur : " " + cur);
+  return out.join("\r\n");
 }
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ artistId: string }> }
 ) {
   const { artistId } = await params;
+  // 내부 운영 시트(담당·차량·동선)는 서명 토큰이 있어야만 열람 — 공개 추측 차단
+  const token = new URL(req.url).searchParams.get("t");
+  if (!verifyCalendarToken(artistId, token)) {
+    return new NextResponse("유효하지 않은 구독 링크입니다.", { status: 403 });
+  }
   // param은 uuid 또는 slug — slug면 DB에서 uuid로 해석
   const bySlug = await getPublicArtistBySlug(artistId);
   const resolvedId = bySlug?.id ?? artistId;

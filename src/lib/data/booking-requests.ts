@@ -96,13 +96,65 @@ export async function getBookingRequests(scope?: {
         eq(schema.bookingRequests.companyUserId, scope.companyUserId)
       );
       if (rows.length > 0) return (rows as Row[]).map(rowToRequest);
-      // 본인 요청이 아직 없으면 데모 전체
-      return getBookingRequests();
+      // 본인 요청이 아직 없으면 데모 샘플만(전체 실데이터로 폴백하면 크로스테넌트 유출)
+      return MOCK;
     }
-    const rows = await buildQuery();
-    if (rows.length > 0) return (rows as Row[]).map(rowToRequest);
+    // 스코프 없음 = 데모(비로그인·미가입). 실데이터는 항상 스코프로만 조회한다.
   } catch {
     /* 폴백 */
   }
   return MOCK;
+}
+
+// 단건 조회 — 상세 페이지가 참여자 확인 후 표시 데이터를 가져올 때(전체 스캔 회피).
+export async function getBookingRequestById(
+  id: string
+): Promise<BookingRequest | null> {
+  try {
+    const db = getDb();
+    const [row] = await db
+      .select(cols)
+      .from(schema.bookingRequests)
+      .leftJoin(
+        schema.artists,
+        eq(schema.bookingRequests.artistId, schema.artists.id)
+      )
+      .where(eq(schema.bookingRequests.id, id))
+      .limit(1);
+    return row ? rowToRequest(row as Row) : null;
+  } catch {
+    return null;
+  }
+}
+
+// 비로그인 데모용 — 실제 요청 대신 항상 샘플만 노출(실 광고주 데이터 유출 방지).
+export function getDemoBookingRequests(): BookingRequest[] {
+  return MOCK;
+}
+
+// 접근 통제용 — 요청 당사자 식별자(광고주 uid + 담당 소속사 id). 없으면 null(데모/미존재).
+export async function getRequestParties(id: string): Promise<{
+  companyUserId: string;
+  artistId: string;
+  agencyId: string | null;
+} | null> {
+  try {
+    const db = getDb();
+    const [row] = await db
+      .select({
+        companyUserId: schema.bookingRequests.companyUserId,
+        artistId: schema.bookingRequests.artistId,
+        agencyId: schema.artists.agencyId,
+      })
+      .from(schema.bookingRequests)
+      .leftJoin(
+        schema.artists,
+        eq(schema.bookingRequests.artistId, schema.artists.id)
+      )
+      .where(eq(schema.bookingRequests.id, id))
+      .limit(1);
+    return row ?? null;
+  } catch {
+    return null;
+  }
 }

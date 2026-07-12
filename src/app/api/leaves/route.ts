@@ -3,8 +3,14 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getDb, schema } from "@/lib/db";
 import { agencyUserForArtist, notify } from "@/lib/data/notify";
+import {
+  getSessionUser,
+  getSessionAgency,
+  getSessionArtistId,
+} from "@/lib/data/session";
+import { agencyOwnsArtist } from "@/lib/data/ownership";
 
-// 휴가 신청(아티스트) / 승인·거절(소속사). 아티스트측 미인증이라 공개.
+// 휴가 신청(아티스트 본인/담당 소속사) / 승인·거절(담당 소속사).
 interface CreateBody {
   artistId: string;
   startDate: string;
@@ -17,11 +23,22 @@ interface DecideBody {
 }
 
 export async function POST(req: Request) {
+  const user = await getSessionUser();
+  if (!user)
+    return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
   try {
     const b = (await req.json()) as CreateBody;
     if (!b.artistId || !b.startDate || !b.endDate) {
       return NextResponse.json({ error: "필수 항목 누락" }, { status: 400 });
     }
+    // 본인(연결된 아티스트) 또는 담당 소속사만 신청 가능
+    const myArtistId = await getSessionArtistId();
+    const agency = await getSessionAgency();
+    const allowed =
+      myArtistId === b.artistId ||
+      (!!agency && (await agencyOwnsArtist(agency.id, b.artistId)));
+    if (!allowed)
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     const db = getDb();
     const [row] = await db
       .insert(schema.leaves)
@@ -57,15 +74,28 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
+  const agency = await getSessionAgency();
+  if (!agency)
+    return NextResponse.json({ error: "소속사 인증이 필요합니다" }, { status: 401 });
   try {
     const b = (await req.json()) as DecideBody;
     if (!b.id || !b.status) {
       return NextResponse.json({ error: "잘못된 요청" }, { status: 400 });
     }
     const db = getDb();
+    // 대상 휴가가 세션 소속사 소유 아티스트의 것인지 확인
+    const [existing] = await db
+      .select({ artistId: schema.leaves.artistId })
+      .from(schema.leaves)
+      .where(eq(schema.leaves.id, b.id))
+      .limit(1);
+    if (!existing)
+      return NextResponse.json({ error: "없는 휴가" }, { status: 404 });
+    if (!(await agencyOwnsArtist(agency.id, existing.artistId)))
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     const [leave] = await db
       .update(schema.leaves)
-      .set({ status: b.status })
+      .set({ status: b.status, decidedByUserId: (await getSessionUser())?.id })
       .where(eq(schema.leaves.id, b.id))
       .returning({ artistId: schema.leaves.artistId });
 
@@ -77,7 +107,7 @@ export async function PATCH(req: Request) {
         .where(eq(schema.artists.id, leave.artistId))
         .limit(1);
       await notify(artist?.userId, {
-        type: "leave_approved",
+        type: b.status === "approved" ? "leave_approved" : "leave_rejected",
         title: b.status === "approved" ? "휴가가 승인됐어요" : "휴가가 거절됐어요",
         link: "/me/leave",
       });

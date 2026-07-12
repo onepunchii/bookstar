@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { getDb, schema } from "@/lib/db";
+import { sessionUserExists, STALE_SESSION_MSG } from "@/lib/data/session";
 import type { ArtistCategory } from "@/lib/types";
 
 // 크리에이터 셀프 가입 — 카카오 로그인 유저에게
@@ -26,6 +27,9 @@ export async function POST(req: Request) {
   if (!uid) {
     return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
   }
+  // 유령 세션(삭제된 계정 토큰) 방어 — FK 위반 500 대신 재로그인 유도
+  if (!(await sessionUserExists(uid)))
+    return NextResponse.json({ error: STALE_SESSION_MSG }, { status: 401 });
   try {
     const b = (await req.json()) as Body;
     if (!b.name?.trim() || !b.slug?.trim()) {

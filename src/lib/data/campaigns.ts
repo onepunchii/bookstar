@@ -256,8 +256,13 @@ export async function applyToCampaign(input: {
       proposedFee: input.proposedFee ?? null,
       proposedIncludes: input.proposedIncludes ?? null,
     });
-  } catch {
-    return { ok: false, error: "이미 이 아티스트로 지원했어요" };
+  } catch (e) {
+    // 중복 지원(unique 위반)만 안내 메시지 — 그 외 오류는 은폐하지 않는다
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg.includes("23505") || msg.includes("duplicate key"))
+      return { ok: false, error: "이미 이 아티스트로 지원했어요" };
+    console.error("[applyToCampaign]", e);
+    return { ok: false, error: "지원에 실패했어요. 잠시 후 다시 시도해주세요." };
   }
 
   const [artist] = await db
@@ -298,6 +303,21 @@ export async function selectApplication(
     .limit(1);
   if (!app || app.campaignId !== campaignId)
     return { ok: false, error: "지원을 찾을 수 없어요" };
+
+  // 0) 원자적 선점 — open일 때만 awarded로 전환(단일 statement).
+  //    동시/재시도 선정 시 한 명만 통과 → 고아 부킹·중복 선정 방지.
+  const claimed = await db
+    .update(schema.campaigns)
+    .set({ status: "awarded", awardedApplicationId: applicationId })
+    .where(
+      and(
+        eq(schema.campaigns.id, campaignId),
+        eq(schema.campaigns.status, "open")
+      )
+    )
+    .returning({ id: schema.campaigns.id });
+  if (claimed.length === 0)
+    return { ok: false, error: "이미 선정이 끝난 캠페인이에요" };
 
   // 1) 부킹 생성 (기존 협의·정산·데일리 흐름으로 진입)
   const budget = app.proposedFee ?? c.budgetMax ?? c.budgetMin ?? 0;
@@ -347,10 +367,7 @@ export async function selectApplication(
         ne(schema.campaignApplications.id, applicationId)
       )
     );
-  await db
-    .update(schema.campaigns)
-    .set({ status: "awarded", awardedApplicationId: applicationId })
-    .where(eq(schema.campaigns.id, campaignId));
+  // (캠페인 awarded 전환은 위에서 원자적으로 선점 완료)
 
   // 4) 알림 — 선정자·미선정자
   if (app.applicantUserId)
@@ -403,13 +420,15 @@ export async function extendDeadline(
   deadline: string
 ) {
   const db = getDb();
+  // awarded/closed 캠페인을 open으로 되돌리지 않도록 — open·closed(재오픈)만 허용, awarded 제외
   await db
     .update(schema.campaigns)
     .set({ deadline, status: "open" })
     .where(
       and(
         eq(schema.campaigns.id, id),
-        eq(schema.campaigns.companyUserId, companyUserId)
+        eq(schema.campaigns.companyUserId, companyUserId),
+        ne(schema.campaigns.status, "awarded")
       )
     );
 }

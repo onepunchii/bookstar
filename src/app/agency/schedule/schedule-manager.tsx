@@ -48,11 +48,13 @@ export function ScheduleManager({
   schedulesByArtist,
   initialHolds,
   initialLeaves,
+  feedTokens = {},
 }: {
   artists: Artist[];
   schedulesByArtist: Record<string, ScheduleDay[]>;
   initialHolds: Hold[];
   initialLeaves: LeaveRequest[];
+  feedTokens?: Record<string, string>;
 }) {
   const [artistId, setArtistId] = useState(artists[0]?.id ?? "");
   const [edits, setEdits] = useState<Record<string, Availability>>({});
@@ -65,7 +67,9 @@ export function ScheduleManager({
     useState<Record<string, ScheduleDay[]>>(schedulesByArtist);
 
   const copyFeed = () => {
-    const url = `${window.location.origin}/api/calendar/${artistId}`;
+    const t = feedTokens[artistId];
+    if (!t) return;
+    const url = `${window.location.origin}/api/calendar/${artistId}?t=${t}`;
     navigator.clipboard?.writeText(url).catch(() => {});
     setCopiedFeed(true);
     setTimeout(() => setCopiedFeed(false), 1800);

@@ -1,10 +1,11 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { getDb, schema } from "@/lib/db";
+import { getSessionAgency } from "@/lib/data/session";
+import { agencyOwnsArtist } from "@/lib/data/ownership";
 
-// 정산 CRUD — 소속사 콘솔 전용(인증 필수).
+// 정산 CRUD — 소속사 콘솔 전용(세션 소속사가 소유한 아티스트만).
 interface CreateBody {
   artistId: string;
   eventTitle: string;
@@ -22,19 +23,17 @@ interface UpdateBody {
   agencyRateBp?: number;
 }
 
-async function requireUser() {
-  const session = await auth();
-  return session?.user ?? null;
-}
-
 export async function POST(req: Request) {
-  if (!(await requireUser()))
-    return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+  const agency = await getSessionAgency();
+  if (!agency)
+    return NextResponse.json({ error: "소속사 인증이 필요합니다" }, { status: 401 });
   try {
     const b = (await req.json()) as CreateBody;
     if (!b.artistId || !b.eventTitle || !b.gross) {
       return NextResponse.json({ error: "필수 항목 누락" }, { status: 400 });
     }
+    if (!(await agencyOwnsArtist(agency.id, b.artistId)))
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     const db = getDb();
     const [row] = await db
       .insert(schema.settlements)
@@ -57,11 +56,23 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
-  if (!(await requireUser()))
-    return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+  const agency = await getSessionAgency();
+  if (!agency)
+    return NextResponse.json({ error: "소속사 인증이 필요합니다" }, { status: 401 });
   try {
     const b = (await req.json()) as UpdateBody;
     if (!b.id) return NextResponse.json({ error: "id 누락" }, { status: 400 });
+    // 대상 정산이 세션 소속사 소유 아티스트의 것인지 확인
+    const db0 = getDb();
+    const [target] = await db0
+      .select({ artistId: schema.settlements.artistId })
+      .from(schema.settlements)
+      .where(eq(schema.settlements.id, b.id))
+      .limit(1);
+    if (!target)
+      return NextResponse.json({ error: "없는 정산" }, { status: 404 });
+    if (!(await agencyOwnsArtist(agency.id, target.artistId)))
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     const patch: Partial<typeof schema.settlements.$inferInsert> = {};
     if (b.status !== undefined) patch.status = b.status;
     if (b.taxInvoice !== undefined) patch.taxInvoice = b.taxInvoice;

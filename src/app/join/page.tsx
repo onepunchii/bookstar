@@ -13,6 +13,7 @@ export const metadata = {
   title: "xong 가입 · eXperience ON",
   description:
     "브랜드가 당신을 직접 찾아오게 하세요. 크리에이터·인플루언서·소속사를 위한 가장 빠른 부킹 채널.",
+  alternates: { canonical: "/join" },
 };
 
 export default function JoinLandingPage() {

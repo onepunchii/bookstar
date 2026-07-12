@@ -32,6 +32,14 @@ export async function upsertKakaoUser(
         .where(eq(schema.users.id, existing.id));
       return { id: existing.id, role: "admin" };
     }
+    // 허용목록에서 빠졌는데 아직 admin이면 강등(권한 회수 — company로)
+    if (!isAdmin && existing.role === "admin") {
+      await db
+        .update(schema.users)
+        .set({ role: "company" })
+        .where(eq(schema.users.id, existing.id));
+      return { id: existing.id, role: "company" };
+    }
     return existing;
   }
 

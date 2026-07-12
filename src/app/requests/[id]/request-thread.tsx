@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useAuthUi } from "@/lib/auth-ui-store";
 import type { ThreadMessage } from "@/lib/types";
 import { SendHorizonal } from "lucide-react";
 
@@ -15,6 +16,7 @@ export function RequestThread({
   const [thread, setThread] = useState<ThreadMessage[]>(initialMessages);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const openLogin = useAuthUi((s) => s.openLogin);
 
   const send = async () => {
     const body = text.trim();
@@ -24,22 +26,27 @@ export function RequestThread({
       const res = await fetch("/api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          requestId,
-          sender: "company",
-          senderName: "광고주",
-          body,
-        }),
+        body: JSON.stringify({ requestId, body }),
       });
+      if (res.status === 401) {
+        openLogin("메시지를 보내려면");
+        return;
+      }
       if (!res.ok) throw new Error();
-      const d = (await res.json()) as { id: string; createdAt: string };
+      // 발신자·표시명은 서버가 세션에서 도출해 반환한다
+      const d = (await res.json()) as {
+        id: string;
+        createdAt: string;
+        sender: "company" | "agency";
+        senderName: string;
+      };
       setThread((t) => [
         ...t,
         {
           id: d.id,
           requestId,
-          sender: "company",
-          senderName: "광고주",
+          sender: d.sender,
+          senderName: d.senderName,
           body,
           createdAt: d.createdAt,
         },

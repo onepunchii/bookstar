@@ -7,6 +7,7 @@ import {
   sessionUserExists,
   STALE_SESSION_MSG,
 } from "@/lib/data/session";
+import { agencyOwnsArtist } from "@/lib/data/ownership";
 
 const UUID = /^[0-9a-f-]{36}$/;
 
@@ -37,10 +38,16 @@ export async function POST(
       );
 
     const agency = await getSessionAgency();
+    // 본인 소속사 소유 아티스트로만 지원 가능(남의 아티스트로 위장·그리핑 방지)
+    if (!agency || !(await agencyOwnsArtist(agency.id, b.artistId)))
+      return NextResponse.json(
+        { error: "본인 소속사의 아티스트만 지원할 수 있어요" },
+        { status: 403 }
+      );
     const res = await applyToCampaign({
       campaignId: id,
       artistId: b.artistId,
-      agencyId: agency?.id ?? null,
+      agencyId: agency.id,
       applicantUserId: uid,
       pitch: b.pitch?.trim() || null,
       proposedFee: b.proposedFee ?? null,

@@ -1,8 +1,9 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { getDb, schema } from "@/lib/db";
+import { getSessionAgency } from "@/lib/data/session";
+import { agencyOwnsArtist } from "@/lib/data/ownership";
 import type { DayStop } from "@/lib/types";
 
 // 데일리 시트 CRUD — 소속사 콘솔 전용(인증 필수).
@@ -21,20 +22,18 @@ interface UpdateBody extends Partial<CreateBody> {
   broadcast?: boolean;
 }
 
-async function requireUser() {
-  const session = await auth();
-  return session?.user ?? null;
-}
-
 // 생성
 export async function POST(req: Request) {
-  if (!(await requireUser()))
-    return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+  const agency = await getSessionAgency();
+  if (!agency)
+    return NextResponse.json({ error: "소속사 인증이 필요합니다" }, { status: 401 });
   try {
     const b = (await req.json()) as CreateBody;
     if (!b.artistId || !b.date || !b.title) {
       return NextResponse.json({ error: "필수 항목 누락" }, { status: 400 });
     }
+    if (!(await agencyOwnsArtist(agency.id, b.artistId)))
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     const db = getDb();
     const [row] = await db
       .insert(schema.daySchedules)
@@ -59,11 +58,30 @@ export async function POST(req: Request) {
 
 // 수정 / 전파
 export async function PATCH(req: Request) {
-  if (!(await requireUser()))
-    return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+  const agency = await getSessionAgency();
+  if (!agency)
+    return NextResponse.json({ error: "소속사 인증이 필요합니다" }, { status: 401 });
   try {
     const b = (await req.json()) as UpdateBody;
     if (!b.id) return NextResponse.json({ error: "id 누락" }, { status: 400 });
+
+    // 대상 시트가 세션 소속사 소유인지 확인 (+재배정 시 새 artistId도 소유 확인)
+    const dbo = getDb();
+    const [target] = await dbo
+      .select({ artistId: schema.daySchedules.artistId })
+      .from(schema.daySchedules)
+      .where(eq(schema.daySchedules.id, b.id))
+      .limit(1);
+    if (!target)
+      return NextResponse.json({ error: "없는 시트" }, { status: 404 });
+    if (!(await agencyOwnsArtist(agency.id, target.artistId)))
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
+    if (
+      b.artistId !== undefined &&
+      b.artistId !== target.artistId &&
+      !(await agencyOwnsArtist(agency.id, b.artistId))
+    )
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
 
     const patch: Partial<typeof schema.daySchedules.$inferInsert> = {};
     if (b.artistId !== undefined) patch.artistId = b.artistId;
@@ -98,12 +116,22 @@ export async function PATCH(req: Request) {
 
 // 삭제
 export async function DELETE(req: Request) {
-  if (!(await requireUser()))
-    return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+  const agency = await getSessionAgency();
+  if (!agency)
+    return NextResponse.json({ error: "소속사 인증이 필요합니다" }, { status: 401 });
   try {
     const { id } = (await req.json()) as { id: string };
     if (!id) return NextResponse.json({ error: "id 누락" }, { status: 400 });
     const db = getDb();
+    const [target] = await db
+      .select({ artistId: schema.daySchedules.artistId })
+      .from(schema.daySchedules)
+      .where(eq(schema.daySchedules.id, id))
+      .limit(1);
+    if (!target)
+      return NextResponse.json({ error: "없는 시트" }, { status: 404 });
+    if (!(await agencyOwnsArtist(agency.id, target.artistId)))
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     await db.delete(schema.daySchedules).where(eq(schema.daySchedules.id, id));
     revalidatePath("/agency/today");
     return NextResponse.json({ ok: true });

@@ -17,17 +17,20 @@ export async function POST(req: Request) {
     const { role } = (await req.json()) as { role?: string };
     const next = role === "agency" ? "agency" : "company";
     const db = getDb();
-    // 관리자 역할은 온보딩 선택으로 강등하지 않음(onboarded만 완료 처리)
     const [cur] = await db
-      .select({ role: schema.users.role })
+      .select({ role: schema.users.role, onboarded: schema.users.onboarded })
       .from(schema.users)
       .where(eq(schema.users.id, uid))
       .limit(1);
+    // 확정 역할(admin·artist)은 강등하지 않고, 이미 온보딩 완료면 role 고정.
+    // 최초 온보딩(onboarded=false, company)일 때만 선택한 role로 설정.
+    const keepRole =
+      cur?.role === "admin" || cur?.role === "artist" || cur?.onboarded === true;
     await db
       .update(schema.users)
-      .set(cur?.role === "admin" ? { onboarded: true } : { onboarded: true, role: next })
+      .set(keepRole ? { onboarded: true } : { onboarded: true, role: next })
       .where(eq(schema.users.id, uid));
-    return NextResponse.json({ ok: true, role: cur?.role === "admin" ? "admin" : next });
+    return NextResponse.json({ ok: true, role: keepRole ? cur?.role : next });
   } catch (e) {
     console.error("[onboarding role]", e);
     return NextResponse.json({ error: "저장 실패" }, { status: 500 });

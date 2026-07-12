@@ -14,7 +14,7 @@ export default function manifest(): MetadataRoute.Manifest {
     icons: [
       {
         src: "/app.png",
-        sizes: "512x512",
+        sizes: "1254x1254", // 실제 파일 크기와 일치
         type: "image/png",
         purpose: "any",
       },

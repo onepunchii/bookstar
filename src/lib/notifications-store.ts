@@ -7,10 +7,18 @@ export type NotificationType =
   | "hold_expiring"
   | "new_request"
   | "quote_accepted"
+  | "quote_received"
+  | "message"
   | "leave_approved"
+  | "leave_rejected"
   | "leave_submitted"
   | "review_received"
   | "booking_accepted"
+  | "campaign_application"
+  | "campaign_selected"
+  | "campaign_rejected"
+  | "agency_signup"
+  | "feedback"
   | "ai_intake"
   | "day_broadcast";
 

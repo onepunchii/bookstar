@@ -1,9 +1,10 @@
 import { desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { getDb, schema } from "@/lib/db";
 import { notify } from "@/lib/data/notify";
+import { getSessionAgency } from "@/lib/data/session";
+import { agencyOwnsArtist } from "@/lib/data/ownership";
 
 // 견적 회신 — quotes 저장 + 협의 메시지 생성 + 요청 상태 negotiating 전환.
 // 소속사 인박스의 '견적 보내기'가 광고주 협의 채팅·요청 상세에 실제로 나타난다.
@@ -16,9 +17,9 @@ interface Body {
 }
 
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+  const agency = await getSessionAgency();
+  if (!agency) {
+    return NextResponse.json({ error: "소속사 인증이 필요합니다" }, { status: 401 });
   }
   try {
     const b = (await req.json()) as Body;
@@ -30,6 +31,7 @@ export async function POST(req: Request) {
       .select({
         status: schema.bookingRequests.status,
         companyUserId: schema.bookingRequests.companyUserId,
+        artistId: schema.bookingRequests.artistId,
       })
       .from(schema.bookingRequests)
       .where(eq(schema.bookingRequests.id, b.requestId))
@@ -37,6 +39,9 @@ export async function POST(req: Request) {
     if (!request) {
       return NextResponse.json({ error: "없는 요청" }, { status: 404 });
     }
+    // 이 요청의 아티스트를 담당하는 소속사만 견적 회신 가능
+    if (!(await agencyOwnsArtist(agency.id, request.artistId)))
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
 
     // 1) 견적 저장
     const [quote] = await db

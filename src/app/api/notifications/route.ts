@@ -52,7 +52,10 @@ export async function PATCH(req: Request) {
       all?: boolean;
       role?: string;
     };
-    const userId = await resolveUserId(b.role);
+    // 읽음 처리(쓰기)는 실제 로그인 세션만 — 익명 role 폴백으로 시드 알림을 건드리지 못하게
+    const session = await auth();
+    const uid = session?.user?.id;
+    const userId = uid && /^[0-9a-f-]{36}$/.test(uid) ? uid : null;
     if (!userId) return NextResponse.json({ ok: true });
     const db = getDb();
     if (b.all) {

@@ -1,8 +1,9 @@
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { getDb, schema } from "@/lib/db";
+import { getSessionAgency } from "@/lib/data/session";
+import { agencyOwnsArtist } from "@/lib/data/ownership";
 import type { Availability } from "@/lib/types";
 
 // 소속사 일정관리 — 아티스트의 가능여부(availability)를 DB schedules에 upsert.
@@ -15,9 +16,9 @@ interface Payload {
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+    const agency = await getSessionAgency();
+    if (!agency) {
+      return NextResponse.json({ error: "소속사 인증이 필요합니다" }, { status: 401 });
     }
 
     const body = (await req.json()) as Payload;
@@ -27,6 +28,8 @@ export async function POST(req: Request) {
     if (body.changes.length === 0) {
       return NextResponse.json({ ok: true, count: 0 });
     }
+    if (!(await agencyOwnsArtist(agency.id, body.artistId)))
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
 
     const db = getDb();
     // (artist_id, date) 유니크 → upsert
@@ -62,9 +65,9 @@ export async function POST(req: Request) {
 // 특정 아티스트의 일정 삭제(선택) — 현재 미사용, 향후 확장용
 export async function DELETE(req: Request) {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+    const agency = await getSessionAgency();
+    if (!agency) {
+      return NextResponse.json({ error: "소속사 인증이 필요합니다" }, { status: 401 });
     }
     const { artistId, date } = (await req.json()) as {
       artistId: string;
@@ -73,6 +76,8 @@ export async function DELETE(req: Request) {
     if (!artistId || !date) {
       return NextResponse.json({ error: "잘못된 요청" }, { status: 400 });
     }
+    if (!(await agencyOwnsArtist(agency.id, artistId)))
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     const db = getDb();
     await db
       .delete(schema.schedules)

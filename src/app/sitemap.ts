@@ -60,7 +60,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 1.6) 섭외 카테고리 랜딩 ("가수 섭외", "행사 MC 섭외" 등 상황·장르 키워드)
   const topicPages: MetadataRoute.Sitemap = BOOKING_TOPICS.map((t) => ({
-    url: absoluteUrl(`/섭외/${encodeURIComponent(t.slug)}`),
+    // 경로 전체를 퍼센트 인코딩(RFC 3986) — 한글 프리픽스도 인코딩해 엄격 파서 호환.
+    // next.config 리라이트가 인코딩·원문 형태를 모두 /booking-topic/:slug로 매핑.
+    url: absoluteUrl(
+      `/${encodeURIComponent("섭외")}/${encodeURIComponent(t.slug)}`
+    ),
     lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.85,

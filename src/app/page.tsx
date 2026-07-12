@@ -24,6 +24,11 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+// 홈 self-canonical (루트 canonical 제거에 따라 명시)
+export const metadata = {
+  alternates: { canonical: "/" },
+};
+
 export default async function HomePage() {
   const user = await getSessionUser();
   const [ARTISTS, BOOKING_REQUESTS, bundles] = await Promise.all([
