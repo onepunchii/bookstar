@@ -160,7 +160,10 @@ export function NotificationsPanel({ dark = false }: { dark?: boolean }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-11 z-50 w-[92vw] max-w-sm overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-xl shadow-neutral-900/5">
+        // 모바일(<640px): 벨이 헤더 맨 오른쪽이 아니라(오른쪽에 역할 스위처) right-0 기준
+        // 92vw 패널이 화면 밖으로 밀려 잘림 → 뷰포트 기준 fixed로 좌우 여백만 두고 꽉 채움.
+        // 데스크톱(sm+): 기존처럼 벨 기준 absolute 드롭다운.
+        <div className="fixed inset-x-3 top-[4.25rem] z-50 max-h-[80vh] overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-xl shadow-neutral-900/5 sm:absolute sm:inset-x-auto sm:right-0 sm:top-11 sm:w-[92vw] sm:max-w-sm">
           <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3">
             <p className="text-sm font-bold">
               알림
