@@ -141,6 +141,7 @@ export function AppShell({
     pathname.startsWith("/login") ||
     pathname.startsWith("/terms") ||
     pathname.startsWith("/privacy") ||
+    pathname.startsWith("/account-delete") ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/guide") ||
     pathname.startsWith("/섭외") ||
