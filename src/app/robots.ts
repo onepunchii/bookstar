@@ -16,6 +16,7 @@ export default function robots(): MetadataRoute.Robots {
           "/recommend",
           "/d/", // 데일리 시트 공유 링크
           "/api/",
+          "/admin", // 관리자 — 크롤 예산 낭비·URL 노출 방지
         ],
       },
     ],
