@@ -5,6 +5,7 @@ import { getDb, schema } from "@/lib/db";
 import { getSessionUser, getSessionAgency } from "@/lib/data/session";
 import { agencyOwnsArtist } from "@/lib/data/ownership";
 import { agencyUserForArtist, notify } from "@/lib/data/notify";
+import { isBlockedEither } from "@/lib/blocked";
 
 // 협의 메시지 전송 — 요청 당사자(광고주 본인 또는 담당 소속사)만.
 // 발신자(sender)는 세션에서 도출한다(클라이언트 값 신뢰 금지 — 사칭 방어).
@@ -53,6 +54,18 @@ export async function POST(req: Request) {
       }
     }
 
+    // 차단 관계면 어느 방향이든 전송 금지 (App Store 1.2 — 차단의 실효성)
+    const counterpart =
+      sender === "company"
+        ? await agencyUserForArtist(request.artistId)
+        : request.companyUserId;
+    if (counterpart && (await isBlockedEither(user.id, counterpart))) {
+      return NextResponse.json(
+        { error: "차단 관계에서는 메시지를 보낼 수 없습니다" },
+        { status: 403 }
+      );
+    }
+
     const [row] = await db
       .insert(schema.messages)
       .values({
@@ -69,11 +82,7 @@ export async function POST(req: Request) {
 
     // 상대방에게 새 메시지 알림
     try {
-      const recipient =
-        sender === "company"
-          ? await agencyUserForArtist(request.artistId)
-          : request.companyUserId;
-      await notify(recipient, {
+      await notify(counterpart, {
         type: "message",
         title: sender === "company" ? "광고주 새 메시지" : "소속사 새 메시지",
         body: b.body.trim().slice(0, 60),

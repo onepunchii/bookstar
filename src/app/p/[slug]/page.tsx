@@ -1,8 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MonthAvailability } from "@/components/month-availability";
+import { SafetyMenu } from "@/components/safety-menu";
 import { Wordmark } from "@/components/wordmark";
-import { getPublicArtistBySlug, getPublicSchedule } from "@/lib/data/artists";
+import {
+  getArtistOwnerUserId,
+  getPublicArtistBySlug,
+  getPublicSchedule,
+} from "@/lib/data/artists";
+import { getSessionUser } from "@/lib/data/session";
 import { getRatingSummaryBySlug } from "@/lib/mock-data";
 import { YoutubeVideos } from "@/components/youtube-videos";
 import { fetchYoutubeSubscribers } from "@/lib/youtube";
@@ -122,6 +128,11 @@ export default async function ArtistPublicPage({ params }: PageProps) {
 
   const schedule = await getPublicSchedule(artist.id);
   const rating = getRatingSummaryBySlug(slug);
+  // 신고·차단(App Store 1.2) — 뷰어 로그인 여부 + 프로필 운영 유저
+  const [viewer, ownerUserId] = await Promise.all([
+    getSessionUser(),
+    getArtistOwnerUserId(artist.id),
+  ]);
   // 유튜브 채널이 있으면 실 구독자 수, 없으면 저장된 팔로워
   const ytSubs = artist.youtube
     ? await fetchYoutubeSubscribers(artist.youtube)
@@ -197,9 +208,20 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           <Link href="/" aria-label="xong 홈으로">
             <Wordmark height={18} />
           </Link>
-          <span className="rounded-full bg-black/40 px-3 py-1 text-[11px] font-semibold text-white/60 backdrop-blur">
-            공개 프로필
-          </span>
+          <div className="flex items-center gap-1">
+            <span className="rounded-full bg-black/40 px-3 py-1 text-[11px] font-semibold text-white/60 backdrop-blur">
+              공개 프로필
+            </span>
+            <SafetyMenu
+              targetType="artist_profile"
+              targetId={artist.id}
+              targetUserId={
+                ownerUserId && ownerUserId !== viewer?.id ? ownerUserId : null
+              }
+              loggedIn={!!viewer}
+              dark
+            />
+          </div>
         </div>
       </div>
 

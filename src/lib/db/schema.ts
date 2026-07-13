@@ -9,6 +9,8 @@ import {
   uuid,
   jsonb,
   uniqueIndex,
+  serial,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 
 export const userRole = pgEnum("user_role", [
@@ -467,6 +469,32 @@ export const outreachReplies = pgTable("outreach_replies", {
   sentAt: timestamp("sent_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+// ---------- 콘텐츠 세이프티 (App Store 1.2 UGC — onp/mapix 검증 패턴) ----------
+
+// 신고 — 협의 채팅·공개 프로필·사용자 등 모든 UGC 대상. 어드민이 24시간 내 검토(약관 약속).
+export const contentReports = pgTable("content_reports", {
+  id: serial("id").primaryKey(),
+  reporterId: uuid("reporter_id").notNull(),
+  // 'artist_profile' | 'chat' | 'user'
+  targetType: text("target_type").notNull(),
+  targetId: text("target_id").notNull(),
+  reason: text("reason"),
+  // open → resolved (어드민 처리)
+  status: text("status").notNull().default("open"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// 사용자 차단 — 차단하면 상대와의 협의 채팅 전송이 양방향으로 막힘.
+export const blockedUsers = pgTable(
+  "blocked_users",
+  {
+    blockerId: uuid("blocker_id").notNull(),
+    blockedId: uuid("blocked_id").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.blockerId, t.blockedId] })]
+);
 
 // ---------- 에러 수집 ----------
 // 서버(onRequestError)·클라이언트(window 리스너·error boundary)에서 올라온 런타임 에러.

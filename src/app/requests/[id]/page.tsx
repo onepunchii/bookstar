@@ -7,6 +7,7 @@ import {
   getRequestParties,
 } from "@/lib/data/booking-requests";
 import { getSessionUser, getSessionAgency } from "@/lib/data/session";
+import { agencyUserForArtist } from "@/lib/data/notify";
 import { getMessages } from "@/lib/data/messages";
 import { getLatestQuote } from "@/lib/data/quotes";
 import { formatBudget } from "@/lib/types";
@@ -41,6 +42,12 @@ export default async function RequestDetailPage({
     getLatestQuote(id),
   ]);
 
+  // 협의 상대 유저 — 신고·차단 메뉴 대상 (내가 광고주면 소속사 대표, 소속사면 광고주)
+  const counterpartUserId =
+    parties.companyUserId === user.id
+      ? await agencyUserForArtist(parties.artistId)
+      : parties.companyUserId;
+
   return (
     <div className="adv-dark min-h-dvh">
       <div className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-16">
@@ -59,7 +66,11 @@ export default async function RequestDetailPage({
         <div className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-3">
           {/* Thread */}
           <div className="lg:col-span-2">
-            <RequestThread requestId={id} initialMessages={thread} />
+            <RequestThread
+              requestId={id}
+              initialMessages={thread}
+              counterpartUserId={counterpartUserId}
+            />
           </div>
 
           {/* Summary sidebar */}

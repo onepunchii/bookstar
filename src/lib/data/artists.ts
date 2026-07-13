@@ -131,6 +131,28 @@ export async function getPublicArtistBySlug(
   return MOCK_ARTISTS.find((a) => a.slug === slug) ?? null;
 }
 
+/** 아티스트를 운영하는 유저 id — 연결된 크리에이터 계정 우선, 없으면 소속사 대표.
+ *  신고·차단(App Store 1.2) 대상 식별용. 목데이터·조회 실패면 null(차단 항목 숨김). */
+export async function getArtistOwnerUserId(
+  artistId: string
+): Promise<string | null> {
+  try {
+    const db = getDb();
+    const [row] = await db
+      .select({
+        userId: schema.artists.userId,
+        ownerId: schema.agencies.ownerId,
+      })
+      .from(schema.artists)
+      .leftJoin(schema.agencies, eq(schema.artists.agencyId, schema.agencies.id))
+      .where(eq(schema.artists.id, artistId))
+      .limit(1);
+    return row?.userId ?? row?.ownerId ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /** 특정 아티스트의 공개 가능 일정 (availability 캘린더용) */
 export async function getPublicSchedule(
   artistId: string

@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">XONG</string>
+    <string name="title_activity_main">XONG</string>
+    <string name="package_name">kr.co.xong.app</string>
+    <string name="custom_url_scheme">kr.co.xong.app</string>
+    <string name="kakao_app_key">d070c8f02c191d9a14efb67edd5c5f37</string>
+    <string name="kakao_scheme">kakaod070c8f02c191d9a14efb67edd5c5f37</string>
+</resources>

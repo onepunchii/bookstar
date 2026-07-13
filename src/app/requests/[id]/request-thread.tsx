@@ -4,14 +4,18 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useAuthUi } from "@/lib/auth-ui-store";
 import type { ThreadMessage } from "@/lib/types";
+import { SafetyMenu } from "@/components/safety-menu";
 import { SendHorizonal } from "lucide-react";
 
 export function RequestThread({
   requestId,
   initialMessages,
+  counterpartUserId,
 }: {
   requestId: string;
   initialMessages: ThreadMessage[];
+  /** 협의 상대 유저 id — 신고·차단 메뉴용 */
+  counterpartUserId?: string | null;
 }) {
   const [thread, setThread] = useState<ThreadMessage[]>(initialMessages);
   const [text, setText] = useState("");
@@ -30,6 +34,14 @@ export function RequestThread({
       });
       if (res.status === 401) {
         openLogin("메시지를 보내려면");
+        return;
+      }
+      if (res.status === 403) {
+        // 차단 관계 등 — 서버가 준 사유를 그대로 안내
+        const d = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        alert(d?.error ?? "메시지를 보낼 수 없습니다");
         return;
       }
       if (!res.ok) throw new Error();
@@ -61,8 +73,18 @@ export function RequestThread({
 
   return (
     <div className="adv-card flex h-[560px] flex-col overflow-hidden rounded-[1.75rem]">
-      <div className="border-b border-white/8 px-5 py-3.5 text-sm font-semibold text-white/80">
-        협의 채팅
+      <div className="flex items-center justify-between border-b border-white/8 py-2 pl-5 pr-2.5">
+        <span className="text-sm font-semibold text-white/80">협의 채팅</span>
+        <SafetyMenu
+          targetType="chat"
+          targetId={requestId}
+          targetUserId={counterpartUserId}
+          onBlocked={() => {
+            alert("차단했어요. 이 상대와는 더 이상 대화할 수 없습니다.");
+            window.location.href = "/requests";
+          }}
+          dark
+        />
       </div>
       <div className="flex-1 space-y-4 overflow-y-auto p-5">
         {thread.length === 0 && (

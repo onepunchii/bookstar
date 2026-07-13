@@ -132,13 +132,15 @@ export function AppShell({
     if (storedRole !== role) setRole(role);
   }, [role, storedRole, setRole]);
 
-  // 공개 페이지(/p/, /@, /d/, /join/, /login)와 관리자(/admin)는 앱 셸 밖 자체 레이아웃
+  // 공개 페이지(/p/, /@, /d/, /join/, /login, 약관·방침)와 관리자(/admin)는 앱 셸 밖 자체 레이아웃
   if (
     pathname.startsWith("/p/") ||
     pathname.startsWith("/@") ||
     pathname.startsWith("/d/") ||
     pathname.startsWith("/join") ||
     pathname.startsWith("/login") ||
+    pathname.startsWith("/terms") ||
+    pathname.startsWith("/privacy") ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/guide") ||
     pathname.startsWith("/섭외") ||

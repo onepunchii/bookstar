@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/app-shell";
 import { ErrorReporter } from "@/components/error-reporter";
+import NativeBridge from "@/components/native-bridge";
 import { auth } from "@/auth";
 import { getAgencyCapability, getViewer } from "@/lib/data/session";
 import { SITE } from "@/lib/site";
@@ -9,6 +10,8 @@ import { SITE } from "@/lib/site";
 export const viewport: Viewport = {
   // 스플래시·주소창 배경 블랙
   themeColor: "#000000",
+  // 네이티브 쉘(iOS 노치)에서 safe-area env() 값이 나오도록
+  viewportFit: "cover",
 };
 
 export const metadata: Metadata = {
@@ -123,6 +126,7 @@ export default async function RootLayout({
           {children}
         </AppShell>
         <ErrorReporter />
+        <NativeBridge />
       </body>
     </html>
   );

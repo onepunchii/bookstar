@@ -1,0 +1,18 @@
+{
+  "slides": [
+    { "file": "01.png", "key": "home" },
+    { "file": "02.png", "key": "artists" },
+    { "file": "03.png", "key": "profile" },
+    { "file": "04.png", "key": "ai" },
+    { "file": "05.png", "key": "guide" }
+  ],
+  "captions": {
+    "ko": {
+      "home": "연예인·인플루언서 섭외를\n가장 빠르게",
+      "artists": "섭외가 공개 · 수수료 0%\n검증된 소속사와 직접",
+      "profile": "섭외가·가능 일정까지\n프로필에서 바로 확인",
+      "ai": "조건만 넣으면\nAI가 캐스팅을 추천",
+      "guide": "시세·절차·견적 거품,\n섭외 가이드로 준비 끝"
+    }
+  }
+}
