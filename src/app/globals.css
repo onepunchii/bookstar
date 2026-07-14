@@ -238,3 +238,21 @@ body {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* 네이티브 쉘(iOS 노치) safe-area — 상단 헤더·하단 탭바가 시스템 영역을 침범하지 않게.
+   웹 브라우저에선 inset이 0이라 무영향. (shell-kit 표준)
+   고정높이(h-16) 헤더는 padding만 주면 내용이 눌리므로(box-sizing) 높이를 함께 키운다. */
+@supports (padding: env(safe-area-inset-top)) {
+  .sticky.top-0.h-16,
+  .fixed.top-0.h-16 {
+    height: calc(4rem + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
+  }
+  .sticky.top-0:not(.h-16),
+  .fixed.top-0:not(.h-16) {
+    padding-top: env(safe-area-inset-top);
+  }
+  .fixed.bottom-0 {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
