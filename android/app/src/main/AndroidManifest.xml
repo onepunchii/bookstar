@@ -38,6 +38,10 @@
                 <data android:host="oauth" android:scheme="@string/kakao_scheme" />
             </intent-filter>
         </activity>
+
+        <!-- FCM 백그라운드 알림 아이콘·색상 — 없으면 앱아이콘 실루엣이 흰 네모로 뭉개짐 -->
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_stat_notify" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color/colorNotify" />
     </application>
 
     <!-- Permissions -->
