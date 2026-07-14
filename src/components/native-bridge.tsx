@@ -6,11 +6,9 @@ import { capacitorApp, isNativeApp, nativePlatform } from "@/lib/native";
 
 // 네이티브 쉘(Capacitor) 연결 — shell-kit 표준. 웹 브라우저에선 아무것도 안 함.
 
-// 푸시 활성화 스위치. xong은 아직 Firebase(google-services.json) 미설정이라
-// PushNotifications.register()가 FirebaseApp 부재로 네이티브 크래시(알림 허용 직후 튕김).
-// 서버측 FCM 발송도 아직 없으므로 등록을 끈다. 푸시 도입 시:
-//   ① android/app/google-services.json 추가 ② 이 값을 true ③ AAB 재빌드.
-const PUSH_ENABLED = false;
+// 푸시 활성화 스위치. google-services.json 배치 완료(xong-17285) + 서버 발송(push-native.ts) 완비.
+// 안드로이드는 FIREBASE_SERVICE_ACCOUNT env, iOS는 APNS_* env가 있으면 실제 발송됨.
+const PUSH_ENABLED = true;
 
 export default function NativeBridge() {
   const router = useRouter();
