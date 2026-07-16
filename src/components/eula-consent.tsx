@@ -6,7 +6,9 @@
 // iOS = 웹뷰 카카오(폼 제출 그대로) + 애플 로그인 버튼 추가(App Store 4.8).
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { nativePlatform } from "@/lib/native";
+import { useAuthUi } from "@/lib/auth-ui-store";
 import {
   nativeKakaoLogin,
   nativeAppleLogin,
@@ -20,6 +22,8 @@ export function EulaConsent({
   label: string;
   redirectTo?: string;
 }) {
+  const router = useRouter();
+  const closeLogin = useAuthUi((s) => s.closeLogin);
   const [agreed, setAgreed] = useState(false);
   const [busy, setBusy] = useState(false);
   // SSR 하이드레이션 안전 — 네이티브 여부는 마운트 후에만 판단
@@ -92,6 +96,17 @@ export function EulaConsent({
           Apple로 로그인
         </button>
       )}
+      {/* 로그인 없이 전체 기능 둘러보기 — 3역할 데모(App Store 2.1(a) 심사 접근성) */}
+      <button
+        type="button"
+        onClick={() => {
+          closeLogin();
+          router.push("/?demo=1");
+        }}
+        className="w-full pt-1 text-center text-xs font-semibold text-neutral-400 underline underline-offset-2 transition-colors hover:text-neutral-700"
+      >
+        로그인 없이 둘러보기
+      </button>
     </div>
   );
 }

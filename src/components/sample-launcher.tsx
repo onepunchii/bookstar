@@ -31,6 +31,18 @@ export function SampleLauncher() {
     } catch {}
   }, []);
 
+  // 로그인 화면의 "로그인 없이 둘러보기"(/?demo=1) → 역할 선택 모달 자동 오픈.
+  // App Store 심사자가 로그인 없이 3역할 데모에 바로 닿게(2.1(a) 접근성).
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("demo") === "1"
+    ) {
+      setDismissed(false);
+      setOpen(true);
+    }
+  }, []);
+
   const dismiss = () => {
     setDismissed(true);
     try {
@@ -156,7 +168,7 @@ export function SampleLauncher() {
             </div>
 
             {/* 푸터 */}
-            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-neutral-100 bg-neutral-50 px-6 py-3 text-xs text-neutral-500">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-neutral-100 bg-neutral-50 px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-xs text-neutral-500">
               <span>
                 샘플은 실제 데이터가 아니며, 클릭 시 자동으로 해당 역할로 전환된
                 뒤 그 화면으로 이동해요.
