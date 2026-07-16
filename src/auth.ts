@@ -57,8 +57,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         pathname.startsWith("/agency") ||
         pathname.startsWith("/me") ||
         pathname.startsWith("/api/artists");
-      if (isProtected) return !!auth?.user;
-      return true;
+      if (!isProtected) return true;
+      if (auth?.user) return true;
+      // 둘러보기(데모) 쿠키가 있으면 비로그인도 페이지는 열람 허용 — 읽기전용 샘플.
+      // 쓰기 API(/api/*)는 계속 로그인 필수(데모에서 실데이터 변경 불가). App Store 2.1(a) 심사 접근성.
+      const demo = request.cookies.get("xong-demo")?.value === "1";
+      return demo && !pathname.startsWith("/api/");
     },
     // 최초 로그인 시 카카오 유저를 users에 upsert → DB id·role을 토큰에 저장
     async jwt({ token, account, profile, user }) {

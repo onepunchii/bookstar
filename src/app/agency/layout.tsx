@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { signOut } from "@/auth";
+import { DemoBanner } from "@/components/demo-banner";
 import { ScopeToggle } from "@/components/scope-toggle";
-import { getSessionAgency } from "@/lib/data/session";
+import { getSessionAgency, getSessionUser } from "@/lib/data/session";
 import { AgencyGate } from "./agency-gate";
 import { AgencyTabs } from "./agency-tabs";
 import { SwipeNav } from "./swipe-nav";
@@ -22,9 +24,15 @@ export default async function AgencyLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const agency = await getSessionAgency();
-  // 인증 완료된 소속사만 콘솔 사용 — 미인증은 어느 탭이든 인증 게이트
+  const [user, agency, cookieStore] = await Promise.all([
+    getSessionUser(),
+    getSessionAgency(),
+    cookies(),
+  ]);
+  // 인증 완료된 소속사만 실제 콘솔. 비로그인 + 둘러보기 쿠키면 데모 콘솔(샘플 데이터).
   const verified = agency?.verificationStatus === "verified";
+  const demo = !user && cookieStore.get("xong-demo")?.value === "1";
+  const showConsole = verified || demo;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
@@ -33,35 +41,42 @@ export default async function AgencyLayout({
         <div className="flex items-center gap-3">
           {verified && <ScopeToggle />}
           <span className="hidden items-center gap-1.5 text-sm text-neutral-400 sm:inline-flex">
-            {agency?.companyName ?? "소속사 미인증"}
+            {demo
+              ? "둘러보기 · 샘플 소속사"
+              : (agency?.companyName ?? "소속사 미인증")}
             {verified && agency && (
               <span className="rounded-full bg-neutral-900 px-2 py-0.5 text-[10px] font-bold text-white">
                 {PLAN_LABEL[agency.plan] ?? agency.plan}
               </span>
             )}
           </span>
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/login" });
-            }}
-          >
-            <button
-              type="submit"
-              className="rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-semibold text-neutral-500 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+          {user && (
+            <form
+              action={async () => {
+                "use server";
+                await signOut({ redirectTo: "/login" });
+              }}
             >
-              로그아웃
-            </button>
-          </form>
+              <button
+                type="submit"
+                className="rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-semibold text-neutral-500 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+              >
+                로그아웃
+              </button>
+            </form>
+          )}
         </div>
       </div>
       <p className="mb-5 text-sm text-neutral-500">
         아티스트 프로필, 일정, 섭외 요청을 한 곳에서 관리하세요
       </p>
       <AgencyTabs />
-      {verified ? (
+      {showConsole ? (
         <SwipeNav>
-          <div className="pt-6">{children}</div>
+          <div className="pt-6">
+            {demo && <DemoBanner />}
+            {children}
+          </div>
         </SwipeNav>
       ) : (
         <div className="pt-6">

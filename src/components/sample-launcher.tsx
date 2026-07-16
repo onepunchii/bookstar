@@ -55,6 +55,8 @@ export function SampleLauncher() {
     setOpen(false);
     try {
       localStorage.setItem("bookstar-sample-seen", "1");
+      // 둘러보기 신호 — 비로그인도 소속사/아티스트 콘솔을 데모 데이터로 열람(미들웨어·게이트 통과)
+      document.cookie = "xong-demo=1; path=/; max-age=86400; SameSite=Lax";
     } catch {}
     setSeen(true);
     router.push(`${scenario.path}?sample=${scenario.id}` as never);
