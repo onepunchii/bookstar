@@ -349,7 +349,7 @@ export function DayScheduleEditor({
         </div>
 
         {/* 푸터 */}
-        <div className="flex items-center justify-between gap-2 border-t border-neutral-100 bg-neutral-50 px-6 py-3">
+        <div className="flex items-center justify-between gap-2 border-t border-neutral-100 bg-neutral-50 px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           {mode === "edit" ? (
             <button
               onClick={del}

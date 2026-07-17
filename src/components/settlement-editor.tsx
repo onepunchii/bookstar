@@ -240,7 +240,7 @@ export function SettlementEditor({ artists, onCreated, onClose }: Props) {
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 border-t border-neutral-100 bg-neutral-50 px-6 py-3">
+        <div className="flex items-center justify-end gap-2 border-t border-neutral-100 bg-neutral-50 px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           {error && (
             <span className="mr-auto text-xs font-semibold text-red-600">
               {error}
