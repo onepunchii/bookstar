@@ -66,6 +66,74 @@ export async function exchangeAppleCode(
   }
 }
 
+// 설정 점검 — 더미 토큰으로 revoke 호출해 client_secret(팀/키/개인키) 유효성만 확인.
+// invalid_client 이면 키·ID 설정 오류. 그 외면 설정 정상(토큰만 무효). 비밀은 반환 안 함.
+export async function appleSelfTest(): Promise<{
+  configured: boolean;
+  clientSecretSigned: boolean;
+  appleStatus: number | null;
+  appleError: string | null;
+  verdict: string;
+}> {
+  if (!appleConfigured())
+    return {
+      configured: false,
+      clientSecretSigned: false,
+      appleStatus: null,
+      appleError: null,
+      verdict: "env 미설정(APPLE_TEAM_ID/KEY_ID/PRIVATE_KEY)",
+    };
+  const secret = await makeClientSecret();
+  if (!secret)
+    return {
+      configured: true,
+      clientSecretSigned: false,
+      appleStatus: null,
+      appleError: null,
+      verdict: "❌ client_secret 서명 실패 — .p8 개인키 형식 확인",
+    };
+  try {
+    const body = new URLSearchParams({
+      client_id: CLIENT_ID(),
+      client_secret: secret,
+      token: "0.0.0",
+      token_type_hint: "refresh_token",
+    });
+    const res = await fetch("https://appleid.apple.com/auth/revoke", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body,
+      signal: AbortSignal.timeout(10_000),
+    });
+    const txt = await res.text();
+    let err: string | null = null;
+    try {
+      err = (JSON.parse(txt) as { error?: string }).error ?? null;
+    } catch {
+      err = txt.slice(0, 120) || null;
+    }
+    const verdict =
+      err === "invalid_client"
+        ? "❌ 설정 오류 — APPLE_TEAM_ID/KEY_ID/CLIENT_ID 또는 .p8 확인"
+        : "✅ 설정 정상 — client_secret 유효(실 리보크 준비 완료)";
+    return {
+      configured: true,
+      clientSecretSigned: true,
+      appleStatus: res.status,
+      appleError: err,
+      verdict,
+    };
+  } catch (e) {
+    return {
+      configured: true,
+      clientSecretSigned: true,
+      appleStatus: null,
+      appleError: e instanceof Error ? e.message : String(e),
+      verdict: "Apple 호출 실패(네트워크)",
+    };
+  }
+}
+
 // 계정 삭제 시 refresh_token 리보크 → Apple ID 설정에서 앱 연결 해제.
 export async function revokeAppleToken(
   refreshToken: string | null | undefined
