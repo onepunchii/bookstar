@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRoleStore, type Role } from "@/lib/role-store";
+import { useAuthUi } from "@/lib/auth-ui-store";
 import { cn } from "@/lib/utils";
 import { Check, ChevronDown } from "lucide-react";
 
@@ -20,6 +21,7 @@ export function RoleSwitcher({
   agencyCapability?: string;
 }) {
   const { role, setRole } = useRoleStore();
+  const isLoggedIn = useAuthUi((s) => s.isLoggedIn);
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -39,13 +41,28 @@ export function RoleSwitcher({
     setOpen(false);
     if (next === role) return;
     setRole(next);
-    // 소속사 전환 — 인증 자격에 따라 진입점 분기
+    const home = ROLES.find((r) => r.key === next)!.home;
+
+    // 비로그인(게스트) — 로그인·모달 없이 데모 쿠키로 소속사/아티스트 콘솔 바로 열람.
+    // (쓰기 API는 여전히 로그인 필수. 로그인은 계정 아이콘/데모 배너에서 가능.)
+    if (!isLoggedIn) {
+      try {
+        document.cookie = "xong-demo=1; path=/; max-age=86400; SameSite=Lax";
+      } catch {}
+      router.push(home as never);
+      return;
+    }
+
+    // 로그인 사용자 — 소속사 전환은 인증 자격에 따라 분기
     // 인증됨/심사중 → 콘솔 바로, 미신청·반려 → 인증 셋업
-    if (next === "agency" && (agencyCapability === "none" || agencyCapability === "rejected")) {
+    if (
+      next === "agency" &&
+      (agencyCapability === "none" || agencyCapability === "rejected")
+    ) {
       router.push("/agency/verify");
       return;
     }
-    router.push(ROLES.find((r) => r.key === next)!.home);
+    router.push(home as never);
   };
 
   return (
