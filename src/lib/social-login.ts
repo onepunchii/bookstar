@@ -37,7 +37,14 @@ export async function nativeAppleLogin(callbackUrl?: string): Promise<"ok" | "ca
     const r = ((res as unknown as { result?: Record<string, unknown> })?.result ?? (res as unknown as Record<string, unknown>)) ?? {};
     const idToken = (r.idToken ?? r.identityToken) as string | undefined;
     if (!idToken) return "cancel";
-    const out = await signIn("native", { provider: "apple", idToken, redirect: false });
+    // authorization code — 서버가 refresh token으로 교환해 리보크(계정 삭제)용으로 저장
+    const authorizationCode = (r.authorizationCode ?? r.code ?? "") as string;
+    const out = await signIn("native", {
+      provider: "apple",
+      idToken,
+      authorizationCode,
+      redirect: false,
+    });
     if (out?.error) return "error";
     window.location.href = callbackUrl || "/";
     return "ok";

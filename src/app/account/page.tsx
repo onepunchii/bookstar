@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signOut } from "@/auth";
+import { DeleteAccountButton } from "@/components/delete-account-button";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { Reveal } from "@/components/premium/reveal";
 import { getSessionProfile } from "@/lib/data/session";
@@ -42,6 +43,7 @@ export default async function MyAccountPage() {
               <LogOut className="h-4 w-4" /> 로그아웃
             </button>
           </form>
+          <DeleteAccountButton dark />
         </Reveal>
       ) : (
         <Reveal delay={80} className="mt-8">

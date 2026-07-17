@@ -50,7 +50,10 @@ export const messageSender = pgEnum("message_sender", [
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
-  kakaoId: text("kakao_id").unique(), // 카카오 로그인 식별자(sub)
+  kakaoId: text("kakao_id").unique(), // 카카오/애플 로그인 식별자(sub). 애플은 "apple:{sub}"
+  // Sign in with Apple — 계정 삭제 시 토큰 리보크(App Store 5.1.1v)용
+  appleSub: text("apple_sub"),
+  appleRefreshToken: text("apple_refresh_token"),
   email: text("email").unique(),
   passwordHash: text("password_hash"),
   role: userRole("role").notNull().default("company"),

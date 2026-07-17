@@ -1,3 +1,4 @@
+import { DeleteAccountButton } from "@/components/delete-account-button";
 import { getSessionAgency } from "@/lib/data/session";
 import { StartAgencyButton } from "../start-agency-button";
 import { AccountForm } from "./account-form";
@@ -22,5 +23,12 @@ export default async function AgencyAccountPage() {
     );
   }
 
-  return <AccountForm agency={agency} />;
+  return (
+    <>
+      <AccountForm agency={agency} />
+      <div className="mt-6 border-t border-neutral-100 pt-4">
+        <DeleteAccountButton />
+      </div>
+    </>
+  );
 }

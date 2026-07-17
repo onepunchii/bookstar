@@ -26,7 +26,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Credentials({
       id: "native",
       name: "native",
-      credentials: { provider: {}, accessToken: {}, idToken: {} },
+      credentials: {
+        provider: {},
+        accessToken: {},
+        idToken: {},
+        authorizationCode: {},
+      },
       async authorize(cred) {
         const provider = String(cred?.provider ?? "");
         if (provider === "kakao") {
@@ -40,6 +45,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           if (!sub) return null;
           // kakaoId unique 컬럼을 provider 식별자로 재활용 — "apple:{sub}"
           const dbUser = await upsertKakaoUser(`apple:${sub}`, "Apple 사용자");
+          // 리보크용 refresh token 확보(Apple 키 설정 시에만) — 실패해도 로그인 진행
+          try {
+            const code = String(cred?.authorizationCode ?? "");
+            if (code) {
+              const { exchangeAppleCode } = await import("@/lib/apple-revoke");
+              const refresh = await exchangeAppleCode(code);
+              if (refresh) {
+                const { linkAppleTokens } = await import("@/lib/data/upsert-user");
+                await linkAppleTokens(dbUser.id, sub, refresh);
+              }
+            }
+          } catch {
+            /* 토큰 저장 실패는 무시 — 로그인·삭제 흐름 불변 */
+          }
           return { id: dbUser.id, name: "Apple 사용자", uid: dbUser.id, role: dbUser.role } as never;
         }
         return null;

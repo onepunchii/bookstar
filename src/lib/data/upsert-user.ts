@@ -49,3 +49,20 @@ export async function upsertKakaoUser(
     .returning({ id: schema.users.id, role: schema.users.role });
   return created;
 }
+
+// Sign in with Apple — 리보크용 sub·refresh token 저장(있을 때만).
+export async function linkAppleTokens(
+  userId: string,
+  appleSub: string,
+  refreshToken: string
+): Promise<void> {
+  try {
+    const db = getDb();
+    await db
+      .update(schema.users)
+      .set({ appleSub, appleRefreshToken: refreshToken })
+      .where(eq(schema.users.id, userId));
+  } catch {
+    /* 저장 실패해도 로그인은 유지 */
+  }
+}
