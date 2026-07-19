@@ -73,5 +73,12 @@
 		<string>kakaotalk</string>
 		<string>kakaolink</string>
 	</array>
+	<!-- 서류/프로필 첨부(파일 선택 시 카메라·사진) — 없으면 iOS가 앱을 강제 종료(TCC) -->
+	<key>NSCameraUsageDescription</key>
+	<string>사업자등록증·프로필 등 서류와 사진을 촬영해 첨부하기 위해 카메라를 사용합니다.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>사업자등록증·프로필 등 서류와 사진을 첨부하기 위해 사진 라이브러리에 접근합니다.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>서류·소개 영상을 촬영해 첨부할 때 마이크를 사용합니다.</string>
 </dict>
 </plist>
