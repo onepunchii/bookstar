@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { signOut } from "@/auth";
+import { AccountLoginButton } from "@/components/account-login-button";
 import { DeleteAccountButton } from "@/components/delete-account-button";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { Reveal } from "@/components/premium/reveal";
 import { getSessionProfile } from "@/lib/data/session";
-import { LogIn, LogOut, ShieldCheck } from "lucide-react";
+import { LogOut, ShieldCheck } from "lucide-react";
 import { MeAccountForm } from "./account-form";
 
 export const metadata = { title: "내 계정" };
@@ -56,12 +56,7 @@ export default async function MyAccountPage() {
               지금 보고 있는 화면은 테스터용 데모 계정이에요. 카카오 또는
               Apple로 로그인하면 내 이름·회사명으로 섭외 요청이 나가요.
             </p>
-            <Link
-              href="/login"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-500 px-6 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
-            >
-              <LogIn className="h-4 w-4" /> 로그인하고 시작하기
-            </Link>
+            <AccountLoginButton />
           </div>
         </Reveal>
       )}
