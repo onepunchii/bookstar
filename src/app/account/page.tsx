@@ -53,14 +53,14 @@ export default async function MyAccountPage() {
               로그인하면 내 프로필을 관리할 수 있어요
             </p>
             <p className="mt-1.5 text-sm text-white/50">
-              지금 보고 있는 화면은 테스터용 데모 계정이에요. 카카오로
-              시작하면 내 이름·회사명으로 섭외 요청이 나가요.
+              지금 보고 있는 화면은 테스터용 데모 계정이에요. 카카오 또는
+              Apple로 로그인하면 내 이름·회사명으로 섭외 요청이 나가요.
             </p>
             <Link
               href="/login"
               className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-500 px-6 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
             >
-              <LogIn className="h-4 w-4" /> 카카오로 시작하기
+              <LogIn className="h-4 w-4" /> 로그인하고 시작하기
             </Link>
           </div>
         </Reveal>
