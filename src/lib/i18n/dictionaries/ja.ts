@@ -1035,6 +1035,38 @@ const ja: Record<string, string> = {
   "agency.tab.docs": "書類ボックス",
   "agency.tab.account": "アカウント・料金プラン",
   "agency.tab.settings": "設定",
+  // ======== 상태·가용성 라벨 ========
+  "avail.available": "可能",
+  "avail.partial": "一部可能",
+  "avail.busy": "不可",
+  "avail.hold": "要相談",
+  "status.pending": "返信待ち",
+  "status.reviewing": "検討中",
+  "status.negotiating": "交渉中",
+  "status.accepted": "承諾済み",
+  "status.rejected": "辞退",
+  "status.completed": "完了",
+  // campaignStatus
+  "campaignStatus.open": "募集中",
+  "campaignStatus.closed": "締切",
+  "campaignStatus.awarded": "選定完了",
+  "campaignStatus.cancelled": "キャンセル",
+  // campaign 마감·예산
+  "campaign.budgetNegotiable": "予算応相談",
+  "campaign.deadlineClosed": "締切",
+  "campaign.deadlineToday": "本日締切",
+  // recommend.reason
+  "recommend.reason.categoryMatch": "カテゴリー一致: {list}",
+  "recommend.reason.budgetInRange": "予算が出演料の範囲内",
+  "recommend.reason.budgetAmple": "予算に余裕があり交渉優位",
+  "recommend.reason.budgetSlightlyLow": "予算はやや低めだが交渉の余地あり",
+  "recommend.reason.genderGroup": "グループ",
+  "recommend.reason.genderFemale": "女性アーティスト",
+  "recommend.reason.genderMale": "男性アーティスト",
+  "recommend.reason.imageMatch": "イメージ一致: {list}",
+  "recommend.reason.ratingHigh": "レビュー{avg}点（{count}件）",
+  "recommend.reason.responseHigh": "返信率{rate}% ・ 迅速回答",
+
 };
 
 export default ja;

@@ -15,7 +15,7 @@ import { mockIdForSlug } from "@/lib/mock-data";
 import { getAgencyBundles } from "@/lib/data/bundles";
 import { BundlesPanel } from "./bundles-panel";
 import { profileCompleteness } from "@/lib/profile";
-import { AVAILABILITY_LABELS, formatBudget } from "@/lib/types";
+import { formatBudget, eventTypeLabel } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
   ArrowRight,
@@ -31,7 +31,7 @@ import {
 const TODAY = todayKST();
 
 export default async function AgencyDashboardPage() {
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const agency = await getSessionAgency();
   const [ARTISTS, BOOKING_REQUESTS, scheduleMap, openCampaigns, bundles] =
     await Promise.all([
@@ -117,7 +117,7 @@ export default async function AgencyDashboardPage() {
         {
           icon: CalendarDays,
           label: t("agency.dashboard.kpiConfirmedThisMonth"),
-          value: formatBudget(confirmedRevenue),
+          value: formatBudget(confirmedRevenue, locale),
           sub: t("agency.dashboard.kpiConfirmedSub", { n: accepted.length }),
         },
       ].map((kpi) => {
@@ -186,13 +186,13 @@ export default async function AgencyDashboardPage() {
                   <span className="truncate text-sm font-bold">
                     {req.companyName}
                   </span>
-                  <Badge>{req.eventType}</Badge>
+                  <Badge>{eventTypeLabel(req.eventType, t)}</Badge>
                 </div>
                 <p className="mt-0.5 truncate text-xs text-neutral-500">
                   {t("agency.dashboard.requestMeta", {
                     artist: req.artistName,
                     date: req.date,
-                    budget: formatBudget(req.budget),
+                    budget: formatBudget(req.budget, locale),
                   })}
                 </p>
               </div>
@@ -227,7 +227,7 @@ export default async function AgencyDashboardPage() {
                       : "text-neutral-500"
                 )}
               >
-                {AVAILABILITY_LABELS[day!.availability]}
+                {t(`avail.${day!.availability}`)}
               </span>
             </div>
           ))}

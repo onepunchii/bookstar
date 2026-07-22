@@ -6,7 +6,7 @@ import {
   dday,
   formatBudgetRange,
 } from "@/lib/campaign-options";
-import { CATEGORY_LABELS } from "@/lib/types";
+import { CATEGORY_LABELS, eventTypeLabel } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { getT } from "@/lib/i18n/server";
 import { CalendarClock, MapPin, Sparkles } from "lucide-react";
@@ -17,7 +17,11 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "오픈 캠페인" };
 
 export default async function AgencyCampaignsPage() {
-  const { t } = await getT();
+  const { t, locale } = await getT();
+  const ddayLabels = {
+    closed: t("campaign.deadlineClosed"),
+    today: t("campaign.deadlineToday"),
+  };
   const agency = await getSessionAgency();
   const [feed, artists] = await Promise.all([
     getAgencyFeed(agency?.id ?? null),
@@ -49,7 +53,7 @@ export default async function AgencyCampaignsPage() {
 
       <div className="space-y-3">
         {feed.map((c) => {
-          const d = dday(c.deadline);
+          const d = dday(c.deadline, ddayLabels);
           return (
             <Card key={c.id} className="p-5">
               {c.imageUrl && (
@@ -62,7 +66,7 @@ export default async function AgencyCampaignsPage() {
               )}
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-semibold text-neutral-600">
-                  {c.eventType}
+                  {eventTypeLabel(c.eventType, t)}
                 </span>
                 {c.matched && (
                   <span className="flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-bold text-brand-600">
@@ -83,7 +87,12 @@ export default async function AgencyCampaignsPage() {
 
               <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-neutral-500">
                 <span className="font-semibold text-neutral-700">
-                  {formatBudgetRange(c.budgetMin, c.budgetMax)}
+                  {formatBudgetRange(
+                    c.budgetMin,
+                    c.budgetMax,
+                    locale,
+                    t("campaign.budgetNegotiable")
+                  )}
                 </span>
                 {c.eventDate && (
                   <span className="flex items-center gap-1">

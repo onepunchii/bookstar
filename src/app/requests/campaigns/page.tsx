@@ -4,11 +4,8 @@ import { Reveal } from "@/components/premium/reveal";
 import { RequestsTabs } from "@/components/requests-tabs";
 import { getCompanyCampaigns } from "@/lib/data/campaigns";
 import { getSessionUser } from "@/lib/data/session";
-import {
-  CAMPAIGN_STATUS_LABEL,
-  dday,
-  formatBudgetRange,
-} from "@/lib/campaign-options";
+import { dday, formatBudgetRange } from "@/lib/campaign-options";
+import { eventTypeLabel } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { ChevronRight, Users } from "lucide-react";
 import { NewCampaignPanel } from "./new-campaign-panel";
@@ -18,7 +15,11 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "오픈 캠페인" };
 
 export default async function CompanyCampaignsPage() {
-  const { t } = await getT();
+  const { t, locale } = await getT();
+  const ddayLabels = {
+    closed: t("campaign.deadlineClosed"),
+    today: t("campaign.deadlineToday"),
+  };
   const user = await getSessionUser();
   const campaigns = user ? await getCompanyCampaigns(user.id) : [];
 
@@ -41,7 +42,7 @@ export default async function CompanyCampaignsPage() {
 
       <div className="mt-4 space-y-3">
         {campaigns.map((c, i) => {
-          const d = dday(c.deadline);
+          const d = dday(c.deadline, ddayLabels);
           return (
             <Reveal key={c.id} delay={(i % 6) * 50}>
               <Link href={`/requests/campaigns/${c.id}`} className="group block">
@@ -56,7 +57,7 @@ export default async function CompanyCampaignsPage() {
                   )}
                   <div className="flex items-center gap-2">
                     <span className="rounded-full bg-white/8 px-2.5 py-0.5 text-[11px] font-semibold text-white/70">
-                      {c.eventType}
+                      {eventTypeLabel(c.eventType, t)}
                     </span>
                     <span
                       className={cn(
@@ -68,7 +69,7 @@ export default async function CompanyCampaignsPage() {
                             : "bg-white/8 text-white/40"
                       )}
                     >
-                      {CAMPAIGN_STATUS_LABEL[c.status]}
+                      {t(`campaignStatus.${c.status}`)}
                     </span>
                     {c.status === "open" && (
                       <span
@@ -84,7 +85,14 @@ export default async function CompanyCampaignsPage() {
                   </div>
                   <p className="mt-2.5 font-bold text-white">{c.title}</p>
                   <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-white/50">
-                    <span>{formatBudgetRange(c.budgetMin, c.budgetMax)}</span>
+                    <span>
+                      {formatBudgetRange(
+                        c.budgetMin,
+                        c.budgetMax,
+                        locale,
+                        t("campaign.budgetNegotiable")
+                      )}
+                    </span>
                     <span className="flex items-center gap-1 text-white/60">
                       <Users className="h-3.5 w-3.5" />{" "}
                       {t("requests.campaigns.applicants", {

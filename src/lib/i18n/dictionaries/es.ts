@@ -1035,6 +1035,38 @@ const es: Record<string, string> = {
   "agency.tab.docs": "Archivo de documentos",
   "agency.tab.account": "Cuenta · Plan",
   "agency.tab.settings": "Configuración",
+  // ======== 상태·가용성 라벨 ========
+  "avail.available": "Disponible",
+  "avail.partial": "Parcial",
+  "avail.busy": "No disponible",
+  "avail.hold": "A consultar",
+  "status.pending": "Esperando respuesta",
+  "status.reviewing": "En revisión",
+  "status.negotiating": "En negociación",
+  "status.accepted": "Aceptado",
+  "status.rejected": "Rechazado",
+  "status.completed": "Completado",
+  // campaignStatus
+  "campaignStatus.open": "Reclutando",
+  "campaignStatus.closed": "Cerrado",
+  "campaignStatus.awarded": "Adjudicado",
+  "campaignStatus.cancelled": "Cancelado",
+  // campaign 마감·예산
+  "campaign.budgetNegotiable": "Presupuesto a negociar",
+  "campaign.deadlineClosed": "Cerrado",
+  "campaign.deadlineToday": "Cierra hoy",
+  // recommend.reason
+  "recommend.reason.categoryMatch": "Coincide categoría: {list}",
+  "recommend.reason.budgetInRange": "Presupuesto dentro de su tarifa",
+  "recommend.reason.budgetAmple": "Presupuesto amplio — ventaja para negociar",
+  "recommend.reason.budgetSlightlyLow": "Presupuesto algo bajo, pero negociable",
+  "recommend.reason.genderGroup": "Grupo",
+  "recommend.reason.genderFemale": "Artista femenina",
+  "recommend.reason.genderMale": "Artista masculino",
+  "recommend.reason.imageMatch": "Coincide imagen: {list}",
+  "recommend.reason.ratingHigh": "{avg}★ ({count} reseñas)",
+  "recommend.reason.responseHigh": "{rate}% respuesta · rápidas",
+
 };
 
 export default es;

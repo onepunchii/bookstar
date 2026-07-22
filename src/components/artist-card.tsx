@@ -13,7 +13,7 @@ import { BadgeCheck, Zap } from "lucide-react";
 
 export async function ArtistCard({ artist }: { artist: Artist }) {
   const rating = getRatingSummary(artist.id);
-  const { t } = await getT();
+  const { t, locale } = await getT();
   return (
     <Link href={`/artists/${artist.id}`} className="group">
       <Card className="h-full overflow-hidden transition-all group-hover:-translate-y-0.5 group-hover:border-neutral-900 group-hover:shadow-lg group-hover:shadow-neutral-900/5">
@@ -54,7 +54,7 @@ export async function ArtistCard({ artist }: { artist: Artist }) {
             <div className="text-neutral-500">
               {t("artists.detail.followers")}{" "}
               <span className="font-semibold text-neutral-900">
-                {formatFollowers(artist.followers)}
+                {formatFollowers(artist.followers, locale)}
               </span>
             </div>
             {rating.count > 0 ? (
@@ -76,8 +76,8 @@ export async function ArtistCard({ artist }: { artist: Artist }) {
           <div className="mt-2 text-sm text-neutral-500">
             {t("artistCard.budget")}{" "}
             <span className="font-semibold text-neutral-900">
-              {formatBudget(artist.budgetRange[0])} ~{" "}
-              {formatBudget(artist.budgetRange[1])}
+              {formatBudget(artist.budgetRange[0], locale)} ~{" "}
+              {formatBudget(artist.budgetRange[1], locale)}
             </span>
           </div>
         </div>

@@ -33,7 +33,7 @@ export async function MomentumCard({
   followers?: number;
   dark?: boolean;
 }) {
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const hasYt = typeof youtubeSubscribers === "number" && youtubeSubscribers > 0;
   const hasInsta = !!instagram;
   const hasSns = hasYt || hasInsta;
@@ -87,7 +87,7 @@ export async function MomentumCard({
   }[] = [
     {
       label: hasYt ? t("home.momentum.ytSubscribers") : t("home.momentum.instaFollowers"),
-      value: formatFollowers(followerValue),
+      value: formatFollowers(followerValue, locale),
       delta: 0,
       series: [],
     },

@@ -1035,6 +1035,38 @@ const ptBR: Record<string, string> = {
   "agency.tab.docs": "Pasta de documentos",
   "agency.tab.account": "Conta · plano",
   "agency.tab.settings": "Configurações",
+  // ======== 상태·가용성 라벨 ========
+  "avail.available": "Disponível",
+  "avail.partial": "Parcial",
+  "avail.busy": "Indisponível",
+  "avail.hold": "Sob consulta",
+  "status.pending": "Aguardando resposta",
+  "status.reviewing": "Em análise",
+  "status.negotiating": "Em negociação",
+  "status.accepted": "Aceito",
+  "status.rejected": "Recusado",
+  "status.completed": "Concluído",
+  // campaignStatus
+  "campaignStatus.open": "Recrutando",
+  "campaignStatus.closed": "Encerrado",
+  "campaignStatus.awarded": "Selecionado",
+  "campaignStatus.cancelled": "Cancelado",
+  // campaign 마감·예산
+  "campaign.budgetNegotiable": "Orçamento a negociar",
+  "campaign.deadlineClosed": "Encerrado",
+  "campaign.deadlineToday": "Encerra hoje",
+  // recommend.reason
+  "recommend.reason.categoryMatch": "Categoria compatível: {list}",
+  "recommend.reason.budgetInRange": "Orçamento dentro do cachê",
+  "recommend.reason.budgetAmple": "Orçamento amplo — vantagem na negociação",
+  "recommend.reason.budgetSlightlyLow": "Orçamento um pouco baixo, mas negociável",
+  "recommend.reason.genderGroup": "Grupo",
+  "recommend.reason.genderFemale": "Artista feminina",
+  "recommend.reason.genderMale": "Artista masculino",
+  "recommend.reason.imageMatch": "Imagem compatível: {list}",
+  "recommend.reason.ratingHigh": "{avg}★ ({count} avaliações)",
+  "recommend.reason.responseHigh": "{rate}% resposta · rápidas",
+
 };
 
 export default ptBR;

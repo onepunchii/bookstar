@@ -160,7 +160,9 @@ export default async function HomePage() {
           <Reveal delay={150}>
             <Link
               href={
-                latestRequest ? `/requests/${latestRequest.id}` : "/requests"
+                latestRequest && user
+                  ? `/requests/${latestRequest.id}`
+                  : "/requests"
               }
               className="group block h-full"
             >

@@ -1178,6 +1178,37 @@ const ko = {
   "agency.tab.docs": "서류함",
   "agency.tab.account": "계정·요금제",
   "agency.tab.settings": "설정",
+  // ======== 상태·가용성 라벨 ========
+  "avail.available": "가능",
+  "avail.partial": "부분 가능",
+  "avail.busy": "불가",
+  "avail.hold": "협의 필요",
+  "status.pending": "답변 대기",
+  "status.reviewing": "검토 중",
+  "status.negotiating": "협의 중",
+  "status.accepted": "수락됨",
+  "status.rejected": "거절됨",
+  "status.completed": "완료",
+  // campaignStatus
+  "campaignStatus.open": "모집 중",
+  "campaignStatus.closed": "마감",
+  "campaignStatus.awarded": "선정 완료",
+  "campaignStatus.cancelled": "취소",
+  // campaign 마감·예산
+  "campaign.budgetNegotiable": "예산 협의",
+  "campaign.deadlineClosed": "마감",
+  "campaign.deadlineToday": "오늘 마감",
+  // recommend.reason
+  "recommend.reason.categoryMatch": "카테고리 일치: {list}",
+  "recommend.reason.budgetInRange": "예산이 섭외가 범위 내",
+  "recommend.reason.budgetAmple": "예산이 넉넉해 협상 우위",
+  "recommend.reason.budgetSlightlyLow": "예산이 조금 낮지만 협의 여지 있음",
+  "recommend.reason.genderGroup": "그룹 아티스트",
+  "recommend.reason.genderFemale": "여성 아티스트",
+  "recommend.reason.genderMale": "남성 아티스트",
+  "recommend.reason.imageMatch": "이미지 매칭: {list}",
+  "recommend.reason.ratingHigh": "리뷰 {avg}점 ({count}건)",
+  "recommend.reason.responseHigh": "응답률 {rate}% · 빠른 확답",
 } as const;
 
 export default ko as Record<string, string>;

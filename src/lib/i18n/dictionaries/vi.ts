@@ -1035,6 +1035,38 @@ const vi: Record<string, string> = {
   "agency.tab.docs": "Kho hồ sơ",
   "agency.tab.account": "Tài khoản · Gói cước",
   "agency.tab.settings": "Cài đặt",
+  // ======== 상태·가용성 라벨 ========
+  "avail.available": "Trống",
+  "avail.partial": "Một phần",
+  "avail.busy": "Bận",
+  "avail.hold": "Cần trao đổi",
+  "status.pending": "Chờ phản hồi",
+  "status.reviewing": "Đang xem xét",
+  "status.negotiating": "Đang thương lượng",
+  "status.accepted": "Đã chấp nhận",
+  "status.rejected": "Đã từ chối",
+  "status.completed": "Hoàn tất",
+  // campaignStatus
+  "campaignStatus.open": "Đang tuyển",
+  "campaignStatus.closed": "Đã đóng",
+  "campaignStatus.awarded": "Đã chọn",
+  "campaignStatus.cancelled": "Đã hủy",
+  // campaign 마감·예산
+  "campaign.budgetNegotiable": "Ngân sách thương lượng",
+  "campaign.deadlineClosed": "Đã đóng",
+  "campaign.deadlineToday": "Đóng hôm nay",
+  // recommend.reason
+  "recommend.reason.categoryMatch": "Khớp danh mục: {list}",
+  "recommend.reason.budgetInRange": "Ngân sách trong khoảng cát-xê",
+  "recommend.reason.budgetAmple": "Ngân sách dư dả — lợi thế thương lượng",
+  "recommend.reason.budgetSlightlyLow": "Ngân sách hơi thấp nhưng còn thương lượng",
+  "recommend.reason.genderGroup": "Nhóm",
+  "recommend.reason.genderFemale": "Nghệ sĩ nữ",
+  "recommend.reason.genderMale": "Nghệ sĩ nam",
+  "recommend.reason.imageMatch": "Khớp hình ảnh: {list}",
+  "recommend.reason.ratingHigh": "Đánh giá {avg} ({count})",
+  "recommend.reason.responseHigh": "Phản hồi {rate}% · trả lời nhanh",
+
 };
 
 export default vi;

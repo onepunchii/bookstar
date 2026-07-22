@@ -13,7 +13,7 @@ import { NewArtistButton } from "./new-artist-button";
 import { StartAgencyButton } from "../start-agency-button";
 
 export default async function AgencyArtistsPage() {
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const agency = await getSessionAgency();
   const visible = await getAgencyArtists(agency?.id);
   const demo = !agency;
@@ -83,8 +83,8 @@ export default async function AgencyArtistsPage() {
                 </div>
                 <p className="mt-1 text-xs text-neutral-500">
                   {t("agency.artists.budgetRange", {
-                    min: formatBudget(artist.budgetRange[0]),
-                    max: formatBudget(artist.budgetRange[1]),
+                    min: formatBudget(artist.budgetRange[0], locale),
+                    max: formatBudget(artist.budgetRange[1], locale),
                   })}
                 </p>
                 <div className="mt-3">

@@ -15,7 +15,7 @@ interface Props {
 
 export async function LineupBundleCard({ bundle, className, dark = false }: Props) {
   const artists = bundle.artists;
-  const { t } = await getT();
+  const { t, locale } = await getT();
 
   const inner = (
     <>
@@ -129,12 +129,12 @@ export async function LineupBundleCard({ bundle, className, dark = false }: Prop
             {t("lineup.setBudget")}
           </span>
           <span className={cn("text-lg font-black", dark && "text-white")}>
-            {formatBudget(bundle.budgetMin ?? 0)}
+            {formatBudget(bundle.budgetMin ?? 0, locale)}
             <span className={cn("text-sm font-bold", dark ? "text-white/40" : "text-neutral-400")}>
               {" "}
               ~{" "}
             </span>
-            {formatBudget(bundle.budgetMax)}
+            {formatBudget(bundle.budgetMax, locale)}
           </span>
         </div>
       ) : null}

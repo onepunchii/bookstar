@@ -1035,6 +1035,38 @@ const th: Record<string, string> = {
   "agency.tab.docs": "ตู้เอกสาร",
   "agency.tab.account": "บัญชี · แพ็กเกจ",
   "agency.tab.settings": "ตั้งค่า",
+  // ======== 상태·가용성 라벨 ========
+  "avail.available": "ว่าง",
+  "avail.partial": "บางส่วน",
+  "avail.busy": "ไม่ว่าง",
+  "avail.hold": "ต้องสอบถาม",
+  "status.pending": "รอตอบกลับ",
+  "status.reviewing": "กำลังตรวจสอบ",
+  "status.negotiating": "กำลังเจรจา",
+  "status.accepted": "ตอบรับแล้ว",
+  "status.rejected": "ปฏิเสธแล้ว",
+  "status.completed": "เสร็จสิ้น",
+  // campaignStatus
+  "campaignStatus.open": "กำลังรับสมัคร",
+  "campaignStatus.closed": "ปิดรับแล้ว",
+  "campaignStatus.awarded": "เลือกแล้ว",
+  "campaignStatus.cancelled": "ยกเลิก",
+  // campaign 마감·예산
+  "campaign.budgetNegotiable": "งบประมาณต่อรองได้",
+  "campaign.deadlineClosed": "ปิดรับแล้ว",
+  "campaign.deadlineToday": "ปิดวันนี้",
+  // recommend.reason
+  "recommend.reason.categoryMatch": "หมวดหมู่ตรงกัน: {list}",
+  "recommend.reason.budgetInRange": "งบประมาณอยู่ในช่วงค่าตัว",
+  "recommend.reason.budgetAmple": "งบเพียงพอ ได้เปรียบการต่อรอง",
+  "recommend.reason.budgetSlightlyLow": "งบต่ำเล็กน้อย แต่ต่อรองได้",
+  "recommend.reason.genderGroup": "กลุ่ม",
+  "recommend.reason.genderFemale": "ศิลปินหญิง",
+  "recommend.reason.genderMale": "ศิลปินชาย",
+  "recommend.reason.imageMatch": "ภาพลักษณ์ตรงกัน: {list}",
+  "recommend.reason.ratingHigh": "รีวิว {avg} ({count} รายการ)",
+  "recommend.reason.responseHigh": "อัตราตอบกลับ {rate}% · ตอบไว",
+
 };
 
 export default th;

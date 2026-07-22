@@ -10,7 +10,7 @@ import type { AgencyBundle } from "@/lib/data/bundles";
 import type { Artist } from "@/lib/types";
 import { formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useT } from "@/lib/i18n/client";
+import { useI18n } from "@/lib/i18n/client";
 import { Check, Loader2, Package, Plus, Trash2, X } from "lucide-react";
 
 const EVENT_TYPES = ["행사", "광고", "축제", "팬미팅", "강연", "예능"];
@@ -33,7 +33,7 @@ export function BundlesPanel({
   artists: Artist[];
   agencyType: string;
 }) {
-  const t = useT();
+  const { t, locale } = useI18n();
   const router = useRouter();
   const canCreate = agencyType === "company" && artists.length >= 2;
   const [open, setOpen] = useState(false);
@@ -250,7 +250,7 @@ export function BundlesPanel({
               <p className="truncate text-xs text-neutral-400">
                 {b.artists.map((a) => a.name).join(" · ")}
                 {b.budgetMax
-                  ? ` · ${formatBudget(b.budgetMin ?? 0)}~${formatBudget(b.budgetMax)}`
+                  ? ` · ${formatBudget(b.budgetMin ?? 0, locale)}~${formatBudget(b.budgetMax, locale)}`
                   : ""}
               </p>
             </div>

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 // 데모 아티스트(정하늘) 기준 — DB 정산에서 본인 건만.
 export default async function MyEarningsPage() {
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const STATUS_LABEL = {
     paid: t("me.earnings.statusPaid"),
     pending: t("me.earnings.statusPending"),
@@ -83,7 +83,7 @@ export default async function MyEarningsPage() {
                 <div className="flex justify-between text-neutral-500">
                   <span>{t("me.earnings.gross")}</span>
                   <span className="font-semibold text-neutral-900">
-                    {formatBudget(s.gross)}
+                    {formatBudget(s.gross, locale)}
                   </span>
                 </div>
                 <div className="flex justify-between text-neutral-500">
@@ -92,7 +92,7 @@ export default async function MyEarningsPage() {
                       rate: Math.round(s.agencyRate * 100),
                     })}
                   </span>
-                  <span>-{formatBudget(b.agencyShare)}</span>
+                  <span>-{formatBudget(b.agencyShare, locale)}</span>
                 </div>
                 <div className="flex justify-between text-neutral-500">
                   <span>{t("me.earnings.withholding")}</span>

@@ -217,16 +217,59 @@ export const AVAILABILITY_LABELS: Record<Availability, string> = {
   hold: "협의 필요",
 };
 
-export function formatBudget(manwon: number): string {
-  if (manwon >= 10000) {
-    const eok = manwon / 10000;
-    return `${Number.isInteger(eok) ? eok : eok.toFixed(1)}억원`;
+// 금액은 만원 단위. 한국어는 "N만원/N억원", 그 외 언어는 실통화(KRW) 콤팩트 표기.
+export function formatBudget(manwon: number, locale: string = "ko"): string {
+  if (locale === "ko") {
+    if (manwon >= 10000) {
+      const eok = manwon / 10000;
+      return `${Number.isInteger(eok) ? eok : eok.toFixed(1)}억원`;
+    }
+    return `${manwon.toLocaleString()}만원`;
   }
-  return `${manwon.toLocaleString()}만원`;
+  const won = manwon * 10000;
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "KRW",
+      maximumFractionDigits: 1,
+      notation: "compact",
+    }).format(won);
+  } catch {
+    return `₩${won.toLocaleString()}`;
+  }
 }
 
-export function formatFollowers(n: number): string {
-  if (n >= 10000000) return `${(n / 10000000).toFixed(1)}천만`;
-  if (n >= 10000) return `${Math.round(n / 10000)}만`;
-  return n.toLocaleString();
+export function formatFollowers(n: number, locale: string = "ko"): string {
+  if (locale === "ko") {
+    if (n >= 10000000) return `${(n / 10000000).toFixed(1)}천만`;
+    if (n >= 10000) return `${Math.round(n / 10000)}만`;
+    return n.toLocaleString();
+  }
+  try {
+    return new Intl.NumberFormat(locale, {
+      notation: "compact",
+      maximumFractionDigits: 1,
+    }).format(n);
+  } catch {
+    return n.toLocaleString();
+  }
+}
+
+// 저장된 한국어 EventType 값 → i18n 키. 표시용으로 t()와 함께 사용.
+const EVENT_TYPE_KEY: Record<string, string> = {
+  행사: "booking.typeEvent",
+  광고: "booking.typeAd",
+  유튜브: "booking.typeYoutube",
+  예능: "booking.typeVariety",
+  팬미팅: "booking.typeFanmeeting",
+  축제: "booking.typeFestival",
+  강연: "booking.typeLecture",
+};
+export function eventTypeLabel(
+  value: string | null | undefined,
+  t: (k: string) => string
+): string {
+  if (!value) return "";
+  const k = EVENT_TYPE_KEY[value];
+  return k ? t(k) : value;
 }

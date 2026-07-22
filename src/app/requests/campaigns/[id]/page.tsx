@@ -3,11 +3,7 @@ import { notFound } from "next/navigation";
 import { Reveal } from "@/components/premium/reveal";
 import { getCompanyCampaign } from "@/lib/data/campaigns";
 import { getSessionUser } from "@/lib/data/session";
-import {
-  CAMPAIGN_STATUS_LABEL,
-  dday,
-  formatBudgetRange,
-} from "@/lib/campaign-options";
+import { dday, formatBudgetRange } from "@/lib/campaign-options";
 import { CATEGORY_LABELS } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { getT } from "@/lib/i18n/server";
@@ -21,14 +17,17 @@ export default async function CampaignDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const { id } = await params;
   const user = await getSessionUser();
   if (!user) notFound();
   const data = await getCompanyCampaign(id, user.id);
   if (!data) notFound();
   const { campaign: c, applicants } = data;
-  const d = dday(c.deadline);
+  const d = dday(c.deadline, {
+    closed: t("campaign.deadlineClosed"),
+    today: t("campaign.deadlineToday"),
+  });
   const awarded = c.status === "awarded";
 
   return (
@@ -55,7 +54,7 @@ export default async function CampaignDetailPage({
                   : "bg-white/8 text-white/40"
             )}
           >
-            {CAMPAIGN_STATUS_LABEL[c.status]}
+            {t(`campaignStatus.${c.status}`)}
           </span>
           {c.status === "open" && (
             <span
@@ -85,7 +84,12 @@ export default async function CampaignDetailPage({
           <div className="adv-card rounded-xl p-4">
             <p className="text-[11px] text-white/40">{t("requests.campaigns.budget")}</p>
             <p className="mt-1 text-sm font-bold text-white">
-              {formatBudgetRange(c.budgetMin, c.budgetMax)}
+              {formatBudgetRange(
+                c.budgetMin,
+                c.budgetMax,
+                locale,
+                t("campaign.budgetNegotiable")
+              )}
             </p>
           </div>
           <div className="adv-card rounded-xl p-4">

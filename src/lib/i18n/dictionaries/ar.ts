@@ -1035,6 +1035,38 @@ const ar: Record<string, string> = {
   "agency.tab.docs": "خزانة المستندات",
   "agency.tab.account": "الحساب · الخطة",
   "agency.tab.settings": "الإعدادات",
+  // ======== 상태·가용성 라벨 ========
+  "avail.available": "متاح",
+  "avail.partial": "جزئي",
+  "avail.busy": "غير متاح",
+  "avail.hold": "للتنسيق",
+  "status.pending": "بانتظار الرد",
+  "status.reviewing": "قيد المراجعة",
+  "status.negotiating": "قيد التفاوض",
+  "status.accepted": "مقبول",
+  "status.rejected": "مرفوض",
+  "status.completed": "مكتمل",
+  // campaignStatus
+  "campaignStatus.open": "مفتوح",
+  "campaignStatus.closed": "مغلق",
+  "campaignStatus.awarded": "تم الاختيار",
+  "campaignStatus.cancelled": "ملغى",
+  // campaign 마감·예산
+  "campaign.budgetNegotiable": "الميزانية قابلة للتفاوض",
+  "campaign.deadlineClosed": "مغلق",
+  "campaign.deadlineToday": "يغلق اليوم",
+  // recommend.reason
+  "recommend.reason.categoryMatch": "تطابق الفئة: {list}",
+  "recommend.reason.budgetInRange": "الميزانية ضمن نطاق السعر",
+  "recommend.reason.budgetAmple": "ميزانية وافرة — أفضلية في التفاوض",
+  "recommend.reason.budgetSlightlyLow": "الميزانية منخفضة قليلاً لكن قابلة للتفاوض",
+  "recommend.reason.genderGroup": "فرقة",
+  "recommend.reason.genderFemale": "فنانة",
+  "recommend.reason.genderMale": "فنان",
+  "recommend.reason.imageMatch": "تطابق الصورة: {list}",
+  "recommend.reason.ratingHigh": "تقييم {avg} ({count})",
+  "recommend.reason.responseHigh": "معدل الرد {rate}% · ردود سريعة",
+
 };
 
 export default ar;

@@ -9,10 +9,17 @@ export interface RecommendCriteria {
   minFollowers?: number;
 }
 
+// 추천 이유 — 표시 문자열이 아니라 i18n 코드+파라미터로 반환(화면에서 t()로 현지화).
+export interface Reason {
+  code: string;
+  params?: Record<string, string | number>;
+  list?: string[]; // 카테고리 코드/태그 등 목록형 값
+}
+
 export interface Recommendation {
   artist: Artist;
   score: number; // 0~100
-  reasons: string[];
+  reasons: Reason[];
 }
 
 // 규칙 기반 스코어링 — 실 데이터/ML 없이도 설명 가능한 추천을 보장.
@@ -21,7 +28,7 @@ export function recommend(
   artists: Artist[]
 ): Recommendation[] {
   const scored = artists.map((a) => {
-    const reasons: string[] = [];
+    const reasons: Reason[] = [];
     let score = 0;
 
     // 카테고리 매칭 (25점) — 카테고리 안 고르면 균등 통과
@@ -33,7 +40,7 @@ export function recommend(
       );
       if (overlap.length > 0) {
         score += 25;
-        reasons.push(`카테고리 일치: ${overlap.join(", ")}`);
+        reasons.push({ code: "categoryMatch", list: overlap });
       } else {
         score -= 40; // 카테고리 안 맞으면 원천 페널티
       }
@@ -43,15 +50,15 @@ export function recommend(
     const [lo, hi] = a.budgetRange;
     if (criteria.budget >= lo && criteria.budget <= hi) {
       score += 30;
-      reasons.push(`예산 ${criteria.budget.toLocaleString()}만원이 섭외가 범위 내`);
+      reasons.push({ code: "budgetInRange" });
     } else if (criteria.budget > hi) {
       score += 20;
-      reasons.push("예산이 넉넉해 협상 우위");
+      reasons.push({ code: "budgetAmple" });
     } else {
       const gap = (lo - criteria.budget) / lo;
       if (gap < 0.2) {
         score += 12;
-        reasons.push("예산이 조금 낮지만 협의 여지 있음");
+        reasons.push({ code: "budgetSlightlyLow" });
       } else {
         score -= 10;
       }
@@ -62,13 +69,14 @@ export function recommend(
       score += 8;
     } else if (a.gender === criteria.gender) {
       score += 15;
-      const label =
-        criteria.gender === "group"
-          ? "그룹"
-          : criteria.gender === "female"
-            ? "여성"
-            : "남성";
-      reasons.push(`${label} 아티스트`);
+      reasons.push({
+        code:
+          criteria.gender === "group"
+            ? "genderGroup"
+            : criteria.gender === "female"
+              ? "genderFemale"
+              : "genderMale",
+      });
     }
 
     // 태그 오버랩 (30점) — 이미지/브랜드 매칭
@@ -78,7 +86,7 @@ export function recommend(
       );
       if (overlap.length > 0) {
         score += Math.min(30, overlap.length * 12);
-        reasons.push(`이미지 매칭: ${overlap.slice(0, 3).join(", ")}`);
+        reasons.push({ code: "imageMatch", list: overlap.slice(0, 3) });
       }
     }
 
@@ -91,11 +99,14 @@ export function recommend(
     const rating = getRatingSummaryBySlug(a.slug);
     if (rating.count > 0 && rating.avg >= 4.5) {
       score += 6;
-      reasons.push(`리뷰 ${rating.avg}점 (${rating.count}건)`);
+      reasons.push({
+        code: "ratingHigh",
+        params: { avg: rating.avg, count: rating.count },
+      });
     }
     if (a.responseRate >= 97) {
       score += 4;
-      reasons.push(`응답률 ${a.responseRate}% · 빠른 확답`);
+      reasons.push({ code: "responseHigh", params: { rate: a.responseRate } });
     }
 
     return {

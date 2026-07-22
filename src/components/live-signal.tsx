@@ -20,7 +20,7 @@ interface Signal {
 // 라이브 시그널 — 네이버 검색·뉴스 + 유튜브 실측 데이터로 "지금 뜨는" 아티스트 랭킹.
 // 실데이터가 잡히는 아티스트만 노출(가짜 숫자 없음). 하나도 없으면 섹션 자체 미노출.
 export async function LiveSignal({ artists }: { artists: Artist[] }) {
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const enriched = (
     await Promise.all(
       artists.slice(0, 10).map(async (artist) => {
@@ -129,7 +129,7 @@ export async function LiveSignal({ artists }: { artists: Artist[] }) {
                   {s.subs != null && (
                     <span className="flex items-center gap-1.5">
                       <Play className="h-3 w-3 text-white/30" />
-                      {t("home.live.subscribers", { count: formatFollowers(s.subs) })}
+                      {t("home.live.subscribers", { count: formatFollowers(s.subs, locale) })}
                     </span>
                   )}
                 </div>

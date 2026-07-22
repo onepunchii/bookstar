@@ -8,7 +8,6 @@ import { WeatherBadge } from "@/components/weather-badge";
 import { isOnLeave } from "@/lib/leave-store";
 import { daysUntil, holdKey, type Hold } from "@/lib/schedule-store";
 import {
-  AVAILABILITY_LABELS,
   type Artist,
   type Availability,
   type LeaveRequest,
@@ -329,7 +328,7 @@ export function ScheduleManager({
               {CYCLE.map((k) => (
                 <span key={k} className="flex items-center gap-1">
                   <span className={cn("h-2.5 w-2.5 rounded", DOT_STYLES[k])} />
-                  {AVAILABILITY_LABELS[k]}
+                  {t(`avail.${k}`)}
                 </span>
               ))}
             </div>
@@ -367,7 +366,7 @@ export function ScheduleManager({
                         })
                       : t("agency.schedule.cellTitle", {
                           d: dayNum,
-                          label: AVAILABILITY_LABELS[day.availability],
+                          label: t(`avail.${day.availability}`),
                         })
                   }
                   className={cn(
@@ -413,7 +412,7 @@ export function ScheduleManager({
                       : "bg-white/10 text-white hover:bg-white/20"
                   )}
                 >
-                  {AVAILABILITY_LABELS[k]}
+                  {t(`avail.${k}`)}
                 </button>
               ))}
               <button
@@ -446,7 +445,7 @@ export function ScheduleManager({
               >
                 <span className="flex items-center gap-2">
                   <span className={cn("h-2.5 w-2.5 rounded", DOT_STYLES[k])} />
-                  {AVAILABILITY_LABELS[k]}
+                  {t(`avail.${k}`)}
                 </span>
                 <span className="font-bold">
                   {t("agency.schedule.dayCount", { n: counts[k] ?? 0 })}

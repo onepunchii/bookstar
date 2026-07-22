@@ -9,6 +9,7 @@ import { DayScheduleEditor } from "@/components/day-schedule-editor";
 import { WeatherBadge } from "@/components/weather-badge";
 import { cn } from "@/lib/utils";
 import type { Artist, DaySchedule, Manager } from "@/lib/types";
+import { eventTypeLabel } from "@/lib/types";
 import {
   Car,
   CalendarDays,
@@ -283,7 +284,7 @@ export function DaySheet({
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-bold">{s.artistName}</span>
-                      <Badge>{s.eventType}</Badge>
+                      <Badge>{eventTypeLabel(s.eventType, t)}</Badge>
                       <WeatherBadge
                         date={s.date}
                         location={s.stops[0]?.location}

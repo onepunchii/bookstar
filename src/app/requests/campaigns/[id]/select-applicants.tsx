@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import type { Applicant } from "@/lib/data/campaigns";
 import { CATEGORY_LABELS, formatBudget, formatFollowers } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useT } from "@/lib/i18n/client";
+import { useI18n } from "@/lib/i18n/client";
 import { BadgeCheck, Check, Loader2, Sparkles, Users } from "lucide-react";
 
 export function SelectApplicants({
@@ -18,7 +18,7 @@ export function SelectApplicants({
   applicants: Applicant[];
   awarded: boolean;
 }) {
-  const t = useT();
+  const { t, locale } = useI18n();
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -108,7 +108,7 @@ export function SelectApplicants({
                   )}
                   {a.followers > 0 && (
                     <span className="flex items-center gap-1">
-                      <Users className="h-3 w-3" /> {formatFollowers(a.followers)}
+                      <Users className="h-3 w-3" /> {formatFollowers(a.followers, locale)}
                     </span>
                   )}
                 </div>
@@ -119,7 +119,7 @@ export function SelectApplicants({
                 )}
                 {a.proposedFee != null && (
                   <p className="mt-2 text-sm font-bold text-white">
-                    {t("requests.campaigns.proposedFee", { fee: formatBudget(a.proposedFee) })}
+                    {t("requests.campaigns.proposedFee", { fee: formatBudget(a.proposedFee, locale) })}
                     {a.proposedIncludes && (
                       <span className="ml-1.5 text-xs font-normal text-white/45">
                         · {a.proposedIncludes}

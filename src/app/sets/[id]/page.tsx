@@ -15,7 +15,7 @@ export default async function SetDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const { id } = await params;
   const bundle = await getPublicBundle(id);
   if (!bundle) notFound();
@@ -103,9 +103,9 @@ export default async function SetDetailPage({
               <div className="flex items-baseline justify-between">
                 <span className="text-sm text-white/40">{t("sets.budgetLabel")}</span>
                 <span className="text-2xl font-black text-white">
-                  {formatBudget(bundle.budgetMin ?? 0)}
+                  {formatBudget(bundle.budgetMin ?? 0, locale)}
                   <span className="text-base font-bold text-white/30"> ~ </span>
-                  {formatBudget(bundle.budgetMax)}
+                  {formatBudget(bundle.budgetMax, locale)}
                 </span>
               </div>
             ) : null}

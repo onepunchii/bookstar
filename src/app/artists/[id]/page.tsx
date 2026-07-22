@@ -26,7 +26,7 @@ export default async function ArtistDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const { id } = await params;
   // [id]는 이제 slug — DB에서 로드
   const artist = await getPublicArtistBySlug(id);
@@ -124,7 +124,7 @@ export default async function ArtistDetailPage({
                 {
                   icon: Users,
                   label: followerLabel,
-                  value: formatFollowers(followerValue),
+                  value: formatFollowers(followerValue, locale),
                 },
                 {
                   icon: TrendingUp,
@@ -210,9 +210,9 @@ export default async function ArtistDetailPage({
           <div className="adv-card sticky top-6 overflow-hidden rounded-[1.75rem] p-7">
             <Eyebrow>Booking</Eyebrow>
             <p className="mt-4 text-3xl font-black tracking-tight text-white">
-              {formatBudget(artist.budgetRange[0])}
+              {formatBudget(artist.budgetRange[0], locale)}
               <span className="text-lg font-bold text-white/30"> ~ </span>
-              {formatBudget(artist.budgetRange[1])}
+              {formatBudget(artist.budgetRange[1], locale)}
             </p>
             <p className="mt-1.5 text-xs text-white/40">
               {t("artists.detail.budgetNote")}

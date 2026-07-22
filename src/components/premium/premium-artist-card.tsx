@@ -18,7 +18,7 @@ export async function PremiumArtistCard({
   artist: Artist;
   className?: string;
 }) {
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const rating = getRatingSummaryBySlug(artist.slug);
   // 유튜브 채널 있으면 실 구독자, 없으면 저장 팔로워
   const ytSubs = artist.youtube
@@ -96,14 +96,14 @@ export async function PremiumArtistCard({
           <div className="min-w-0">
             <p className="eyebrow text-white/35">{followerLabel}</p>
             <p className="mt-0.5 text-sm font-bold text-white/90">
-              {formatFollowers(followerValue)}
+              {formatFollowers(followerValue, locale)}
             </p>
           </div>
           <div className="h-8 w-px shrink-0 bg-white/10" />
           <div className="min-w-0 text-right">
             <p className="eyebrow text-white/35">{t("premiumCard.price")}</p>
             <p className="mt-0.5 whitespace-nowrap text-sm font-bold text-white/90">
-              {formatBudget(artist.budgetRange[0])}~
+              {formatBudget(artist.budgetRange[0], locale)}~
             </p>
           </div>
         </div>

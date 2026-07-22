@@ -10,7 +10,7 @@ import {
   type ArtistCategory,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useT } from "@/lib/i18n/client";
+import { useI18n } from "@/lib/i18n/client";
 import { ArrowUpRight, Search, Sparkles, TrendingUp } from "lucide-react";
 
 const KEYWORD_KEYS = [
@@ -23,7 +23,7 @@ const KEYWORD_KEYS = [
 ] as const;
 
 export function HomeSearch({ artists = [] }: { artists?: Artist[] }) {
-  const t = useT();
+  const { t, locale } = useI18n();
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
   const [q, setQ] = useState("");
@@ -99,7 +99,7 @@ export function HomeSearch({ artists = [] }: { artists?: Artist[] }) {
                         <span className="block truncate text-xs text-white/45">
                           {t(`category.${a.category}`)} ·{" "}
                           {t("home.search.followers")}{" "}
-                          {formatFollowers(a.followers)}
+                          {formatFollowers(a.followers, locale)}
                         </span>
                       </span>
                       <ArrowUpRight className="h-4 w-4 shrink-0 text-white/25" />

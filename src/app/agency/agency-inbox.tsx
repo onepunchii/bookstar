@@ -12,7 +12,6 @@ import { holdKey, useScheduleStore } from "@/lib/schedule-store";
 import { useForecast } from "@/lib/use-forecast";
 import { isRainRisky } from "@/lib/weather";
 import {
-  AVAILABILITY_LABELS,
   formatBudget,
   type Artist,
   type BookingRequest,
@@ -20,7 +19,7 @@ import {
   type ScheduleDay,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useT } from "@/lib/i18n/client";
+import { useI18n } from "@/lib/i18n/client";
 import {
   Banknote,
   Calendar,
@@ -118,7 +117,7 @@ export function AgencyInbox({
     { amount: number; includes: string | null; note: string | null }
   >;
 }) {
-  const t = useT();
+  const { t, locale } = useI18n();
   const [requests, setRequests] = useState<BookingRequest[]>(initialRequests);
   // 상태 변경 → DB PATCH + 로컬 반영
   const updateStatus = (id: string, status: BookingStatus) => {
@@ -452,7 +451,7 @@ export function AgencyInbox({
               · {req.date}
             </p>
             <p className="mt-0.5 text-xs font-semibold text-neutral-700">
-              {t("agency.inbox.budget")} {formatBudget(req.budget)}
+              {t("agency.inbox.budget")} {formatBudget(req.budget, locale)}
             </p>
           </button>
         ))}
@@ -596,7 +595,7 @@ export function AgencyInbox({
                       })
                     : baseDay
                       ? t("agency.inbox.currentStatus", {
-                          status: AVAILABILITY_LABELS[baseDay.availability],
+                          status: t(`avail.${baseDay.availability}`),
                         })
                       : t("agency.inbox.noSchedule")}
                 </p>
@@ -614,7 +613,7 @@ export function AgencyInbox({
                   <Banknote className="h-3 w-3" /> {t("agency.inbox.proposedBudget")}
                 </p>
                 <p className="mt-0.5 text-sm font-bold">
-                  {formatBudget(selected.budget)}
+                  {formatBudget(selected.budget, locale)}
                 </p>
               </div>
             </div>
@@ -688,7 +687,7 @@ export function AgencyInbox({
                   {t("agency.inbox.quoteSent")}
                 </p>
                 <p className="mt-2 text-2xl font-black">
-                  {formatBudget(sentQuote.amount)}
+                  {formatBudget(sentQuote.amount, locale)}
                 </p>
                 {sentQuote.items && (
                   <p className="mt-1 text-sm text-neutral-600">
@@ -719,7 +718,7 @@ export function AgencyInbox({
                       {t("agency.inbox.presetLabel", {
                         artist: selected.artistName,
                       })}{" "}
-                      · {formatBudget(preset.baseFee)}
+                      · {formatBudget(preset.baseFee, locale)}
                     </button>
                   )}
                 </div>

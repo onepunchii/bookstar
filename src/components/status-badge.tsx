@@ -1,5 +1,8 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
-import { STATUS_LABELS, type BookingStatus } from "@/lib/types";
+import { type BookingStatus } from "@/lib/types";
+import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 
 const STATUS_STYLES: Record<BookingStatus, string> = {
@@ -12,7 +15,8 @@ const STATUS_STYLES: Record<BookingStatus, string> = {
 };
 
 export function StatusBadge({ status }: { status: BookingStatus }) {
+  const t = useT();
   return (
-    <Badge className={cn(STATUS_STYLES[status])}>{STATUS_LABELS[status]}</Badge>
+    <Badge className={cn(STATUS_STYLES[status])}>{t(`status.${status}`)}</Badge>
   );
 }

@@ -13,7 +13,7 @@ import {
   type ArtistCategory,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useT } from "@/lib/i18n/client";
+import { useI18n } from "@/lib/i18n/client";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
 
 const TAG_SUGGESTIONS = [
@@ -32,7 +32,7 @@ const TAG_SUGGESTIONS = [
 ];
 
 export function CastingRecommender({ artists }: { artists: Artist[] }) {
-  const t = useT();
+  const { t, locale } = useI18n();
   const [budget, setBudget] = useState<string>("3000");
   const [categories, setCategories] = useState<ArtistCategory[]>([]);
   const [gender, setGender] = useState<"any" | "male" | "female" | "group">(
@@ -234,19 +234,32 @@ export function CastingRecommender({ artists }: { artists: Artist[] }) {
                         <ul className="mt-2 space-y-1">
                           {r.reasons.slice(0, 3).map((reason) => (
                             <li
-                              key={reason}
+                              key={reason.code}
                               className="flex items-center gap-1.5 text-xs text-white/65"
                             >
                               <Check className="h-3 w-3 text-brand-500" />
-                              {reason}
+                              {t(`recommend.reason.${reason.code}`, {
+                                ...reason.params,
+                                ...(reason.list
+                                  ? {
+                                      list: reason.list
+                                        .map((v) =>
+                                          reason.code === "categoryMatch"
+                                            ? t(`category.${v}`)
+                                            : v
+                                        )
+                                        .join(", "),
+                                    }
+                                  : {}),
+                              })}
                             </li>
                           ))}
                         </ul>
                         <p className="mt-2 text-xs text-white/40">
                           {t("recommend.followersBudget", {
-                            followers: formatFollowers(r.artist.followers),
-                            min: formatBudget(r.artist.budgetRange[0]),
-                            max: formatBudget(r.artist.budgetRange[1]),
+                            followers: formatFollowers(r.artist.followers, locale),
+                            min: formatBudget(r.artist.budgetRange[0], locale),
+                            max: formatBudget(r.artist.budgetRange[1], locale),
                           })}
                         </p>
                       </div>

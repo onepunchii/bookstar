@@ -1035,6 +1035,38 @@ const zhTW: Record<string, string> = {
   "agency.tab.docs": "文件庫",
   "agency.tab.account": "帳號 · 方案",
   "agency.tab.settings": "設定",
+  // ======== 상태·가용성 라벨 ========
+  "avail.available": "可接",
+  "avail.partial": "部分可接",
+  "avail.busy": "不可",
+  "avail.hold": "需洽談",
+  "status.pending": "等待回覆",
+  "status.reviewing": "審核中",
+  "status.negotiating": "洽談中",
+  "status.accepted": "已接受",
+  "status.rejected": "已婉拒",
+  "status.completed": "已完成",
+  // campaignStatus
+  "campaignStatus.open": "招募中",
+  "campaignStatus.closed": "已截止",
+  "campaignStatus.awarded": "已選定",
+  "campaignStatus.cancelled": "已取消",
+  // campaign 마감·예산
+  "campaign.budgetNegotiable": "預算面議",
+  "campaign.deadlineClosed": "已截止",
+  "campaign.deadlineToday": "今日截止",
+  // recommend.reason
+  "recommend.reason.categoryMatch": "類別相符：{list}",
+  "recommend.reason.budgetInRange": "預算落在邀約價範圍內",
+  "recommend.reason.budgetAmple": "預算充裕，議價占優",
+  "recommend.reason.budgetSlightlyLow": "預算略低，但有協商空間",
+  "recommend.reason.genderGroup": "團體",
+  "recommend.reason.genderFemale": "女性藝人",
+  "recommend.reason.genderMale": "男性藝人",
+  "recommend.reason.imageMatch": "形象相符：{list}",
+  "recommend.reason.ratingHigh": "評價 {avg} 分（{count} 則）",
+  "recommend.reason.responseHigh": "回覆率 {rate}% · 快速回覆",
+
 };
 
 export default zhTW;

@@ -1035,6 +1035,38 @@ const id: Record<string, string> = {
   "agency.tab.docs": "Arsip Dokumen",
   "agency.tab.account": "Akun · Paket",
   "agency.tab.settings": "Pengaturan",
+  // ======== 상태·가용성 라벨 ========
+  "avail.available": "Tersedia",
+  "avail.partial": "Sebagian",
+  "avail.busy": "Penuh",
+  "avail.hold": "Perlu diskusi",
+  "status.pending": "Menunggu balasan",
+  "status.reviewing": "Ditinjau",
+  "status.negotiating": "Negosiasi",
+  "status.accepted": "Diterima",
+  "status.rejected": "Ditolak",
+  "status.completed": "Selesai",
+  // campaignStatus
+  "campaignStatus.open": "Merekrut",
+  "campaignStatus.closed": "Ditutup",
+  "campaignStatus.awarded": "Terpilih",
+  "campaignStatus.cancelled": "Dibatalkan",
+  // campaign 마감·예산
+  "campaign.budgetNegotiable": "Anggaran dinego",
+  "campaign.deadlineClosed": "Ditutup",
+  "campaign.deadlineToday": "Tutup hari ini",
+  // recommend.reason
+  "recommend.reason.categoryMatch": "Kategori cocok: {list}",
+  "recommend.reason.budgetInRange": "Anggaran sesuai rentang tarif",
+  "recommend.reason.budgetAmple": "Anggaran cukup — unggul negosiasi",
+  "recommend.reason.budgetSlightlyLow": "Anggaran agak rendah, tapi bisa dinego",
+  "recommend.reason.genderGroup": "Grup",
+  "recommend.reason.genderFemale": "Artis wanita",
+  "recommend.reason.genderMale": "Artis pria",
+  "recommend.reason.imageMatch": "Citra cocok: {list}",
+  "recommend.reason.ratingHigh": "Ulasan {avg} ({count})",
+  "recommend.reason.responseHigh": "Respons {rate}% · balasan cepat",
+
 };
 
 export default id;

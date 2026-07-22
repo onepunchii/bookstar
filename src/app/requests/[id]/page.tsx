@@ -21,7 +21,7 @@ export default async function RequestDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { t } = await getT();
+  const { t, locale } = await getT();
 
   // 접근 통제(fail-closed) — 당사자(광고주 본인·담당 소속사)만 열람.
   // 요청을 못 찾거나 조회 실패면 notFound(협의 채팅·견적·회사명 등 민감정보 보호).
@@ -64,7 +64,7 @@ export default async function RequestDetailPage({
           {t("requests.detail.meta", {
             date: request.date,
             location: request.location,
-            budget: formatBudget(request.budget),
+            budget: formatBudget(request.budget, locale),
           })}
         </p>
 
@@ -95,7 +95,7 @@ export default async function RequestDetailPage({
                   {t("requests.detail.latestQuote")}
                 </h3>
                 <p className="mt-2 text-2xl font-black text-white">
-                  {formatBudget(quote.amount)}
+                  {formatBudget(quote.amount, locale)}
                 </p>
                 {quote.includes && (
                   <p className="mt-1 text-xs text-white/50">

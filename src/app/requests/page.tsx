@@ -10,12 +10,12 @@ import {
 } from "@/lib/data/booking-requests";
 import { getSessionUser } from "@/lib/data/session";
 import { getLastSenderMap } from "@/lib/data/messages";
-import { formatBudget } from "@/lib/types";
+import { formatBudget, eventTypeLabel } from "@/lib/types";
 import { getT } from "@/lib/i18n/server";
 import { ChevronRight } from "lucide-react";
 
 export default async function RequestsPage() {
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const user = await getSessionUser();
   // 로그인 광고주는 본인 요청, 비로그인은 데모 샘플(실 광고주 데이터 노출 금지)
   const [requests, lastSender] = await Promise.all([
@@ -51,14 +51,14 @@ export default async function RequestsPage() {
                     <span className="font-bold text-white">
                       {req.artistName}
                     </span>
-                    <Badge>{req.eventType}</Badge>
+                    <Badge>{eventTypeLabel(req.eventType, t)}</Badge>
                     {lastSender[req.id] === "agency" && (
                       <Badge variant="solid">{t("requests.newReply")}</Badge>
                     )}
                   </div>
                   <p className="mt-1 truncate text-sm text-white/50">
                     {req.date} · {req.location} · {t("requests.budgetLabel")}{" "}
-                    {formatBudget(req.budget)}
+                    {formatBudget(req.budget, locale)}
                   </p>
                 </div>
                 <StatusBadge status={req.status} />

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useT } from "@/lib/i18n/client";
+import { useI18n } from "@/lib/i18n/client";
 import { Card } from "@/components/ui/card";
 import { formatFollowers, type ArtistCategory } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,7 @@ function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export function CompleteInner() {
-  const t = useT();
+  const { t, locale } = useI18n();
   const params = useSearchParams();
   const name = params.get("name") ?? t("join.complete.defaultName");
   const slug = params.get("slug") ?? "me";
@@ -63,7 +63,7 @@ export function CompleteInner() {
         <p className="mt-2 text-neutral-500">
           {t(`category.${category}`)}
           {followers > 0 &&
-            t("join.complete.followers", { count: formatFollowers(followers) })}
+            t("join.complete.followers", { count: formatFollowers(followers, locale) })}
         </p>
       </div>
 

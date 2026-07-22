@@ -11,7 +11,7 @@ import {
   type Settlement,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useT } from "@/lib/i18n/client";
+import { useI18n } from "@/lib/i18n/client";
 import { BellRing, Check, FileText, Plus } from "lucide-react";
 
 const STATUS_STYLE = {
@@ -27,7 +27,7 @@ export function SettlementBoard({
   initialSettlements: Settlement[];
   artists: Artist[];
 }) {
-  const t = useT();
+  const { t, locale } = useI18n();
   const [reminded, setReminded] = useState<Record<string, boolean>>({});
   const [editorOpen, setEditorOpen] = useState(false);
   const [visible, setVisible] = useState<Settlement[]>(initialSettlements);
@@ -77,11 +77,11 @@ export function SettlementBoard({
       {/* 요약 */}
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
-          { label: t("agency.settlement.kpiTotal"), value: formatBudget(total) },
-          { label: t("agency.settlement.kpiPending"), value: formatBudget(pending) },
+          { label: t("agency.settlement.kpiTotal"), value: formatBudget(total, locale) },
+          { label: t("agency.settlement.kpiPending"), value: formatBudget(pending, locale) },
           {
             label: t("agency.settlement.kpiOverdue"),
-            value: formatBudget(overdue),
+            value: formatBudget(overdue, locale),
             highlight: overdue > 0,
           },
         ].map((kpi) => (
@@ -163,14 +163,14 @@ export function SettlementBoard({
               <div className="mt-4 grid grid-cols-2 gap-3 rounded-xl bg-neutral-50 p-4 text-sm sm:grid-cols-5">
                 <div>
                   <p className="text-xs text-neutral-400">{t("agency.settlement.grossLabel")}</p>
-                  <p className="mt-0.5 font-bold">{formatBudget(s.gross)}</p>
+                  <p className="mt-0.5 font-bold">{formatBudget(s.gross, locale)}</p>
                 </div>
                 <div>
                   <p className="text-xs text-neutral-400">
                     {t("agency.settlement.agencyShareLabel", { rate: Math.round(s.agencyRate * 100) })}
                   </p>
                   <p className="mt-0.5 font-bold">
-                    {formatBudget(b.agencyShare)}
+                    {formatBudget(b.agencyShare, locale)}
                   </p>
                 </div>
                 <div>
@@ -178,7 +178,7 @@ export function SettlementBoard({
                     {t("agency.settlement.artistShareLabel", { rate: Math.round((1 - s.agencyRate) * 100) })}
                   </p>
                   <p className="mt-0.5 font-bold">
-                    {formatBudget(b.artistGross)}
+                    {formatBudget(b.artistGross, locale)}
                   </p>
                 </div>
                 <div>

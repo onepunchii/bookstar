@@ -7,7 +7,7 @@ import { useNotificationsStore } from "@/lib/notifications-store";
 import type { Artist, EventType } from "@/lib/types";
 import { formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useT } from "@/lib/i18n/client";
+import { useI18n } from "@/lib/i18n/client";
 import { CheckCircle2 } from "lucide-react";
 
 const EVENT_TYPES: EventType[] = [
@@ -47,7 +47,7 @@ export function BookingForm({
   artist: Artist;
   setInfo?: SetInfo;
 }) {
-  const t = useT();
+  const { t, locale } = useI18n();
   const [submitted, setSubmitted] = useState(false);
   const [eventType, setEventType] = useState<EventType>("행사");
   const pushNotif = useNotificationsStore((s) => s.push);
@@ -152,8 +152,8 @@ export function BookingForm({
           <p className="text-sm text-white/50">
             {t("booking.artistBudget", {
               agency: artist.agencyName,
-              min: formatBudget(artist.budgetRange[0]),
-              max: formatBudget(artist.budgetRange[1]),
+              min: formatBudget(artist.budgetRange[0], locale),
+              max: formatBudget(artist.budgetRange[1], locale),
             })}
           </p>
         </div>

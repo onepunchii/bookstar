@@ -21,12 +21,14 @@ export const BUDGET_PRESETS: { label: string; min: number | null; max: number | 
 
 export function formatBudgetRange(
   min: number | null,
-  max: number | null
+  max: number | null,
+  locale: string = "ko",
+  negotiableLabel: string = "예산 협의"
 ): string {
-  if (min == null && max == null) return "예산 협의";
-  if (min == null) return `~ ${formatBudget(max as number)}`;
-  if (max == null) return `${formatBudget(min)} ~`;
-  return `${formatBudget(min)} ~ ${formatBudget(max)}`;
+  if (min == null && max == null) return negotiableLabel;
+  if (min == null) return `~ ${formatBudget(max as number, locale)}`;
+  if (max == null) return `${formatBudget(min, locale)} ~`;
+  return `${formatBudget(min, locale)} ~ ${formatBudget(max, locale)}`;
 }
 
 export interface Dday {
@@ -36,10 +38,18 @@ export interface Dday {
 }
 
 // 마감까지 D-day (KST 기준)
-export function dday(deadline: string): Dday {
+export function dday(
+  deadline: string,
+  labels: { closed: string; today: string } = {
+    closed: "마감",
+    today: "오늘 마감",
+  }
+): Dday {
   const today = todayKST();
-  if (deadline < today) return { label: "마감", urgent: false, closed: true };
-  if (deadline === today) return { label: "오늘 마감", urgent: true, closed: false };
+  if (deadline < today)
+    return { label: labels.closed, urgent: false, closed: true };
+  if (deadline === today)
+    return { label: labels.today, urgent: true, closed: false };
   const diff = Math.round(
     (new Date(`${deadline}T00:00:00`).getTime() -
       new Date(`${today}T00:00:00`).getTime()) /

@@ -123,7 +123,7 @@ export async function generateMetadata({
 }
 
 export default async function ArtistPublicPage({ params }: PageProps) {
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const { slug } = await params;
   const artist = await getPublicArtistBySlug(slug);
   if (!artist) notFound();
@@ -290,7 +290,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
               <Users className="h-3 w-3" /> {followerLabel}
             </p>
             <p className="mt-1 text-2xl font-black sm:text-3xl">
-              {formatFollowers(followerValue)}
+              {formatFollowers(followerValue, locale)}
             </p>
           </div>
           <div className="px-4 text-center sm:px-6">
@@ -406,7 +406,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
               Booking
             </p>
             <p className="text-2xl font-black text-white">
-              {formatBudget(artist.budgetRange[0])}
+              {formatBudget(artist.budgetRange[0], locale)}
               <span className="text-base font-bold text-white/40">~</span>
             </p>
             <p className="text-xs text-white/45">
