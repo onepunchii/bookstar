@@ -121,10 +121,12 @@ export async function getBookingRequestById(
       )
       .where(eq(schema.bookingRequests.id, id))
       .limit(1);
-    return row ? rowToRequest(row as Row) : null;
+    if (row) return rowToRequest(row as Row);
   } catch {
-    return null;
+    /* 폴백 */
   }
+  // 실 DB에 없으면 데모 샘플 폴백 — 데모 요청 상세도 열람 가능하게(목록·홈과 일관)
+  return MOCK.find((m) => m.id === id) ?? null;
 }
 
 // 비로그인 데모용 — 실제 요청 대신 항상 샘플만 노출(실 광고주 데이터 유출 방지).
@@ -137,6 +139,7 @@ export async function getRequestParties(id: string): Promise<{
   companyUserId: string;
   artistId: string;
   agencyId: string | null;
+  demo?: boolean;
 } | null> {
   try {
     const db = getDb();
@@ -153,8 +156,13 @@ export async function getRequestParties(id: string): Promise<{
       )
       .where(eq(schema.bookingRequests.id, id))
       .limit(1);
-    return row ?? null;
+    if (row) return row;
   } catch {
-    return null;
+    /* 폴백 */
   }
+  // 데모 요청(MOCK)이면 누구나 열람 가능 — 실제 개인정보 아님(홈·목록에 공개된 샘플)
+  const m = MOCK.find((x) => x.id === id);
+  return m
+    ? { companyUserId: "__demo__", artistId: m.artistId, agencyId: null, demo: true }
+    : null;
 }

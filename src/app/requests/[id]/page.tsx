@@ -10,7 +10,7 @@ import { getSessionUser, getSessionAgency } from "@/lib/data/session";
 import { agencyUserForArtist } from "@/lib/data/notify";
 import { getMessages } from "@/lib/data/messages";
 import { getLatestQuote } from "@/lib/data/quotes";
-import { formatBudget } from "@/lib/types";
+import { formatBudget, eventTypeLabel } from "@/lib/types";
 import { RequestThread } from "./request-thread";
 import { cn } from "@/lib/utils";
 import { getT } from "@/lib/i18n/server";
@@ -31,10 +31,12 @@ export default async function RequestDetailPage({
     getSessionUser(),
     getSessionAgency(),
   ]);
+  // 데모 요청(MOCK)은 공개 샘플이라 로그인·당사자 여부와 무관하게 열람 허용.
   const isParticipant =
-    !!user &&
-    (parties.companyUserId === user.id ||
-      (!!agency && parties.agencyId === agency.id));
+    !!parties.demo ||
+    (!!user &&
+      (parties.companyUserId === user.id ||
+        (!!agency && parties.agencyId === agency.id)));
   if (!isParticipant) notFound();
 
   const request = await getBookingRequestById(id);
@@ -46,7 +48,7 @@ export default async function RequestDetailPage({
 
   // 협의 상대 유저 — 신고·차단 메뉴 대상 (내가 광고주면 소속사 대표, 소속사면 광고주)
   const counterpartUserId =
-    parties.companyUserId === user.id
+    parties.companyUserId === user?.id
       ? await agencyUserForArtist(parties.artistId)
       : parties.companyUserId;
 
@@ -57,7 +59,7 @@ export default async function RequestDetailPage({
           <h1 className="display-kr text-3xl font-black text-white">
             {request.artistName}
           </h1>
-          <Badge>{request.eventType}</Badge>
+          <Badge>{eventTypeLabel(request.eventType, t)}</Badge>
           <StatusBadge status={request.status} />
         </div>
         <p className="mt-2 text-sm text-white/50">
