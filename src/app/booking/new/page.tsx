@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { getPublicArtistBySlug } from "@/lib/data/artists";
 import { getPublicBundle } from "@/lib/data/bundles";
+import { getT } from "@/lib/i18n/server";
 import { BookingForm, type SetInfo } from "./booking-form";
 
 // 섭외 요청 폼 → 색인 제외
@@ -15,6 +16,7 @@ export default async function NewBookingPage({
 }: {
   searchParams: Promise<{ artist?: string; set?: string }>;
 }) {
+  const { t } = await getT();
   const { artist: slug, set: setId } = await searchParams;
 
   // 세트 문의: 실 번들 → 구성원 이름 + 대표(첫) 아티스트로 폼 진입
@@ -40,12 +42,10 @@ export default async function NewBookingPage({
       <div className="mx-auto max-w-2xl px-5 py-12 sm:px-8 sm:py-16">
         <Eyebrow>Booking Request</Eyebrow>
         <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-4xl">
-          {setInfo ? "세트 섭외 문의" : "섭외 요청"}
+          {setInfo ? t("booking.setTitle") : t("booking.title")}
         </h1>
         <p className="mt-2 text-sm text-white/50">
-          {setInfo
-            ? "세트 구성으로 문의하면 소속사가 구성·예산을 함께 검토해요"
-            : "표준 브리프로 작성하면 소속사가 더 빠르게 답변할 수 있어요"}
+          {setInfo ? t("booking.setSubtitle") : t("booking.subtitle")}
         </p>
         <BookingForm artist={artist} setInfo={setInfo} />
       </div>

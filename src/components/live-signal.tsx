@@ -6,6 +6,7 @@ import { recentDelta } from "@/lib/metrics";
 import { fetchNaverMomentum } from "@/lib/naver";
 import { fetchYoutubeSubscribers } from "@/lib/youtube";
 import { formatFollowers, type Artist } from "@/lib/types";
+import { getT } from "@/lib/i18n/server";
 import { ArrowDownRight, ArrowUpRight, Newspaper, Play } from "lucide-react";
 
 interface Signal {
@@ -19,6 +20,7 @@ interface Signal {
 // 라이브 시그널 — 네이버 검색·뉴스 + 유튜브 실측 데이터로 "지금 뜨는" 아티스트 랭킹.
 // 실데이터가 잡히는 아티스트만 노출(가짜 숫자 없음). 하나도 없으면 섹션 자체 미노출.
 export async function LiveSignal({ artists }: { artists: Artist[] }) {
+  const { t } = await getT();
   const enriched = (
     await Promise.all(
       artists.slice(0, 10).map(async (artist) => {
@@ -52,10 +54,10 @@ export async function LiveSignal({ artists }: { artists: Artist[] }) {
           </span>
         </div>
         <h2 className="display-kr mt-3 text-xl font-black text-white sm:text-3xl">
-          지금 검색량이 움직이는 아티스트
+          {t("home.live.heading")}
         </h2>
         <p className="mt-1.5 text-sm text-white/40">
-          네이버 검색 트렌드·뉴스 · 유튜브 실시간 집계
+          {t("home.live.subtitle")}
         </p>
       </Reveal>
 
@@ -102,8 +104,8 @@ export async function LiveSignal({ artists }: { artists: Artist[] }) {
                       ) : (
                         <ArrowDownRight className="h-3 w-3" />
                       )}
-                      검색량 {up ? "+" : ""}
-                      {s.delta}% <span className="font-normal text-white/35">/ 7일</span>
+                      {t("home.live.searchVolume")} {up ? "+" : ""}
+                      {s.delta}% <span className="font-normal text-white/35">{t("home.live.perWeek")}</span>
                     </p>
                   </div>
                 </div>
@@ -122,12 +124,12 @@ export async function LiveSignal({ artists }: { artists: Artist[] }) {
                 <div className="mt-3 flex items-center gap-4 border-t border-white/8 pt-3 text-xs text-white/50">
                   <span className="flex items-center gap-1.5">
                     <Newspaper className="h-3 w-3 text-white/30" />
-                    기사 {s.news.toLocaleString()}건
+                    {t("home.live.newsCount", { count: s.news.toLocaleString() })}
                   </span>
                   {s.subs != null && (
                     <span className="flex items-center gap-1.5">
                       <Play className="h-3 w-3 text-white/30" />
-                      구독자 {formatFollowers(s.subs)}
+                      {t("home.live.subscribers", { count: formatFollowers(s.subs) })}
                     </span>
                   )}
                 </div>

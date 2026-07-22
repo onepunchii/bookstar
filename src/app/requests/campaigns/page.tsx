@@ -12,11 +12,13 @@ import {
 import { cn } from "@/lib/utils";
 import { ChevronRight, Users } from "lucide-react";
 import { NewCampaignPanel } from "./new-campaign-panel";
+import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "오픈 캠페인" };
 
 export default async function CompanyCampaignsPage() {
+  const { t } = await getT();
   const user = await getSessionUser();
   const campaigns = user ? await getCompanyCampaigns(user.id) : [];
 
@@ -25,10 +27,10 @@ export default async function CompanyCampaignsPage() {
       <Reveal>
         <Eyebrow>Open Casting</Eyebrow>
         <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-4xl">
-          섭외 관리
+          {t("nav.company.requests")}
         </h1>
         <p className="mt-2 text-sm text-white/50">
-          캠페인을 올리면 맞는 아티스트·기획사가 직접 지원해요.
+          {t("requests.campaigns.subtitle")}
         </p>
         <RequestsTabs />
       </Reveal>
@@ -84,7 +86,10 @@ export default async function CompanyCampaignsPage() {
                   <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-white/50">
                     <span>{formatBudgetRange(c.budgetMin, c.budgetMax)}</span>
                     <span className="flex items-center gap-1 text-white/60">
-                      <Users className="h-3.5 w-3.5" /> 지원 {c.applicantCount}
+                      <Users className="h-3.5 w-3.5" />{" "}
+                      {t("requests.campaigns.applicants", {
+                        count: c.applicantCount,
+                      })}
                     </span>
                   </div>
                 </div>
@@ -94,7 +99,7 @@ export default async function CompanyCampaignsPage() {
         })}
         {user && campaigns.length === 0 && (
           <p className="py-10 text-center text-sm text-white/35">
-            아직 올린 캠페인이 없어요. 위에서 첫 캠페인을 만들어보세요.
+            {t("requests.campaigns.empty")}
           </p>
         )}
       </div>

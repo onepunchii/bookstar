@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useT } from "@/lib/i18n/client";
 import { Card } from "@/components/ui/card";
-import { CATEGORY_LABELS, formatFollowers, type ArtistCategory } from "@/lib/types";
+import { formatFollowers, type ArtistCategory } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
   Check,
@@ -33,8 +34,9 @@ function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export function CompleteInner() {
+  const t = useT();
   const params = useSearchParams();
-  const name = params.get("name") ?? "신규 크리에이터";
+  const name = params.get("name") ?? t("join.complete.defaultName");
   const slug = params.get("slug") ?? "me";
   const category = (params.get("category") as ArtistCategory) ?? "influencer";
   const followers = Number(params.get("followers") ?? 0);
@@ -56,18 +58,19 @@ export function CompleteInner() {
           <Check className="h-8 w-8" />
         </div>
         <h1 className="mt-5 text-3xl font-black tracking-tight">
-          {name}님, 환영해요!
+          {t("join.complete.welcome", { name })}
         </h1>
         <p className="mt-2 text-neutral-500">
-          {CATEGORY_LABELS[category]}
-          {followers > 0 && ` · 팔로워 ${formatFollowers(followers)}`}
+          {t(`category.${category}`)}
+          {followers > 0 &&
+            t("join.complete.followers", { count: formatFollowers(followers) })}
         </p>
       </div>
 
       {/* 공유 링크 */}
       <Card className="mt-8 overflow-hidden">
         <div className="border-b border-neutral-100 bg-neutral-50 px-5 py-3 text-xs font-bold text-neutral-500">
-          당신의 xong 링크
+          {t("join.complete.linkLabel")}
         </div>
         <div className="p-5">
           <div className="flex flex-wrap items-center gap-2 rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3">
@@ -86,18 +89,17 @@ export function CompleteInner() {
             >
               {copied ? (
                 <>
-                  <Check className="h-3.5 w-3.5" /> 복사됨
+                  <Check className="h-3.5 w-3.5" /> {t("join.complete.copied")}
                 </>
               ) : (
                 <>
-                  <Copy className="h-3.5 w-3.5" /> 복사
+                  <Copy className="h-3.5 w-3.5" /> {t("join.complete.copy")}
                 </>
               )}
             </button>
           </div>
           <p className="mt-3 text-xs text-neutral-500">
-            이 링크를 인스타 바이오·트위터·카톡 프로필에 붙여두면 브랜드가 대행사
-            거치지 않고 바로 연락해요.
+            {t("join.complete.linkHint")}
           </p>
         </div>
       </Card>
@@ -114,9 +116,9 @@ export function CompleteInner() {
             <InstagramIcon className="h-4.5 w-4.5" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold">인스타 바이오에 붙이기</p>
+            <p className="text-sm font-bold">{t("join.complete.instaTitle")}</p>
             <p className="mt-0.5 text-xs text-neutral-500">
-              1분이면 첫 섭외를 받을 준비 완료
+              {t("join.complete.instaDesc")}
             </p>
           </div>
           <ExternalLink className="h-4 w-4 shrink-0 text-neutral-300 group-hover:text-neutral-900" />
@@ -126,9 +128,9 @@ export function CompleteInner() {
             <MessageCircle className="h-4.5 w-4.5" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold">카톡 프로필에 붙이기</p>
+            <p className="text-sm font-bold">{t("join.complete.kakaoTitle")}</p>
             <p className="mt-0.5 text-xs text-neutral-500">
-              지인 브랜드가 카톡으로 문의 가능
+              {t("join.complete.kakaoDesc")}
             </p>
           </div>
         </button>
@@ -137,7 +139,7 @@ export function CompleteInner() {
       {/* 미리보기 */}
       <div className="mt-6 rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
         <p className="text-xs font-bold text-neutral-500">
-          지금 당신의 프로필은 이렇게 보여요
+          {t("join.complete.previewLabel")}
         </p>
         <Link
           href={`/p/haneul`}
@@ -149,11 +151,11 @@ export function CompleteInner() {
           <div className="min-w-0 flex-1">
             <p className="font-bold">{name}</p>
             <p className="text-xs text-neutral-500">
-              @{slug} · {CATEGORY_LABELS[category]}
+              @{slug} · {t(`category.${category}`)}
             </p>
           </div>
           <span className="rounded-full bg-brand-500 px-2.5 py-0.5 text-[10px] font-bold text-white">
-            공개 중
+            {t("join.complete.publicBadge")}
           </span>
         </Link>
       </div>
@@ -164,10 +166,10 @@ export function CompleteInner() {
           href="/me"
           className="inline-flex items-center gap-1 rounded-lg bg-neutral-900 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-neutral-700"
         >
-          내 대시보드 열기 →
+          {t("join.complete.dashboardCta")} →
         </Link>
         <p className="mt-3 text-xs text-neutral-400">
-          섭외 요청·정산·일정을 여기서 관리해요
+          {t("join.complete.dashboardHint")}
         </p>
       </div>
     </div>

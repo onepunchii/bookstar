@@ -6,6 +6,9 @@ import NativeBridge from "@/components/native-bridge";
 import { auth } from "@/auth";
 import { getAgencyCapability, getViewer } from "@/lib/data/session";
 import { SITE } from "@/lib/site";
+import { I18nProvider } from "@/lib/i18n/client";
+import { getLocale, dictFor } from "@/lib/i18n/server";
+import { dirOf } from "@/lib/i18n/locales";
 
 export const viewport: Viewport = {
   // 스플래시·주소창 배경 블랙
@@ -77,8 +80,11 @@ export default async function RootLayout({
     ? await getAgencyCapability()
     : "none";
   const viewer = await getViewer();
+  const locale = await getLocale();
+  const dir = dirOf(locale);
+  const dict = dictFor(locale);
   return (
-    <html lang="ko" className="h-full antialiased">
+    <html lang={locale} dir={dir} className="h-full antialiased">
       <head>
         <link
           rel="stylesheet"
@@ -118,13 +124,15 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full bg-white text-neutral-900">
-        <AppShell
-          isAdmin={isAdmin}
-          agencyCapability={agencyCapability}
-          viewer={viewer}
-        >
-          {children}
-        </AppShell>
+        <I18nProvider initialLocale={locale} initialDict={dict}>
+          <AppShell
+            isAdmin={isAdmin}
+            agencyCapability={agencyCapability}
+            viewer={viewer}
+          >
+            {children}
+          </AppShell>
+        </I18nProvider>
         <ErrorReporter />
         <NativeBridge />
       </body>

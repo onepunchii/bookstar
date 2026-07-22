@@ -5,6 +5,7 @@ import { PremiumArtistCard } from "@/components/premium/premium-artist-card";
 import { Reveal } from "@/components/premium/reveal";
 import { SLACounter } from "@/components/sla-counter";
 import { getPublicArtists, getPublicScheduleMap } from "@/lib/data/artists";
+import { getT } from "@/lib/i18n/server";
 import { parseNL } from "@/lib/nl-search";
 import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -35,10 +36,15 @@ export async function generateMetadata({
 }
 
 const BUDGET_FILTERS = [
-  { key: "all", label: "전체 예산", min: 0, max: Infinity },
-  { key: "u1000", label: "1천만원 이하", min: 0, max: 1000 },
-  { key: "1000-5000", label: "1천~5천만원", min: 1000, max: 5000 },
-  { key: "o5000", label: "5천만원 이상", min: 5000, max: Infinity },
+  { key: "all", labelKey: "artists.browse.budgetAll", min: 0, max: Infinity },
+  { key: "u1000", labelKey: "artists.browse.budgetU1000", min: 0, max: 1000 },
+  {
+    key: "1000-5000",
+    labelKey: "artists.browse.budget1000to5000",
+    min: 1000,
+    max: 5000,
+  },
+  { key: "o5000", labelKey: "artists.browse.budgetO5000", min: 5000, max: Infinity },
 ];
 
 function hasAvailabilityInRange(
@@ -59,6 +65,7 @@ export default async function ArtistsPage({
 }: {
   searchParams: Promise<{ category?: string; q?: string; budget?: string }>;
 }) {
+  const { t } = await getT();
   const { category, q, budget } = await searchParams;
   const budgetFilter =
     BUDGET_FILTERS.find((b) => b.key === budget) ?? BUDGET_FILTERS[0];
@@ -136,11 +143,10 @@ export default async function ArtistsPage({
       <Reveal>
         <Eyebrow>Discover</Eyebrow>
         <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-4xl">
-          아티스트 찾기
+          {t("artists.browse.title")}
         </h1>
         <p className="mt-2 text-sm text-white/50 sm:text-base">
-          {filtered.length}팀이 섭외를 기다리고 있어요 · &lsquo;다음주 가능한
-          여자 아이돌&rsquo; 같은 자연어로 검색해보세요
+          {t("artists.browse.subtitle", { count: filtered.length })}
         </p>
       </Reveal>
 
@@ -156,7 +162,7 @@ export default async function ArtistsPage({
       {nl && nl.chips.length > 0 && (
         <div className="mt-3 flex flex-wrap items-center gap-1.5 rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-2">
           <span className="flex items-center gap-1 text-xs font-bold text-brand-300">
-            <Sparkles className="h-3 w-3" /> AI가 이해한 조건
+            <Sparkles className="h-3 w-3" /> {t("artists.browse.aiUnderstood")}
           </span>
           {nl.chips.map((chip) => (
             <span
@@ -180,7 +186,7 @@ export default async function ArtistsPage({
               : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-white"
           )}
         >
-          전체
+          {t("artists.browse.categoryAll")}
         </Link>
         {(Object.keys(CATEGORY_LABELS) as ArtistCategory[]).map((c) => (
           <Link
@@ -193,7 +199,7 @@ export default async function ArtistsPage({
                 : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-white"
             )}
           >
-            {CATEGORY_LABELS[c]}
+            {t(`category.${c}`)}
           </Link>
         ))}
       </div>
@@ -211,7 +217,7 @@ export default async function ArtistsPage({
                 : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-brand-300 hover:ring-brand-500/30"
             )}
           >
-            {b.label}
+            {t(b.labelKey)}
           </Link>
         ))}
       </div>
@@ -219,11 +225,10 @@ export default async function ArtistsPage({
       {filtered.length === 0 ? (
         <div className="mt-16 rounded-2xl border border-dashed border-white/15 py-20 text-center">
           <p className="font-semibold text-white/80">
-            조건에 맞는 아티스트가 없어요
+            {t("artists.browse.emptyTitle")}
           </p>
           <p className="mt-1 text-sm text-white/45">
-            필터를 조정하거나, AI 캐스팅 추천으로 조건에 맞는 아티스트를
-            찾아보세요
+            {t("artists.browse.emptyDesc")}
           </p>
         </div>
       ) : (

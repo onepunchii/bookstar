@@ -11,9 +11,11 @@ import {
 import { getSessionUser } from "@/lib/data/session";
 import { getLastSenderMap } from "@/lib/data/messages";
 import { formatBudget } from "@/lib/types";
+import { getT } from "@/lib/i18n/server";
 import { ChevronRight } from "lucide-react";
 
 export default async function RequestsPage() {
+  const { t } = await getT();
   const user = await getSessionUser();
   // 로그인 광고주는 본인 요청, 비로그인은 데모 샘플(실 광고주 데이터 노출 금지)
   const [requests, lastSender] = await Promise.all([
@@ -28,10 +30,10 @@ export default async function RequestsPage() {
       <Reveal>
         <Eyebrow>My Requests</Eyebrow>
         <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-4xl">
-          섭외 관리
+          {t("nav.company.requests")}
         </h1>
         <p className="mt-2 text-sm text-white/50">
-          보낸 요청의 진행 상황을 한눈에 확인하세요 · 총 {requests.length}건
+          {t("requests.subtitle", { count: requests.length })}
         </p>
         <RequestsTabs />
       </Reveal>
@@ -51,11 +53,12 @@ export default async function RequestsPage() {
                     </span>
                     <Badge>{req.eventType}</Badge>
                     {lastSender[req.id] === "agency" && (
-                      <Badge variant="solid">새 답장</Badge>
+                      <Badge variant="solid">{t("requests.newReply")}</Badge>
                     )}
                   </div>
                   <p className="mt-1 truncate text-sm text-white/50">
-                    {req.date} · {req.location} · 예산 {formatBudget(req.budget)}
+                    {req.date} · {req.location} · {t("requests.budgetLabel")}{" "}
+                    {formatBudget(req.budget)}
                   </p>
                 </div>
                 <StatusBadge status={req.status} />

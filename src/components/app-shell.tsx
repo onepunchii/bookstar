@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthUi } from "@/lib/auth-ui-store";
 import { useRoleStore, type Role } from "@/lib/role-store";
+import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { LoginModal } from "./login-modal";
 import { NotificationsPanel } from "./notifications-panel";
@@ -32,10 +33,10 @@ const NAV_BY_ROLE: Record<
   { href: string; label: string; icon: typeof LayoutGrid }[]
 > = {
   company: [
-    { href: "/", label: "홈", icon: LayoutGrid },
-    { href: "/artists", label: "아티스트", icon: Search },
+    { href: "/", label: "nav.company.home", icon: LayoutGrid },
+    { href: "/artists", label: "nav.company.artists", icon: Search },
     // AI 추천은 홈 카드에서 진입 — 내비 중복 제거
-    { href: "/requests", label: "섭외 관리", icon: Inbox },
+    { href: "/requests", label: "nav.company.requests", icon: Inbox },
   ],
   agency: [
     { href: "/agency", label: "대시보드", icon: LayoutGrid },
@@ -64,7 +65,7 @@ const ACCOUNT: Record<
   company: {
     initial: "브",
     name: "브라이트마케팅",
-    label: "광고주 계정",
+    label: "shell.companyLabel",
     home: "/",
     settings: "/account",
   },
@@ -107,6 +108,7 @@ export function AppShell({
   };
 }) {
   const pathname = usePathname();
+  const t = useT();
   const { role: storedRole, setRole } = useRoleStore();
   const { setLoggedIn, openLogin, openRole } = useAuthUi();
 
@@ -157,7 +159,7 @@ export function AppShell({
     viewer.loggedIn && viewer.name ? viewer.name : account.name;
   const displayInitial =
     viewer.loggedIn && viewer.name ? viewer.name.slice(0, 1) : account.initial;
-  const displayLabel = viewer.loggedIn ? account.label : "로그인 전 · 둘러보기";
+  const displayLabel = viewer.loggedIn ? t(account.label) : t("shell.guestLabel");
 
   // 광고주는 다크 럭셔리 크롬, 소속사·아티스트는 라이트
   const dark = role === "company";
@@ -208,7 +210,7 @@ export function AppShell({
                         : "text-neutral-400"
                   )}
                 />
-                {item.label}
+                {t(item.label)}
               </Link>
             );
           })}
@@ -243,7 +245,7 @@ export function AppShell({
                       dark && "text-white"
                     )}
                   >
-                    {viewer.loggedIn ? displayName : "로그인하고 시작"}
+                    {viewer.loggedIn ? displayName : t("shell.guestCta")}
                   </p>
                   <p
                     className={cn(
@@ -252,8 +254,8 @@ export function AppShell({
                     )}
                   >
                     {viewer.loggedIn
-                      ? `${displayLabel} · 프로필 수정`
-                      : "카카오 간편가입"}
+                      ? `${displayLabel} · ${t("shell.editProfile")}`
+                      : t("shell.guestSub")}
                   </p>
                 </div>
               </div>
@@ -303,7 +305,7 @@ export function AppShell({
             {role === "agency" && (
               <Building2 className="h-3.5 w-3.5 text-neutral-300" />
             )}
-            {nav.find((n) => isActive(pathname, n.href))?.label ?? ""}
+            {t(nav.find((n) => isActive(pathname, n.href))?.label ?? "")}
           </div>
           <div className="flex items-center gap-2">
             {isAdmin && (
@@ -375,7 +377,7 @@ export function AppShell({
             <Link
               key={item.href}
               href={item.href}
-              aria-label={item.label}
+              aria-label={t(item.label)}
               className="relative flex flex-1 items-center justify-center py-3.5"
             >
               {active && (

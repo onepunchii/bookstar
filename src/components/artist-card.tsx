@@ -4,15 +4,16 @@ import { Card } from "@/components/ui/card";
 import { RatingStars } from "@/components/rating-stars";
 import { getRatingSummary } from "@/lib/mock-data";
 import {
-  CATEGORY_LABELS,
   formatBudget,
   formatFollowers,
   type Artist,
 } from "@/lib/types";
+import { getT } from "@/lib/i18n/server";
 import { BadgeCheck, Zap } from "lucide-react";
 
-export function ArtistCard({ artist }: { artist: Artist }) {
+export async function ArtistCard({ artist }: { artist: Artist }) {
   const rating = getRatingSummary(artist.id);
+  const { t } = await getT();
   return (
     <Link href={`/artists/${artist.id}`} className="group">
       <Card className="h-full overflow-hidden transition-all group-hover:-translate-y-0.5 group-hover:border-neutral-900 group-hover:shadow-lg group-hover:shadow-neutral-900/5">
@@ -22,7 +23,7 @@ export function ArtistCard({ artist }: { artist: Artist }) {
           </span>
           {artist.responseHours <= 6 && (
             <Badge variant="solid" className="absolute left-3 top-3">
-              <Zap className="h-3 w-3" /> 빠른 응답
+              <Zap className="h-3 w-3" /> {t("artistCard.fastResponse")}
             </Badge>
           )}
         </div>
@@ -42,16 +43,16 @@ export function ArtistCard({ artist }: { artist: Artist }) {
           <div className="mt-3 flex flex-wrap gap-1.5">
             {artist.categories.map((c) => (
               <Badge key={c} variant="brand">
-                {CATEGORY_LABELS[c]}
+                {t(`category.${c}`)}
               </Badge>
             ))}
-            {artist.tags.slice(0, 2).map((t) => (
-              <Badge key={t}>{t}</Badge>
+            {artist.tags.slice(0, 2).map((tag) => (
+              <Badge key={tag}>{tag}</Badge>
             ))}
           </div>
           <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-3 text-sm">
             <div className="text-neutral-500">
-              팔로워{" "}
+              {t("artists.detail.followers")}{" "}
               <span className="font-semibold text-neutral-900">
                 {formatFollowers(artist.followers)}
               </span>
@@ -65,7 +66,7 @@ export function ArtistCard({ artist }: { artist: Artist }) {
               </div>
             ) : (
               <div className="text-neutral-500">
-                응답률{" "}
+                {t("artists.detail.responseRate")}{" "}
                 <span className="font-semibold text-brand-600">
                   {artist.responseRate}%
                 </span>
@@ -73,7 +74,7 @@ export function ArtistCard({ artist }: { artist: Artist }) {
             )}
           </div>
           <div className="mt-2 text-sm text-neutral-500">
-            예산대{" "}
+            {t("artistCard.budget")}{" "}
             <span className="font-semibold text-neutral-900">
               {formatBudget(artist.budgetRange[0])} ~{" "}
               {formatBudget(artist.budgetRange[1])}

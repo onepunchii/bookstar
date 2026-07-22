@@ -10,11 +10,20 @@ import {
   type ArtistCategory,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { ArrowUpRight, Search, Sparkles, TrendingUp } from "lucide-react";
 
-const KEYWORDS = ["축제", "광고", "MC", "뷰티", "유튜브", "팬미팅"];
+const KEYWORD_KEYS = [
+  "festival",
+  "ad",
+  "mc",
+  "beauty",
+  "youtube",
+  "fanMeeting",
+] as const;
 
 export function HomeSearch({ artists = [] }: { artists?: Artist[] }) {
+  const t = useT();
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
   const [q, setQ] = useState("");
@@ -64,7 +73,7 @@ export function HomeSearch({ artists = [] }: { artists?: Artist[] }) {
               setOpen(true);
             }}
             onFocus={() => setOpen(true)}
-            placeholder="아티스트·소속사·키워드 검색"
+            placeholder={t("home.search.placeholder")}
             className="glass premium-ease h-14 w-full rounded-full py-4 pl-13 pr-5 text-base text-white outline-none placeholder:text-white/35 focus:border-brand-500/50"
           />
         </form>
@@ -88,7 +97,8 @@ export function HomeSearch({ artists = [] }: { artists?: Artist[] }) {
                           {a.name}
                         </span>
                         <span className="block truncate text-xs text-white/45">
-                          {CATEGORY_LABELS[a.category]} · 팔로워{" "}
+                          {t(`category.${a.category}`)} ·{" "}
+                          {t("home.search.followers")}{" "}
                           {formatFollowers(a.followers)}
                         </span>
                       </span>
@@ -103,27 +113,30 @@ export function HomeSearch({ artists = [] }: { artists?: Artist[] }) {
                 className="flex w-full items-center gap-2 px-4 py-3.5 text-left text-sm text-white/70 hover:bg-white/[0.05]"
               >
                 <Search className="h-4 w-4 text-white/40" />
-                <span className="font-semibold text-white">{q}</span> 전체
-                결과 보기
+                <span className="font-semibold text-white">{q}</span>{" "}
+                {t("home.search.viewAll")}
               </button>
             ) : (
               <div className="p-3">
                 <p className="flex items-center gap-1.5 px-2 pb-2 text-[11px] font-bold uppercase tracking-wider text-white/35">
-                  <TrendingUp className="h-3 w-3" /> 인기 키워드
+                  <TrendingUp className="h-3 w-3" /> {t("home.search.popularKeywords")}
                 </p>
                 <div className="flex flex-wrap gap-1.5 px-1">
-                  {KEYWORDS.map((k) => (
-                    <button
-                      key={k}
-                      onClick={() => go(k)}
-                      className="rounded-full bg-white/[0.06] px-3 py-1.5 text-sm font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-                    >
-                      {k}
-                    </button>
-                  ))}
+                  {KEYWORD_KEYS.map((k) => {
+                    const label = t(`home.search.keyword.${k}`);
+                    return (
+                      <button
+                        key={k}
+                        onClick={() => go(label)}
+                        className="rounded-full bg-white/[0.06] px-3 py-1.5 text-sm font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
                 </div>
                 <p className="mt-3 flex items-center gap-1.5 px-2 pb-2 pt-1 text-[11px] font-bold uppercase tracking-wider text-white/35">
-                  카테고리
+                  {t("home.search.category")}
                 </p>
                 <div className="flex flex-wrap gap-1.5 px-1">
                   {(Object.keys(CATEGORY_LABELS) as ArtistCategory[])
@@ -135,7 +148,7 @@ export function HomeSearch({ artists = [] }: { artists?: Artist[] }) {
                         onClick={() => setOpen(false)}
                         className="rounded-full bg-white/[0.06] px-3 py-1.5 text-sm font-medium text-white/70 transition-colors hover:bg-brand-500/20 hover:text-brand-300"
                       >
-                        {CATEGORY_LABELS[c]}
+                        {t(`category.${c}`)}
                       </Link>
                     ))}
                 </div>
@@ -151,8 +164,8 @@ export function HomeSearch({ artists = [] }: { artists?: Artist[] }) {
         className="premium-ease flex h-14 shrink-0 items-center gap-2 rounded-full bg-brand-500 px-5 text-sm font-bold text-white hover:bg-brand-600 hover:brand-glow sm:px-6"
       >
         <Sparkles className="h-4 w-4" />
-        <span className="hidden sm:inline">AI 캐스팅</span>
-        <span className="sm:hidden">AI</span>
+        <span className="hidden sm:inline">{t("home.search.aiCasting")}</span>
+        <span className="sm:hidden">{t("home.search.aiShort")}</span>
       </Link>
     </div>
   );

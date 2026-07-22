@@ -13,6 +13,7 @@ import {
   type ArtistCategory,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
 
 const TAG_SUGGESTIONS = [
@@ -31,6 +32,7 @@ const TAG_SUGGESTIONS = [
 ];
 
 export function CastingRecommender({ artists }: { artists: Artist[] }) {
+  const t = useT();
   const [budget, setBudget] = useState<string>("3000");
   const [categories, setCategories] = useState<ArtistCategory[]>([]);
   const [gender, setGender] = useState<"any" | "male" | "female" | "group">(
@@ -43,9 +45,9 @@ export function CastingRecommender({ artists }: { artists: Artist[] }) {
     setCategories((prev) =>
       prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]
     );
-  const toggleTag = (t: string) =>
+  const toggleTag = (tag: string) =>
     setTags((prev) =>
-      prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
+      prev.includes(tag) ? prev.filter((x) => x !== tag) : [...prev, tag]
     );
 
   const results = useMemo(() => {
@@ -69,7 +71,7 @@ export function CastingRecommender({ artists }: { artists: Artist[] }) {
       <div className="adv-card space-y-5 rounded-[1.75rem] p-6 sm:p-7">
         <div>
           <label htmlFor="rec-budget" className={label}>
-            예산 (만원)
+            {t("recommend.budgetLabel")}
           </label>
           <input
             id="rec-budget"
@@ -79,13 +81,13 @@ export function CastingRecommender({ artists }: { artists: Artist[] }) {
               setBudget(e.target.value);
               setSubmitted(false);
             }}
-            placeholder="예: 3000"
+            placeholder={t("recommend.budgetPlaceholder")}
             className="adv-glass h-11 w-full rounded-xl px-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-brand-500/50"
           />
         </div>
 
         <div>
-          <p className={label}>카테고리 (복수 선택 가능)</p>
+          <p className={label}>{t("recommend.categoryLabel")}</p>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(CATEGORY_LABELS) as ArtistCategory[]).map((c) => (
               <button
@@ -103,21 +105,21 @@ export function CastingRecommender({ artists }: { artists: Artist[] }) {
                 )}
               >
                 {categories.includes(c) && <Check className="h-3 w-3" />}
-                {CATEGORY_LABELS[c]}
+                {t(`category.${c}`)}
               </button>
             ))}
           </div>
         </div>
 
         <div>
-          <p className={label}>성별</p>
+          <p className={label}>{t("recommend.genderLabel")}</p>
           <div className="flex flex-wrap gap-2">
             {(
               [
-                ["any", "무관"],
-                ["female", "여성"],
-                ["male", "남성"],
-                ["group", "그룹"],
+                ["any", t("recommend.genderAny")],
+                ["female", t("recommend.genderFemale")],
+                ["male", t("recommend.genderMale")],
+                ["group", t("recommend.genderGroup")],
               ] as const
             ).map(([v, txt]) => (
               <button
@@ -141,24 +143,24 @@ export function CastingRecommender({ artists }: { artists: Artist[] }) {
         </div>
 
         <div>
-          <p className={label}>이미지 · 브랜드 태그 (복수 선택)</p>
+          <p className={label}>{t("recommend.tagLabel")}</p>
           <div className="flex flex-wrap gap-1.5">
-            {TAG_SUGGESTIONS.map((t) => (
+            {TAG_SUGGESTIONS.map((opt) => (
               <button
-                key={t}
+                key={opt}
                 type="button"
                 onClick={() => {
-                  toggleTag(t);
+                  toggleTag(opt);
                   setSubmitted(false);
                 }}
                 className={cn(
                   "premium-ease rounded-full px-3 py-1 text-xs font-medium",
-                  tags.includes(t)
+                  tags.includes(opt)
                     ? "bg-brand-500/20 text-brand-300 ring-1 ring-brand-500/40"
                     : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-white"
                 )}
               >
-                {t}
+                {opt}
               </button>
             ))}
           </div>
@@ -169,7 +171,7 @@ export function CastingRecommender({ artists }: { artists: Artist[] }) {
           className="premium-ease flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-500 text-sm font-bold text-white hover:bg-brand-600 hover:brand-glow"
         >
           <Sparkles className="h-4 w-4" />
-          매칭 아티스트 찾기
+          {t("recommend.submit")}
         </button>
       </div>
 
@@ -177,15 +179,15 @@ export function CastingRecommender({ artists }: { artists: Artist[] }) {
       {submitted && (
         <section>
           <h2 className="mb-3 text-sm font-bold text-white/50">
-            추천 결과 ({results.length}팀)
+            {t("recommend.resultsHeading", { count: results.length })}
           </h2>
           {results.length === 0 ? (
             <div className="adv-card rounded-2xl py-12 text-center">
               <p className="font-semibold text-white">
-                조건에 맞는 아티스트가 없어요
+                {t("recommend.emptyTitle")}
               </p>
               <p className="mt-1 text-sm text-white/45">
-                카테고리·태그를 조정하거나 예산 범위를 넓혀보세요
+                {t("recommend.emptyDesc")}
               </p>
             </div>
           ) : (
@@ -241,23 +243,25 @@ export function CastingRecommender({ artists }: { artists: Artist[] }) {
                           ))}
                         </ul>
                         <p className="mt-2 text-xs text-white/40">
-                          팔로워 {formatFollowers(r.artist.followers)} · 예산대{" "}
-                          {formatBudget(r.artist.budgetRange[0])}~
-                          {formatBudget(r.artist.budgetRange[1])}
+                          {t("recommend.followersBudget", {
+                            followers: formatFollowers(r.artist.followers),
+                            min: formatBudget(r.artist.budgetRange[0]),
+                            max: formatBudget(r.artist.budgetRange[1]),
+                          })}
                         </p>
                       </div>
                       <div className="flex flex-col items-end gap-2">
                         <span className="text-2xl font-black text-brand-400">
                           {r.score}
                           <span className="ml-0.5 text-xs font-bold text-white/40">
-                            점
+                            {t("recommend.scoreUnit")}
                           </span>
                         </span>
                         <Link
                           href={`/artists/${r.artist.slug}`}
                           className="flex items-center gap-1 text-xs font-semibold text-white/60 hover:text-white"
                         >
-                          프로필 <ArrowRight className="h-3 w-3" />
+                          {t("recommend.profile")} <ArrowRight className="h-3 w-3" />
                         </Link>
                       </div>
                     </div>

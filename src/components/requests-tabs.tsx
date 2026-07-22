@@ -5,8 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Megaphone } from "lucide-react";
+import { useT } from "@/lib/i18n/client";
 
 export function RequestsTabs() {
+  const t = useT();
   const pathname = usePathname();
   const onCampaigns = pathname.startsWith("/requests/campaigns");
 
@@ -21,7 +23,7 @@ export function RequestsTabs() {
             : "text-white/50 ring-1 ring-white/10 hover:text-white"
         )}
       >
-        받은 섭외
+        {t("requests.tabs.received")}
       </Link>
       {/* 오픈 캠페인 — 신규 기능 부각 필 */}
       <Link
@@ -34,7 +36,7 @@ export function RequestsTabs() {
         )}
       >
         <Megaphone className="h-3.5 w-3.5" />
-        오픈 캠페인
+        {t("requests.tabs.openCampaigns")}
         <span
           className={cn(
             "rounded-full px-1.5 py-0.5 text-[9px] font-black leading-none",

@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { useRoleStore, type Role } from "@/lib/role-store";
 import { useAuthUi } from "@/lib/auth-ui-store";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { Check, ChevronDown } from "lucide-react";
 
 const ROLES: { key: Role; label: string; home: string; desc: string }[] = [
-  { key: "company", label: "광고주", home: "/", desc: "아티스트 섭외" },
-  { key: "agency", label: "소속사", home: "/agency", desc: "아티스트 관리" },
-  { key: "artist", label: "아티스트", home: "/me", desc: "내 일정·정산" },
+  { key: "company", label: "roleSwitcher.company.label", home: "/", desc: "roleSwitcher.company.desc" },
+  { key: "agency", label: "roleSwitcher.agency.label", home: "/agency", desc: "roleSwitcher.agency.desc" },
+  { key: "artist", label: "roleSwitcher.artist.label", home: "/me", desc: "roleSwitcher.artist.desc" },
 ];
 
 export function RoleSwitcher({
@@ -20,6 +21,7 @@ export function RoleSwitcher({
   dark?: boolean;
   agencyCapability?: string;
 }) {
+  const t = useT();
   const { role, setRole } = useRoleStore();
   const isLoggedIn = useAuthUi((s) => s.isLoggedIn);
   const router = useRouter();
@@ -70,7 +72,7 @@ export function RoleSwitcher({
       {/* 컴팩트 pill — 역할명 항상 표시 (모바일 포함) */}
       <button
         onClick={() => setOpen((v) => !v)}
-        aria-label="계정 전환"
+        aria-label={t("roleSwitcher.accountSwitch")}
         aria-expanded={open}
         className={cn(
           "premium-ease flex h-9 items-center gap-2 rounded-full px-3.5 text-[13px] font-bold",
@@ -80,7 +82,7 @@ export function RoleSwitcher({
         )}
       >
         <span className="h-2 w-2 shrink-0 rounded-full bg-brand-500 shadow-[0_0_6px_rgba(255,90,0,0.7)]" />
-        {current.label}
+        {t(current.label)}
         <ChevronDown
           className={cn(
             "premium-ease h-3.5 w-3.5",
@@ -128,7 +130,7 @@ export function RoleSwitcher({
                           : "text-neutral-900"
                     )}
                   >
-                    {r.label}
+                    {t(r.label)}
                   </p>
                   <p
                     className={cn(
@@ -136,7 +138,7 @@ export function RoleSwitcher({
                       dark ? "text-white/40" : "text-neutral-400"
                     )}
                   >
-                    {r.desc}
+                    {t(r.desc)}
                   </p>
                 </div>
                 {active && <Check className="h-4 w-4 shrink-0 text-brand-500" />}

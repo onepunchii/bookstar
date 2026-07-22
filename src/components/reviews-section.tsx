@@ -1,6 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
+import { useT } from "@/lib/i18n/client";
 import { getRatingSummary } from "@/lib/mock-data";
 import { allReviewsFor, useReviewsStore } from "@/lib/reviews-store";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ export function ReviewsSection({
   artistId: string;
   dark?: boolean;
 }) {
+  const t = useT();
   const extra = useReviewsStore((s) => s.extra);
   const reviews = allReviewsFor(artistId, extra);
   // 유저가 남긴 리뷰가 더 있으면 avg 재계산
@@ -36,10 +38,9 @@ export function ReviewsSection({
   if (reviews.length === 0) {
     return (
       <section>
-        <h2 className={cn("text-lg font-bold", dark && "text-white")}>리뷰</h2>
+        <h2 className={cn("text-lg font-bold", dark && "text-white")}>{t("reviews.title")}</h2>
         <p className={cn("mt-2 text-sm", dark ? "text-white/40" : "text-neutral-400")}>
-          아직 등록된 리뷰가 없어요. 첫 섭외 후 광고주가 남기는 리뷰가 여기에
-          쌓여요.
+          {t("reviews.empty")}
         </p>
       </section>
     );
@@ -48,14 +49,14 @@ export function ReviewsSection({
   return (
     <section>
       <div className="flex items-baseline justify-between">
-        <h2 className={cn("text-lg font-bold", dark && "text-white")}>리뷰</h2>
+        <h2 className={cn("text-lg font-bold", dark && "text-white")}>{t("reviews.title")}</h2>
         <div className="flex items-center gap-2">
           <RatingStars value={avg} size="sm" />
           <span className={cn("text-sm font-bold", dark && "text-white")}>
             {avg.toFixed(1)}
           </span>
           <span className={cn("text-xs", dark ? "text-white/40" : "text-neutral-400")}>
-            ({count}건)
+            {t("reviews.countSuffix", { count })}
           </span>
         </div>
       </div>

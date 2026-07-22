@@ -4,12 +4,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { kakaoSignIn } from "@/app/actions/auth";
+import { useT } from "@/lib/i18n/client";
 import { useAuthUi } from "@/lib/auth-ui-store";
 import { EulaConsent } from "./eula-consent";
 import { Wordmark } from "./wordmark";
 import { X } from "lucide-react";
 
 export function LoginModal() {
+  const t = useT();
   const { loginOpen, loginReason, closeLogin } = useAuthUi();
   const [redirectTo, setRedirectTo] = useState("/");
 
@@ -37,7 +39,7 @@ export function LoginModal() {
       >
         <button
           onClick={closeLogin}
-          aria-label="닫기"
+          aria-label={t("common.close")}
           className="absolute right-4 top-4 text-neutral-400 hover:text-neutral-900"
         >
           <X className="h-5 w-5" />
@@ -46,25 +48,25 @@ export function LoginModal() {
           <Wordmark height={26} />
         </div>
         <h2 className="mt-5 text-lg font-black text-neutral-900">
-          {loginReason ?? "계속하려면 로그인이 필요해요"}
+          {loginReason ?? t("loginModal.title")}
         </h2>
         <p className="mt-1.5 text-sm text-neutral-500">
-          카카오로 3초면 시작해요. 매칭 수수료 0%.
+          {t("loginModal.subtitle")}
         </p>
 
         <form action={kakaoSignIn} className="mt-6">
           <input type="hidden" name="redirectTo" value={redirectTo} />
           {/* EULA 동의 체크 전에는 제출 비활성 — App Store 1.2 */}
-          <EulaConsent label="카카오로 시작하기" redirectTo={redirectTo} />
+          <EulaConsent label={t("loginModal.cta")} redirectTo={redirectTo} />
         </form>
 
         <p className="mt-4 text-[11px] text-neutral-400">
           <Link href="/terms" target="_blank" className="underline">
-            이용약관
+            {t("common.terms")}
           </Link>{" "}
           ·{" "}
           <Link href="/privacy" target="_blank" className="underline">
-            개인정보처리방침
+            {t("common.privacy")}
           </Link>
         </p>
       </div>

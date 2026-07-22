@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/wordmark";
+import { getT } from "@/lib/i18n/server";
 import {
   ArrowRight,
   BadgeCheck,
@@ -16,20 +17,21 @@ export const metadata = {
   alternates: { canonical: "/join" },
 };
 
-export default function JoinLandingPage() {
+export default async function JoinLandingPage() {
+  const { t } = await getT();
   return (
     <div className="min-h-dvh bg-white">
       {/* 헤더 */}
       <header className="border-b border-neutral-200">
         <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4 sm:px-6">
-          <Link href="/" aria-label="xong 홈으로">
+          <Link href="/" aria-label={t("join.homeAriaLabel")}>
             <Wordmark height={22} />
           </Link>
           <Link
             href="/"
             className="text-sm font-semibold text-neutral-500 hover:text-neutral-900"
           >
-            둘러보기 →
+            {t("join.browseCta")}
           </Link>
         </div>
       </header>
@@ -38,29 +40,25 @@ export default function JoinLandingPage() {
       <section className="border-b border-neutral-100 bg-gradient-to-b from-brand-50/40 to-white">
         <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6 sm:py-20">
           <span className="inline-flex items-center gap-1 rounded-full bg-brand-500 px-2.5 py-0.5 text-[10px] font-bold text-white">
-            <Zap className="h-3 w-3" /> BETA · 초대 코드 없이 즉시 가입
+            <Zap className="h-3 w-3" /> {t("join.betaBadge")}
           </span>
           <h1 className="mt-4 max-w-2xl text-4xl font-black tracking-tight sm:text-5xl">
-            브랜드가 당신을{" "}
-            <span className="text-brand-500">직접</span> 찾아오게
-            하세요
+            {t("join.heroTitlePre")}{" "}
+            <span className="text-brand-500">{t("join.heroTitleEmphasis")}</span>{" "}
+            {t("join.heroTitlePost")}
           </h1>
           <p className="mt-4 max-w-xl text-lg leading-relaxed text-neutral-600">
-            프로필을 만들면 3분 안에 나만의 섭외 링크가 발급돼요.
-            인스타 바이오에 붙여두면 브랜드가 대행사를 거치지 않고 바로
-            연락합니다.
+            {t("join.heroSubtitle")}
           </p>
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-neutral-500">
             <span className="flex items-center gap-1.5">
-              <BadgeCheck className="h-4 w-4 text-brand-500" /> 브로커 없이
-              직거래
+              <BadgeCheck className="h-4 w-4 text-brand-500" /> {t("join.benefitDirect")}
             </span>
             <span className="flex items-center gap-1.5">
-              <BadgeCheck className="h-4 w-4 text-brand-500" /> 견적·계약·정산
-              한 곳
+              <BadgeCheck className="h-4 w-4 text-brand-500" /> {t("join.benefitAllInOne")}
             </span>
             <span className="flex items-center gap-1.5">
-              <BadgeCheck className="h-4 w-4 text-brand-500" /> 가입 무료
+              <BadgeCheck className="h-4 w-4 text-brand-500" /> {t("join.benefitFree")}
             </span>
           </div>
         </div>
@@ -69,7 +67,7 @@ export default function JoinLandingPage() {
       {/* 페르소나 선택 */}
       <section className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
         <p className="text-sm font-bold text-neutral-500">
-          어떤 자격으로 가입하시겠어요?
+          {t("join.personaPrompt")}
         </p>
         <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
           {/* 크리에이터 */}
@@ -78,26 +76,24 @@ export default function JoinLandingPage() {
             className="group relative overflow-hidden rounded-3xl border-2 border-brand-500 bg-gradient-to-br from-brand-500 to-brand-700 p-7 text-white transition-transform hover:-translate-y-0.5"
           >
             <span className="absolute right-4 top-4 rounded-full bg-white px-2 py-0.5 text-[10px] font-black text-brand-600">
-              추천
+              {t("join.recommended")}
             </span>
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20 backdrop-blur">
               <UserRound className="h-5 w-5" />
             </div>
             <h2 className="mt-4 text-2xl font-black">
-              개인 크리에이터
+              {t("join.creatorCardTitle")}
               <br />
-              인플루언서 · 유튜버
+              {t("join.creatorCardSubtitle")}
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-white/85">
-              소속사 없이 활동 중이신가요? 인스타·유튜브 채널만 있으면
-              돼요. 프로필 만들고 링크만 걸어두면 자동으로 브랜드가
-              찾아옵니다.
+              {t("join.creatorCardBody")}
             </p>
             <ul className="mt-5 space-y-1.5 text-sm">
               {[
-                "3분 만에 나만의 섭외 링크 발급",
-                "SNS 연동으로 팔로워 자동 표시",
-                "요금·조건 직접 설정 · 수수료 저렴",
+                t("join.creatorFeature1"),
+                t("join.creatorFeature2"),
+                t("join.creatorFeature3"),
               ].map((line) => (
                 <li key={line} className="flex items-center gap-2">
                   <Sparkles className="h-3.5 w-3.5 text-white/80" />
@@ -106,7 +102,7 @@ export default function JoinLandingPage() {
               ))}
             </ul>
             <span className="mt-6 inline-flex items-center gap-1 text-sm font-bold">
-              크리에이터로 시작하기 <ArrowRight className="h-3.5 w-3.5" />
+              {t("join.creatorCta")} <ArrowRight className="h-3.5 w-3.5" />
             </span>
           </Link>
 
@@ -119,19 +115,18 @@ export default function JoinLandingPage() {
               <Building2 className="h-5 w-5" />
             </div>
             <h2 className="mt-4 text-2xl font-black">
-              소속사 · MCN
+              {t("join.agencyCardTitle")}
               <br />
-              엔터테인먼트사
+              {t("join.agencyCardSubtitle")}
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-neutral-600">
-              여러 아티스트를 관리하시나요? xong 소속사 센터로 프로필·일정·
-              섭외·정산을 한 곳에서 처리하세요. 카톡과 엑셀에서 벗어나요.
+              {t("join.agencyCardBody")}
             </p>
             <ul className="mt-5 space-y-1.5 text-sm text-neutral-600">
               {[
-                "아티스트 로스터·일정·매니저 스코프",
-                "인박스 · 견적 프리셋 · 홀드 자동화",
-                "데일리 시트 · 정산 · 서류함까지",
+                t("join.agencyFeature1"),
+                t("join.agencyFeature2"),
+                t("join.agencyFeature3"),
               ].map((line) => (
                 <li key={line} className="flex items-center gap-2">
                   <Sparkles className="h-3.5 w-3.5 text-brand-500" />
@@ -140,15 +135,15 @@ export default function JoinLandingPage() {
               ))}
             </ul>
             <span className="mt-6 inline-flex items-center gap-1 text-sm font-bold text-neutral-900">
-              소속사로 시작하기 <ArrowRight className="h-3.5 w-3.5" />
+              {t("join.agencyCta")} <ArrowRight className="h-3.5 w-3.5" />
             </span>
           </Link>
         </div>
 
         <p className="mt-8 text-center text-xs text-neutral-400">
-          이미 xong를 쓰고 계신가요?{" "}
+          {t("join.alreadyMember")}{" "}
           <Link href="/" className="font-semibold text-neutral-900">
-            로그인
+            {t("common.login")}
           </Link>
         </p>
       </section>

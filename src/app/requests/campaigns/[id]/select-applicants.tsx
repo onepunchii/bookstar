@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { Applicant } from "@/lib/data/campaigns";
 import { CATEGORY_LABELS, formatBudget, formatFollowers } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { BadgeCheck, Check, Loader2, Sparkles, Users } from "lucide-react";
 
 export function SelectApplicants({
@@ -17,6 +18,7 @@ export function SelectApplicants({
   applicants: Applicant[];
   awarded: boolean;
 }) {
+  const t = useT();
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -31,11 +33,11 @@ export function SelectApplicants({
         body: JSON.stringify({ applicationId }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "선정 실패");
+      if (!res.ok) throw new Error(data.error ?? t("requests.campaigns.selectFailedShort"));
       if (data.requestId) router.push(`/requests/${data.requestId}`);
       else router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "선정에 실패했어요");
+      setError(e instanceof Error ? e.message : t("requests.campaigns.selectFailed"));
       setBusy(null);
     }
   };
@@ -43,7 +45,7 @@ export function SelectApplicants({
   if (applicants.length === 0) {
     return (
       <p className="rounded-2xl border border-dashed border-white/12 py-10 text-center text-sm text-white/35">
-        아직 지원자가 없어요. 마감 전까지 아티스트·기획사의 지원을 기다려요.
+        {t("requests.campaigns.empty")}
       </p>
     );
   }
@@ -82,12 +84,12 @@ export function SelectApplicants({
                   <span className="font-bold text-white">{a.artistName}</span>
                   {selected && (
                     <span className="flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-bold text-emerald-300">
-                      <BadgeCheck className="h-3 w-3" /> 선정됨
+                      <BadgeCheck className="h-3 w-3" /> {t("requests.campaigns.selected")}
                     </span>
                   )}
                   {a.recommended && !selected && !rejected && (
                     <span className="flex items-center gap-1 rounded-full bg-brand-500/15 px-2 py-0.5 text-[11px] font-bold text-brand-300">
-                      <Sparkles className="h-3 w-3" /> 적합 1순위
+                      <Sparkles className="h-3 w-3" /> {t("requests.campaigns.topMatch")}
                     </span>
                   )}
                 </div>
@@ -96,10 +98,10 @@ export function SelectApplicants({
                   {a.categories.length > 0 && (
                     <span>
                       {a.categories
-                        .map(
-                          (c) =>
-                            CATEGORY_LABELS[c as keyof typeof CATEGORY_LABELS] ??
-                            c
+                        .map((c) =>
+                          CATEGORY_LABELS[c as keyof typeof CATEGORY_LABELS]
+                            ? t(`category.${c}`)
+                            : c
                         )
                         .join(", ")}
                     </span>
@@ -117,7 +119,7 @@ export function SelectApplicants({
                 )}
                 {a.proposedFee != null && (
                   <p className="mt-2 text-sm font-bold text-white">
-                    제안 견적 {formatBudget(a.proposedFee)}
+                    {t("requests.campaigns.proposedFee", { fee: formatBudget(a.proposedFee) })}
                     {a.proposedIncludes && (
                       <span className="ml-1.5 text-xs font-normal text-white/45">
                         · {a.proposedIncludes}
@@ -139,7 +141,7 @@ export function SelectApplicants({
                 ) : (
                   <Check className="h-4 w-4" />
                 )}
-                이 아티스트 선정하고 협의 시작
+                {t("requests.campaigns.selectAndStart")}
               </button>
             )}
             {selected && a.requestId && (
@@ -147,7 +149,7 @@ export function SelectApplicants({
                 href={`/requests/${a.requestId}`}
                 className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-white/8 px-5 py-3 text-sm font-bold text-white hover:bg-white/12"
               >
-                협의 스레드로 이동
+                {t("requests.campaigns.goToThread")}
               </a>
             )}
           </div>

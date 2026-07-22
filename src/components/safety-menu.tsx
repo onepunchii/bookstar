@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MoreVertical, Flag, Ban, Check } from "lucide-react";
 import { reportContent, blockUser, type ReportTarget } from "@/lib/safety";
+import { useT } from "@/lib/i18n/client";
 
 interface Props {
   /** 신고 대상 유형 */
@@ -28,6 +29,7 @@ export function SafetyMenu({
   loggedIn = true,
   dark = false,
 }: Props) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [reported, setReported] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -62,24 +64,19 @@ export function SafetyMenu({
       setOpen(false);
       setReported(false);
     }, 1100);
-    if (!ok) alert("신고 접수에 실패했어요. 잠시 후 다시 시도해 주세요.");
+    if (!ok) alert(t("safety.reportFailed"));
   };
 
   const doBlock = async () => {
     if (!guard() || !targetUserId) return;
-    if (
-      !confirm(
-        "이 사용자를 차단할까요?\n차단하면 이 사용자와 협의 메시지를 주고받을 수 없게 됩니다."
-      )
-    )
-      return;
+    if (!confirm(t("safety.blockConfirm"))) return;
     const ok = await blockUser(targetUserId);
     setOpen(false);
     if (ok) {
       if (onBlocked) onBlocked();
-      else alert("차단했어요. 이 사용자와는 더 이상 대화할 수 없습니다.");
+      else alert(t("safety.blockDone"));
     } else {
-      alert("차단에 실패했어요. 잠시 후 다시 시도해 주세요.");
+      alert(t("safety.blockFailed"));
     }
   };
 
@@ -90,7 +87,7 @@ export function SafetyMenu({
           e.stopPropagation();
           setOpen((v) => !v);
         }}
-        aria-label="신고·차단 메뉴"
+        aria-label={t("safety.menuLabel")}
         className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
           dark
             ? "text-white/55 hover:bg-white/10 active:bg-white/10"
@@ -110,11 +107,11 @@ export function SafetyMenu({
           >
             {reported ? (
               <>
-                <Check className="h-3.5 w-3.5" /> 신고가 접수됐어요
+                <Check className="h-3.5 w-3.5" /> {t("safety.reportReceived")}
               </>
             ) : (
               <>
-                <Flag className="h-3.5 w-3.5" /> 신고하기
+                <Flag className="h-3.5 w-3.5" /> {t("safety.report")}
               </>
             )}
           </button>
@@ -126,7 +123,7 @@ export function SafetyMenu({
               }}
               className="flex w-full items-center gap-2 border-t border-neutral-200 px-3.5 py-3 text-[13px] font-bold text-neutral-900 transition-colors hover:bg-neutral-50 active:bg-neutral-100"
             >
-              <Ban className="h-3.5 w-3.5" /> 사용자 차단
+              <Ban className="h-3.5 w-3.5" /> {t("safety.blockUser")}
             </button>
           )}
         </div>

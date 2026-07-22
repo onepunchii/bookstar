@@ -6,6 +6,7 @@ import { useAuthUi } from "@/lib/auth-ui-store";
 import type { ThreadMessage } from "@/lib/types";
 import { SafetyMenu } from "@/components/safety-menu";
 import { SendHorizonal } from "lucide-react";
+import { useT } from "@/lib/i18n/client";
 
 export function RequestThread({
   requestId,
@@ -17,6 +18,7 @@ export function RequestThread({
   /** 협의 상대 유저 id — 신고·차단 메뉴용 */
   counterpartUserId?: string | null;
 }) {
+  const t = useT();
   const [thread, setThread] = useState<ThreadMessage[]>(initialMessages);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
@@ -33,7 +35,7 @@ export function RequestThread({
         body: JSON.stringify({ requestId, body }),
       });
       if (res.status === 401) {
-        openLogin("메시지를 보내려면");
+        openLogin(t("requests.thread.loginToSend"));
         return;
       }
       if (res.status === 403) {
@@ -41,7 +43,7 @@ export function RequestThread({
         const d = (await res.json().catch(() => null)) as {
           error?: string;
         } | null;
-        alert(d?.error ?? "메시지를 보낼 수 없습니다");
+        alert(d?.error ?? t("requests.thread.cannotSend"));
         return;
       }
       if (!res.ok) throw new Error();
@@ -52,8 +54,8 @@ export function RequestThread({
         sender: "company" | "agency";
         senderName: string;
       };
-      setThread((t) => [
-        ...t,
+      setThread((prev) => [
+        ...prev,
         {
           id: d.id,
           requestId,
@@ -74,13 +76,13 @@ export function RequestThread({
   return (
     <div className="adv-card flex h-[560px] flex-col overflow-hidden rounded-[1.75rem]">
       <div className="flex items-center justify-between border-b border-white/8 py-2 pl-5 pr-2.5">
-        <span className="text-sm font-semibold text-white/80">협의 채팅</span>
+        <span className="text-sm font-semibold text-white/80">{t("requests.thread.title")}</span>
         <SafetyMenu
           targetType="chat"
           targetId={requestId}
           targetUserId={counterpartUserId}
           onBlocked={() => {
-            alert("차단했어요. 이 상대와는 더 이상 대화할 수 없습니다.");
+            alert(t("requests.thread.blocked"));
             window.location.href = "/requests";
           }}
           dark
@@ -89,7 +91,7 @@ export function RequestThread({
       <div className="flex-1 space-y-4 overflow-y-auto p-5">
         {thread.length === 0 && (
           <p className="py-16 text-center text-sm text-white/40">
-            아직 메시지가 없어요. 소속사 응답을 기다리는 중입니다.
+            {t("requests.thread.empty")}
           </p>
         )}
         {thread.map((msg) =>
@@ -133,14 +135,14 @@ export function RequestThread({
             }
           }}
           rows={1}
-          placeholder="메시지를 입력하세요"
+          placeholder={t("requests.thread.inputPlaceholder")}
           className="flex-1 resize-none rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:border-brand-500/50 focus:outline-none"
         />
         <button
           onClick={send}
           disabled={!text.trim() || sending}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500 text-white transition-opacity hover:opacity-90 disabled:opacity-40"
-          aria-label="전송"
+          aria-label={t("requests.thread.send")}
         >
           <SendHorizonal className="h-4 w-4" />
         </button>

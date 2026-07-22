@@ -10,6 +10,7 @@ import {
 } from "@/lib/campaign-options";
 import { CATEGORY_LABELS } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { getT } from "@/lib/i18n/server";
 import { ArrowLeft, CalendarClock, MapPin, Users } from "lucide-react";
 import { SelectApplicants } from "./select-applicants";
 
@@ -20,6 +21,7 @@ export default async function CampaignDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { t } = await getT();
   const { id } = await params;
   const user = await getSessionUser();
   if (!user) notFound();
@@ -35,7 +37,7 @@ export default async function CampaignDetailPage({
         href="/requests/campaigns"
         className="mb-6 inline-flex items-center gap-1.5 text-sm font-semibold text-white/50 hover:text-white"
       >
-        <ArrowLeft className="h-4 w-4" /> 오픈 캠페인
+        <ArrowLeft className="h-4 w-4" /> {t("requests.campaigns.openCampaigns")}
       </Link>
 
       <Reveal>
@@ -81,23 +83,23 @@ export default async function CampaignDetailPage({
 
         <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div className="adv-card rounded-xl p-4">
-            <p className="text-[11px] text-white/40">예산</p>
+            <p className="text-[11px] text-white/40">{t("requests.campaigns.budget")}</p>
             <p className="mt-1 text-sm font-bold text-white">
               {formatBudgetRange(c.budgetMin, c.budgetMax)}
             </p>
           </div>
           <div className="adv-card rounded-xl p-4">
             <p className="flex items-center gap-1 text-[11px] text-white/40">
-              <CalendarClock className="h-3 w-3" /> 신청 마감
+              <CalendarClock className="h-3 w-3" /> {t("requests.campaigns.applicationDeadline")}
             </p>
             <p className="mt-1 text-sm font-bold text-white">{c.deadline}</p>
           </div>
           <div className="adv-card rounded-xl p-4">
             <p className="flex items-center gap-1 text-[11px] text-white/40">
-              <Users className="h-3 w-3" /> 지원자
+              <Users className="h-3 w-3" /> {t("requests.campaigns.applicants")}
             </p>
             <p className="mt-1 text-sm font-bold text-white">
-              {applicants.length}명
+              {t("requests.campaigns.applicantCount", { count: applicants.length })}
             </p>
           </div>
         </div>
@@ -109,12 +111,14 @@ export default async function CampaignDetailPage({
                 key={cat}
                 className="rounded-full bg-brand-500/10 px-2.5 py-1 font-semibold text-brand-300"
               >
-                {CATEGORY_LABELS[cat as keyof typeof CATEGORY_LABELS] ?? cat}
+                {CATEGORY_LABELS[cat as keyof typeof CATEGORY_LABELS]
+                  ? t(`category.${cat}`)
+                  : cat}
               </span>
             ))}
             {c.eventDate && (
               <span className="flex items-center gap-1">
-                <CalendarClock className="h-3 w-3" /> 예정 {c.eventDate}
+                <CalendarClock className="h-3 w-3" /> {t("requests.campaigns.scheduled", { date: c.eventDate })}
               </span>
             )}
             {c.location && (
@@ -134,10 +138,10 @@ export default async function CampaignDetailPage({
 
       <div className="mt-10">
         <div className="mb-4 flex items-center gap-2">
-          <h2 className="text-lg font-black text-white">지원자</h2>
+          <h2 className="text-lg font-black text-white">{t("requests.campaigns.applicants")}</h2>
           {awarded && (
             <span className="text-xs font-semibold text-emerald-300">
-              선정 완료
+              {t("requests.campaigns.selectionComplete")}
             </span>
           )}
         </div>

@@ -8,6 +8,7 @@ import {
   type NotificationType,
 } from "@/lib/notifications-store";
 import { useRoleStore } from "@/lib/role-store";
+import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import {
   Bell,
@@ -74,6 +75,7 @@ interface DbNotification {
 }
 
 export function NotificationsPanel({ dark = false }: { dark?: boolean }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { role } = useRoleStore();
@@ -142,7 +144,7 @@ export function NotificationsPanel({ dark = false }: { dark?: boolean }) {
   return (
     <div ref={ref} className="relative">
       <button
-        aria-label="알림"
+        aria-label={t("notif.bellAria")}
         onClick={() => setOpen((v) => !v)}
         className={cn(
           "relative flex h-9 w-9 items-center justify-center rounded-full transition-colors",
@@ -166,10 +168,10 @@ export function NotificationsPanel({ dark = false }: { dark?: boolean }) {
         <div className="fixed inset-x-3 top-[4.25rem] z-50 max-h-[80vh] overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-xl shadow-neutral-900/5 sm:absolute sm:inset-x-auto sm:right-0 sm:top-11 sm:w-[92vw] sm:max-w-sm">
           <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3">
             <p className="text-sm font-bold">
-              알림
+              {t("notif.title")}
               {unread > 0 && (
                 <span className="ml-2 text-xs font-bold text-brand-600">
-                  새 알림 {unread}
+                  {t("notif.unreadCount", { count: unread })}
                 </span>
               )}
             </p>
@@ -178,14 +180,14 @@ export function NotificationsPanel({ dark = false }: { dark?: boolean }) {
                 onClick={readAll}
                 className="text-xs font-semibold text-neutral-500 transition-colors hover:text-neutral-900"
               >
-                모두 읽음
+                {t("notif.markAllRead")}
               </button>
             )}
           </div>
           <div className="max-h-[70vh] overflow-y-auto">
             {roleItems.length === 0 ? (
               <p className="py-14 text-center text-sm text-neutral-400">
-                받은 알림이 없어요
+                {t("notif.empty")}
               </p>
             ) : (
               <ul className="divide-y divide-neutral-100">
@@ -254,7 +256,7 @@ export function NotificationsPanel({ dark = false }: { dark?: boolean }) {
           </div>
           <div className="border-t border-neutral-100 bg-neutral-50 px-4 py-2.5 text-center text-[11px] text-neutral-400">
             <Check className="mr-1 inline h-3 w-3" />
-            알림은 역할별로 표시돼요
+            {t("notif.footerNote")}
           </div>
         </div>
       )}

@@ -5,6 +5,7 @@ import { PremiumCTA } from "@/components/premium/premium-cta";
 import { Reveal } from "@/components/premium/reveal";
 import { getPublicBundle } from "@/lib/data/bundles";
 import { formatBudget } from "@/lib/types";
+import { getT } from "@/lib/i18n/server";
 import { ArrowLeft, ChevronRight, Package, Percent } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +15,7 @@ export default async function SetDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { t } = await getT();
   const { id } = await params;
   const bundle = await getPublicBundle(id);
   if (!bundle) notFound();
@@ -25,18 +27,18 @@ export default async function SetDetailPage({
           href="/"
           className="mb-6 inline-flex items-center gap-1.5 text-sm font-semibold text-white/50 hover:text-white"
         >
-          <ArrowLeft className="h-4 w-4" /> 홈으로
+          <ArrowLeft className="h-4 w-4" /> {t("sets.backHome")}
         </Link>
 
         {/* 세트 헤더 */}
         <Reveal>
           <div className="flex items-center gap-2">
             <Package className="h-4 w-4 text-brand-500" />
-            <Eyebrow>{bundle.artists.length}인 세트</Eyebrow>
+            <Eyebrow>{t("sets.artistCount", { count: bundle.artists.length })}</Eyebrow>
             {bundle.discountPct ? (
               <span className="flex items-center gap-0.5 rounded-full bg-brand-500 px-2.5 py-0.5 text-xs font-bold text-white">
                 <Percent className="h-3 w-3" />
-                {bundle.discountPct} 세트 할인
+                {t("sets.discountBadge", { pct: bundle.discountPct })}
               </span>
             ) : null}
           </div>
@@ -49,12 +51,12 @@ export default async function SetDetailPage({
 
           {bundle.eventTypes.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-1.5">
-              {bundle.eventTypes.map((t) => (
+              {bundle.eventTypes.map((opt) => (
                 <span
-                  key={t}
+                  key={opt}
                   className="rounded-full bg-white/8 px-3 py-1 text-xs font-medium text-white/70"
                 >
-                  {t}
+                  {opt}
                 </span>
               ))}
             </div>
@@ -63,7 +65,7 @@ export default async function SetDetailPage({
 
         {/* 구성 아티스트 */}
         <Reveal delay={80} className="mt-8">
-          <p className="mb-3 text-sm font-bold text-white/80">구성 아티스트</p>
+          <p className="mb-3 text-sm font-bold text-white/80">{t("sets.artistsLabel")}</p>
           <div className="space-y-2.5">
             {bundle.artists.map((a) => (
               <Link
@@ -99,7 +101,7 @@ export default async function SetDetailPage({
           <div className="adv-card rounded-[1.75rem] p-6">
             {bundle.budgetMax ? (
               <div className="flex items-baseline justify-between">
-                <span className="text-sm text-white/40">세트 예산</span>
+                <span className="text-sm text-white/40">{t("sets.budgetLabel")}</span>
                 <span className="text-2xl font-black text-white">
                   {formatBudget(bundle.budgetMin ?? 0)}
                   <span className="text-base font-bold text-white/30"> ~ </span>
@@ -109,7 +111,7 @@ export default async function SetDetailPage({
             ) : null}
             {bundle.discountPct ? (
               <p className="mt-1.5 text-right text-xs text-brand-300">
-                세트로 묶으면 개별 섭외 대비 약 {bundle.discountPct}% 절감
+                {t("sets.discountNote", { pct: bundle.discountPct })}
               </p>
             ) : null}
             <div className="mt-5">
@@ -118,12 +120,11 @@ export default async function SetDetailPage({
                 variant="solid"
                 className="w-full justify-center"
               >
-                이 세트로 섭외 문의
+                {t("sets.cta")}
               </PremiumCTA>
             </div>
             <p className="mt-3 text-center text-xs text-white/40">
-              구성·예산이 미리 담긴 문의서로 열려요. 소속사가 세트 단위로
-              검토합니다.
+              {t("sets.ctaNote")}
             </p>
           </div>
         </Reveal>

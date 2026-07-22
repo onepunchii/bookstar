@@ -4,8 +4,10 @@
 import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { Loader2, RefreshCw } from "lucide-react";
+import { useT } from "@/lib/i18n/client";
 
 export function StaleSessionBanner() {
+  const t = useT();
   const [busy, setBusy] = useState(false);
 
   const relogin = async () => {
@@ -20,7 +22,7 @@ export function StaleSessionBanner() {
 
   return (
     <div className="fixed inset-x-0 top-0 z-[90] flex items-center justify-center gap-3 bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black">
-      로그인 정보가 오래됐어요 — 다시 로그인하면 바로 해결돼요.
+      {t("session.staleBanner")}
       <button
         onClick={relogin}
         disabled={busy}
@@ -31,7 +33,7 @@ export function StaleSessionBanner() {
         ) : (
           <RefreshCw className="h-3.5 w-3.5" />
         )}
-        다시 로그인
+        {t("session.reloginCta")}
       </button>
     </div>
   );

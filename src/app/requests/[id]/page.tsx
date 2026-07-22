@@ -13,6 +13,7 @@ import { getLatestQuote } from "@/lib/data/quotes";
 import { formatBudget } from "@/lib/types";
 import { RequestThread } from "./request-thread";
 import { cn } from "@/lib/utils";
+import { getT } from "@/lib/i18n/server";
 
 export default async function RequestDetailPage({
   params,
@@ -20,6 +21,7 @@ export default async function RequestDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const { t } = await getT();
 
   // 접근 통제(fail-closed) — 당사자(광고주 본인·담당 소속사)만 열람.
   // 요청을 못 찾거나 조회 실패면 notFound(협의 채팅·견적·회사명 등 민감정보 보호).
@@ -59,8 +61,11 @@ export default async function RequestDetailPage({
           <StatusBadge status={request.status} />
         </div>
         <p className="mt-2 text-sm text-white/50">
-          {request.date} · {request.location} · 제안 예산{" "}
-          {formatBudget(request.budget)}
+          {t("requests.detail.meta", {
+            date: request.date,
+            location: request.location,
+            budget: formatBudget(request.budget),
+          })}
         </p>
 
         <div className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-3">
@@ -76,7 +81,9 @@ export default async function RequestDetailPage({
           {/* Summary sidebar */}
           <div className="space-y-4">
             <div className="adv-card rounded-2xl p-5">
-              <h3 className="text-sm font-bold text-white">요청 내용</h3>
+              <h3 className="text-sm font-bold text-white">
+                {t("requests.detail.requestContent")}
+              </h3>
               <p className="mt-2 text-sm leading-relaxed text-white/60">
                 {request.message}
               </p>
@@ -84,20 +91,22 @@ export default async function RequestDetailPage({
 
             {quote && (
               <div className="adv-card rounded-2xl p-5 ring-1 ring-brand-500/30">
-                <h3 className="text-sm font-bold text-brand-300">최근 견적</h3>
+                <h3 className="text-sm font-bold text-brand-300">
+                  {t("requests.detail.latestQuote")}
+                </h3>
                 <p className="mt-2 text-2xl font-black text-white">
                   {formatBudget(quote.amount)}
                 </p>
                 {quote.includes && (
                   <p className="mt-1 text-xs text-white/50">
-                    포함: {quote.includes}
+                    {t("requests.detail.includes", { includes: quote.includes })}
                   </p>
                 )}
                 {quote.note && (
                   <p className="mt-1 text-xs text-white/45">{quote.note}</p>
                 )}
                 <p className="mt-3 text-xs text-white/40">
-                  견적 수락 시 전자계약 단계로 넘어갑니다 (2차 오픈 예정)
+                  {t("requests.detail.quoteAcceptNote")}
                 </p>
               </div>
             )}
@@ -114,10 +123,17 @@ export default async function RequestDetailPage({
             )}
 
             <div className="adv-card rounded-2xl p-5">
-              <h3 className="text-sm font-bold text-white">진행 단계</h3>
+              <h3 className="text-sm font-bold text-white">
+                {t("requests.detail.progressTitle")}
+              </h3>
               <ol className="mt-3 space-y-2 text-sm">
-                {["요청 발송", "소속사 검토", "협의", "계약", "완료"].map(
-                  (step, i) => {
+                {[
+                  t("requests.detail.stepSent"),
+                  t("requests.detail.stepReview"),
+                  t("requests.detail.stepNegotiate"),
+                  t("requests.detail.stepContract"),
+                  t("requests.detail.stepDone"),
+                ].map((step, i) => {
                     const activeIdx =
                       request.status === "pending"
                         ? 0

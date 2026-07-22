@@ -3,9 +3,11 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getScenario } from "@/lib/samples";
+import { useT } from "@/lib/i18n/client";
 import { Lightbulb, X } from "lucide-react";
 
 function SampleHintInner() {
+  const t = useT();
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get("sample");
@@ -34,13 +36,13 @@ function SampleHintInner() {
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-xs font-bold text-brand-700">
-            샘플 시나리오 · {scenario.title}
+            {t("sample.scenarioLabel", { title: scenario.title })}
           </p>
           <p className="mt-0.5 text-sm text-neutral-700">{scenario.hint}</p>
         </div>
         <button
           onClick={close}
-          aria-label="힌트 닫기"
+          aria-label={t("sample.closeHint")}
           className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-white hover:text-neutral-900"
         >
           <X className="h-3.5 w-3.5" />

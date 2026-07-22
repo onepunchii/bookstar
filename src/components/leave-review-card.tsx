@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/input";
+import { useT } from "@/lib/i18n/client";
 import { useNotificationsStore } from "@/lib/notifications-store";
 import { useReviewsStore } from "@/lib/reviews-store";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ export function LeaveReviewCard({
   eventTitle,
   dark = false,
 }: Props) {
+  const t = useT();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -37,8 +39,8 @@ export function LeaveReviewCard({
     pushNotif({
       type: "review_received",
       role: "agency",
-      title: "새 리뷰 도착",
-      body: `${companyName} · ${rating}점 · ${artistName}`,
+      title: t("reviews.notifTitle"),
+      body: t("reviews.notifBody", { companyName, rating, artistName }),
       link: `/artists/${artistId}`,
     });
     setSubmitted(true);
@@ -61,10 +63,10 @@ export function LeaveReviewCard({
           )}
         >
           <CheckCircle2 className="h-4 w-4" />
-          <p className="text-sm font-bold">리뷰 등록 완료</p>
+          <p className="text-sm font-bold">{t("reviews.doneTitle")}</p>
         </div>
         <p className={cn("mt-1 text-xs", dark ? "text-white/50" : "text-neutral-500")}>
-          공개 프로필에 즉시 반영되고, 소속사에게도 알림이 갔어요.
+          {t("reviews.doneDesc")}
         </p>
       </div>
     );
@@ -75,7 +77,7 @@ export function LeaveReviewCard({
       <div className="flex items-center gap-1.5">
         <Star className="h-4 w-4 text-brand-500" />
         <h3 className={cn("text-sm font-bold", dark && "text-white")}>
-          이번 섭외는 어떠셨나요?
+          {t("reviews.prompt")}
         </h3>
       </div>
       <p className={cn("mt-1 text-xs", dark ? "text-white/50" : "text-neutral-500")}>
@@ -92,7 +94,7 @@ export function LeaveReviewCard({
             : "border border-neutral-300 placeholder:text-neutral-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
         )}
         rows={3}
-        placeholder="현장 매너, 커뮤니케이션, 결과물 만족도 등을 남겨주세요"
+        placeholder={t("reviews.commentPlaceholder")}
         value={comment}
         onChange={(e) => setComment(e.target.value)}
       />
@@ -101,7 +103,7 @@ export function LeaveReviewCard({
         disabled={rating === 0 || !comment.trim()}
         className="mt-3"
       >
-        리뷰 남기기
+        {t("reviews.submit")}
       </Button>
     </>
   );

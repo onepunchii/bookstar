@@ -2,12 +2,12 @@ import Link from "next/link";
 import { getRatingSummaryBySlug } from "@/lib/mock-data";
 import { fetchYoutubeSubscribers } from "@/lib/youtube";
 import {
-  CATEGORY_LABELS,
   formatBudget,
   formatFollowers,
   type Artist,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { getT } from "@/lib/i18n/server";
 import { ArrowUpRight, BadgeCheck, Star } from "lucide-react";
 
 // 광고주용 다크 럭셔리 카드 — 대형 비주얼, 유리 질감, 오렌지 글로우
@@ -18,6 +18,7 @@ export async function PremiumArtistCard({
   artist: Artist;
   className?: string;
 }) {
+  const { t } = await getT();
   const rating = getRatingSummaryBySlug(artist.slug);
   // 유튜브 채널 있으면 실 구독자, 없으면 저장 팔로워
   const ytSubs = artist.youtube
@@ -25,7 +26,7 @@ export async function PremiumArtistCard({
     : null;
   const followerValue = ytSubs ?? artist.followers;
   // 유튜브 연동 시 실 구독자, 아니면 등록된 대표 팔로워 수치
-  const followerLabel = ytSubs ? "유튜브" : "팔로워";
+  const followerLabel = ytSubs ? t("premiumCard.youtube") : t("artists.detail.followers");
   return (
     <Link href={`/artists/${artist.slug}`} className={cn("group block", className)}>
       <div className="adv-card adv-card-hover overflow-hidden rounded-[1.75rem]">
@@ -59,7 +60,7 @@ export async function PremiumArtistCard({
                   key={c}
                   className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur"
                 >
-                  {CATEGORY_LABELS[c]}
+                  {t(`category.${c}`)}
                 </span>
               ))}
             </div>
@@ -100,7 +101,7 @@ export async function PremiumArtistCard({
           </div>
           <div className="h-8 w-px shrink-0 bg-white/10" />
           <div className="min-w-0 text-right">
-            <p className="eyebrow text-white/35">섭외가</p>
+            <p className="eyebrow text-white/35">{t("premiumCard.price")}</p>
             <p className="mt-0.5 whitespace-nowrap text-sm font-bold text-white/90">
               {formatBudget(artist.budgetRange[0])}~
             </p>

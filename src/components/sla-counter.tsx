@@ -1,6 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
+import { useT } from "@/lib/i18n/client";
 import type { Artist } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Clock, TrendingUp, Zap } from "lucide-react";
@@ -15,6 +16,7 @@ export function SLACounter({
   dark?: boolean;
   artists?: Artist[];
 }) {
+  const t = useT();
   const n = artists.length || 1;
   const avgHours =
     artists.length > 0
@@ -42,11 +44,12 @@ export function SLACounter({
           )}
         >
           <Clock className="h-3.5 w-3.5 text-brand-500" />
-          평균 응답{" "}
+          {t("sla.avgResponse")}{" "}
           <span
             className={cn("font-black", dark ? "text-white" : "text-neutral-900")}
           >
-            {avgHours}시간
+            {avgHours}
+            {t("sla.hoursUnit")}
           </span>
         </span>
         <span
@@ -56,7 +59,7 @@ export function SLACounter({
           )}
         >
           <TrendingUp className="h-3.5 w-3.5 text-brand-500" />
-          응답률{" "}
+          {t("sla.responseRate")}{" "}
           <span
             className={cn("font-black", dark ? "text-white" : "text-neutral-900")}
           >
@@ -73,7 +76,7 @@ export function SLACounter({
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-500" />
           </span>
-          매칭 수수료 0%
+          {t("sla.zeroFee")}
         </span>
       </div>
     );
@@ -85,20 +88,20 @@ export function SLACounter({
         <Zap className="h-3 w-3" /> SLA
       </div>
       <p className="mt-1 text-sm font-bold text-neutral-500">
-        소속사 응답 지표
+        {t("sla.agencyMetrics")}
       </p>
       <div className="mt-4 grid grid-cols-2 gap-4">
         <div>
-          <p className="text-xs text-neutral-400">평균 응답</p>
+          <p className="text-xs text-neutral-400">{t("sla.avgResponse")}</p>
           <p className="mt-0.5 text-2xl font-black">
             {avgHours}
             <span className="ml-0.5 text-sm font-bold text-neutral-500">
-              시간
+              {t("sla.hoursUnit")}
             </span>
           </p>
         </div>
         <div>
-          <p className="text-xs text-neutral-400">응답률</p>
+          <p className="text-xs text-neutral-400">{t("sla.responseRate")}</p>
           <p className="mt-0.5 text-2xl font-black text-brand-600">
             {avgRate}%
           </p>

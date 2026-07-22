@@ -9,7 +9,8 @@ import { ReviewsSection } from "@/components/reviews-section";
 import { getPublicArtistBySlug, getPublicSchedule } from "@/lib/data/artists";
 import { getRatingSummaryBySlug, mockIdForSlug } from "@/lib/mock-data";
 import { fetchYoutubeSubscribers } from "@/lib/youtube";
-import { CATEGORY_LABELS, formatBudget, formatFollowers } from "@/lib/types";
+import { formatBudget, formatFollowers } from "@/lib/types";
+import { getT } from "@/lib/i18n/server";
 import {
   BadgeCheck,
   Clock,
@@ -25,6 +26,7 @@ export default async function ArtistDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { t } = await getT();
   const { id } = await params;
   // [id]는 이제 slug — DB에서 로드
   const artist = await getPublicArtistBySlug(id);
@@ -37,7 +39,9 @@ export default async function ArtistDetailPage({
     ? await fetchYoutubeSubscribers(artist.youtube)
     : null;
   const followerValue = ytSubs ?? artist.followers;
-  const followerLabel = ytSubs ? "구독자" : "팔로워";
+  const followerLabel = ytSubs
+    ? t("artists.detail.subscribers")
+    : t("artists.detail.followers");
 
   return (
     <div className="adv-dark">
@@ -73,8 +77,8 @@ export default async function ArtistDetailPage({
               )}
               {artist.verified && (
                 <span className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-black/50 px-3 py-1.5 text-xs font-bold text-white backdrop-blur">
-                  <BadgeCheck className="h-3.5 w-3.5 text-brand-400" /> 인증
-                  소속사
+                  <BadgeCheck className="h-3.5 w-3.5 text-brand-400" />{" "}
+                  {t("artists.detail.verifiedAgency")}
                 </span>
               )}
               {rating.count > 0 && (
@@ -101,7 +105,7 @@ export default async function ArtistDetailPage({
                   key={c}
                   className="rounded-full bg-brand-500/15 px-3 py-1 text-xs font-bold text-brand-300"
                 >
-                  {CATEGORY_LABELS[c]}
+                  {t(`category.${c}`)}
                 </span>
               ))}
               {artist.tags.map((t) => (
@@ -124,13 +128,13 @@ export default async function ArtistDetailPage({
                 },
                 {
                   icon: TrendingUp,
-                  label: "응답률",
+                  label: t("artists.detail.responseRate"),
                   value: `${artist.responseRate}%`,
                   accent: true,
                 },
                 {
                   icon: Clock,
-                  label: "평균 응답",
+                  label: t("artists.detail.avgResponse"),
                   value: `${artist.responseHours}h`,
                 },
               ].map((s) => (
@@ -211,7 +215,7 @@ export default async function ArtistDetailPage({
               {formatBudget(artist.budgetRange[1])}
             </p>
             <p className="mt-1.5 text-xs text-white/40">
-              행사 유형과 조건에 따라 달라질 수 있어요
+              {t("artists.detail.budgetNote")}
             </p>
 
             <div className="mt-6">
@@ -220,18 +224,19 @@ export default async function ArtistDetailPage({
                 variant="solid"
                 className="w-full justify-center"
               >
-                섭외 요청하기
+                {t("artists.detail.requestCta")}
               </PremiumCTA>
             </div>
 
             <div className="mt-5 rounded-2xl bg-white/[0.04] p-4">
               <p className="flex items-center gap-1.5 text-sm font-bold text-white">
                 <Clock className="h-3.5 w-3.5 text-brand-500" />
-                평균 {artist.responseHours}시간 내 응답
+                {t("artists.detail.avgResponseWithin", {
+                  hours: artist.responseHours,
+                })}
               </p>
               <p className="mt-1.5 text-[13px] leading-relaxed text-white/55">
-                {artist.agencyName} 담당자가 요청을 검토한 후 수락·협의·거절로
-                답변드려요.
+                {t("artists.detail.reviewNote", { agency: artist.agencyName })}
               </p>
             </div>
 
@@ -239,9 +244,9 @@ export default async function ArtistDetailPage({
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
               <p>
                 <span className="font-semibold text-white/85">
-                  매칭 수수료 0%.
+                  {t("artists.detail.feeZero")}
                 </span>{" "}
-                요청은 무료이며, 견적 확정 전까지 비용이 발생하지 않아요.
+                {t("artists.detail.freeNote")}
               </p>
             </div>
           </div>

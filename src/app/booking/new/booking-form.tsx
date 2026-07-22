@@ -7,6 +7,7 @@ import { useNotificationsStore } from "@/lib/notifications-store";
 import type { Artist, EventType } from "@/lib/types";
 import { formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { CheckCircle2 } from "lucide-react";
 
 const EVENT_TYPES: EventType[] = [
@@ -18,6 +19,16 @@ const EVENT_TYPES: EventType[] = [
   "축제",
   "강연",
 ];
+
+const EVENT_TYPE_KEY: Record<EventType, string> = {
+  행사: "booking.typeEvent",
+  광고: "booking.typeAd",
+  유튜브: "booking.typeYoutube",
+  예능: "booking.typeVariety",
+  팬미팅: "booking.typeFanmeeting",
+  축제: "booking.typeFestival",
+  강연: "booking.typeLecture",
+};
 
 const LABEL = "mb-1.5 block text-sm font-medium text-white/70";
 const FIELD =
@@ -36,6 +47,7 @@ export function BookingForm({
   artist: Artist;
   setInfo?: SetInfo;
 }) {
+  const t = useT();
   const [submitted, setSubmitted] = useState(false);
   const [eventType, setEventType] = useState<EventType>("행사");
   const pushNotif = useNotificationsStore((s) => s.push);
@@ -46,29 +58,29 @@ export function BookingForm({
       <div className="adv-card mt-8 rounded-[1.75rem] p-10 text-center">
         <CheckCircle2 className="mx-auto h-12 w-12 text-brand-500" />
         <h2 className="mt-4 text-xl font-bold text-white">
-          섭외 요청을 보냈어요
+          {t("booking.successTitle")}
         </h2>
         <p className="mt-2 text-sm text-white/55">
-          {artist.agencyName} 담당자가 평균{" "}
+          {t("booking.successAvgLead", { agency: artist.agencyName })}{" "}
           <span className="font-semibold text-white">
-            {artist.responseHours}시간
+            {t("booking.successHours", { hours: artist.responseHours })}
           </span>{" "}
-          내에 답변드립니다.
+          {t("booking.successReplyWithin")}
           <br />
-          답변이 오면 이메일과 알림으로 알려드릴게요.
+          {t("booking.successNotify")}
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <Link
             href="/requests"
             className="premium-ease inline-flex h-11 items-center rounded-xl bg-brand-500 px-5 text-sm font-bold text-white hover:bg-brand-600"
           >
-            내 요청 확인하기
+            {t("booking.viewMyRequests")}
           </Link>
           <Link
             href="/artists"
             className="premium-ease inline-flex h-11 items-center rounded-xl bg-white/5 px-5 text-sm font-bold text-white/80 ring-1 ring-white/10 hover:text-white"
           >
-            다른 아티스트 보기
+            {t("booking.viewOtherArtists")}
           </Link>
         </div>
       </div>
@@ -82,7 +94,7 @@ export function BookingForm({
         e.preventDefault();
         // 로그인 게이트 — 비로그인 시 모달로 카카오 간편가입 유도(요청이 데모로 새는 것 방지)
         if (!isLoggedIn) {
-          openLogin("섭외 요청을 보내려면 로그인이 필요해요");
+          openLogin(t("booking.loginRequired"));
           return;
         }
         const form = new FormData(e.currentTarget);
@@ -109,20 +121,24 @@ export function BookingForm({
           pushNotif({
             type: "new_request",
             role: "agency",
-            title: "새 섭외 요청",
-            body: `${artist.name} · ${eventType} · 예산 ${budget}만원`,
+            title: t("booking.notifAgencyTitle"),
+            body: t("booking.notifAgencyBody", {
+              name: artist.name,
+              eventType: t(EVENT_TYPE_KEY[eventType]),
+              budget,
+            }),
             link: "/agency/inbox",
           });
           pushNotif({
             type: "new_request",
             role: "company",
-            title: "섭외 요청 접수 완료",
-            body: `${artist.name} · 소속사 응답 대기 중`,
+            title: t("booking.notifCompanyTitle"),
+            body: t("booking.notifCompanyBody", { name: artist.name }),
             link: `/requests/${id}`,
           });
           setSubmitted(true);
         } catch {
-          alert("요청 전송에 실패했어요. 다시 시도해주세요.");
+          alert(t("booking.submitError"));
         }
       }}
     >
@@ -134,15 +150,20 @@ export function BookingForm({
         <div>
           <p className="font-bold text-white">{artist.name}</p>
           <p className="text-sm text-white/50">
-            {artist.agencyName} · 예산대 {formatBudget(artist.budgetRange[0])}~
-            {formatBudget(artist.budgetRange[1])}
+            {t("booking.artistBudget", {
+              agency: artist.agencyName,
+              min: formatBudget(artist.budgetRange[0]),
+              max: formatBudget(artist.budgetRange[1]),
+            })}
           </p>
         </div>
       </div>
 
       {setInfo && (
         <div className="adv-glass rounded-2xl p-4 ring-1 ring-brand-500/30">
-          <p className="text-xs font-bold text-brand-300">📦 세트 섭외 문의</p>
+          <p className="text-xs font-bold text-brand-300">
+            {t("booking.setInquiry")}
+          </p>
           <p className="mt-1 text-sm font-semibold text-white">
             {setInfo.title}
           </p>
@@ -151,21 +172,21 @@ export function BookingForm({
       )}
 
       <div>
-        <p className={LABEL}>행사 유형</p>
+        <p className={LABEL}>{t("booking.eventTypeLabel")}</p>
         <div className="flex flex-wrap gap-2">
-          {EVENT_TYPES.map((t) => (
+          {EVENT_TYPES.map((opt) => (
             <button
-              key={t}
+              key={opt}
               type="button"
-              onClick={() => setEventType(t)}
+              onClick={() => setEventType(opt)}
               className={cn(
                 "premium-ease rounded-full px-4 py-2 text-sm font-medium",
-                eventType === t
+                eventType === opt
                   ? "bg-brand-500 text-white"
                   : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-white"
               )}
             >
-              {t}
+              {t(EVENT_TYPE_KEY[opt])}
             </button>
           ))}
         </div>
@@ -174,7 +195,7 @@ export function BookingForm({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="date" className={LABEL}>
-            희망 날짜
+            {t("booking.dateLabel")}
           </label>
           <input
             id="date"
@@ -187,14 +208,14 @@ export function BookingForm({
         </div>
         <div>
           <label htmlFor="budget" className={LABEL}>
-            예산 (만원)
+            {t("booking.budgetLabel")}
           </label>
           <input
             id="budget"
             name="budget"
             type="number"
             required
-            placeholder="예: 3000"
+            placeholder={t("booking.budgetPlaceholder")}
             min={0}
             defaultValue={setInfo?.budgetMin}
             className={FIELD}
@@ -205,44 +226,56 @@ export function BookingForm({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="location" className={LABEL}>
-            지역 / 장소
+            {t("booking.locationLabel")}
           </label>
           <input
             id="location"
             name="location"
             required
-            placeholder="예: 서울 코엑스"
+            placeholder={t("booking.locationPlaceholder")}
             className={FIELD}
           />
         </div>
         <div>
           <label htmlFor="duration" className={LABEL}>
-            소요 시간
+            {t("booking.durationLabel")}
           </label>
-          <select id="duration" defaultValue="2-4시간" className={FIELD}>
-            <option className="bg-neutral-900">2시간 이내</option>
-            <option className="bg-neutral-900">2-4시간</option>
-            <option className="bg-neutral-900">반일 (4-6시간)</option>
-            <option className="bg-neutral-900">종일</option>
+          <select
+            id="duration"
+            defaultValue={t("booking.duration2to4")}
+            className={FIELD}
+          >
+            <option className="bg-neutral-900">
+              {t("booking.durationUnder2")}
+            </option>
+            <option className="bg-neutral-900">
+              {t("booking.duration2to4")}
+            </option>
+            <option className="bg-neutral-900">
+              {t("booking.durationHalfDay")}
+            </option>
+            <option className="bg-neutral-900">
+              {t("booking.durationFullDay")}
+            </option>
           </select>
         </div>
       </div>
 
       <div>
         <label htmlFor="brand" className={LABEL}>
-          브랜드 / 주최사
+          {t("booking.brandLabel")}
         </label>
         <input
           id="brand"
           name="companyName"
-          placeholder="예: (주)브라이트마케팅"
+          placeholder={t("booking.brandPlaceholder")}
           className={FIELD}
         />
       </div>
 
       <div>
         <label htmlFor="message" className={LABEL}>
-          상세 내용
+          {t("booking.messageLabel")}
         </label>
         <textarea
           id="message"
@@ -251,24 +284,26 @@ export function BookingForm({
           required
           defaultValue={
             setInfo
-              ? `[세트 섭외] ${setInfo.title}\n구성: ${setInfo.members}\n\n`
+              ? t("booking.setPrefill", {
+                  title: setInfo.title,
+                  members: setInfo.members,
+                })
               : undefined
           }
-          placeholder="행사 개요, 아티스트 역할(공연/진행/촬영 등), 콘텐츠 사용 범위(SNS/TVC/기간), 독점 조항 여부를 적어주시면 협의가 빨라져요."
+          placeholder={t("booking.messagePlaceholder")}
           className="adv-glass w-full rounded-xl px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-brand-500/50"
         />
       </div>
 
       <div className="rounded-xl bg-white/[0.04] p-4 text-sm text-white/50">
-        요청 발송은 무료입니다. 소속사가 수락하면 협의 채팅이 열리고, 견적 확정
-        후에만 계약이 진행됩니다.
+        {t("booking.feeNote")}
       </div>
 
       <button
         type="submit"
         className="premium-ease flex h-12 w-full items-center justify-center rounded-xl bg-brand-500 text-sm font-bold text-white hover:bg-brand-600 hover:brand-glow"
       >
-        섭외 요청 보내기
+        {t("booking.submitCta")}
       </button>
     </form>
   );

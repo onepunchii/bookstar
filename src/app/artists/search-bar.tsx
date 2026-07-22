@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { Search } from "lucide-react";
 
 export function SearchBar({
@@ -11,6 +12,7 @@ export function SearchBar({
   defaultValue?: string;
   dark?: boolean;
 }) {
+  const t = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -35,7 +37,7 @@ export function SearchBar({
       <input
         name="q"
         defaultValue={defaultValue}
-        placeholder="아티스트, 소속사, 키워드 검색 (예: 축제, 뷰티, MC)"
+        placeholder={t("artists.search.placeholder")}
         className={cn(
           "h-13 w-full rounded-2xl pl-11 pr-4 text-sm outline-none",
           dark

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GUIDES, getGuide } from "@/lib/guides";
 import { SITE, absoluteUrl } from "@/lib/site";
+import { getT } from "@/lib/i18n/server";
 
 export const dynamicParams = false;
 
@@ -39,6 +40,7 @@ export default async function GuidePage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const { t } = await getT();
   const { slug } = await params;
   const guide = getGuide(decodeURIComponent(slug));
   if (!guide) notFound();
@@ -86,7 +88,7 @@ export default async function GuidePage({
     <main className="mx-auto max-w-3xl px-5 py-14">
       <nav className="text-xs text-white/35">
         <Link href="/guide" className="hover:text-white/60">
-          섭외 가이드
+          {t("guide.breadcrumb")}
         </Link>
         <span className="mx-1.5">/</span>
       </nav>
@@ -95,7 +97,9 @@ export default async function GuidePage({
         {guide.title}
       </h1>
       <p className="mt-3 text-xs text-white/35">
-        XONG 리서치 · {guide.updated.replaceAll("-", ".")} 업데이트
+        {t("guide.researchUpdated", {
+          date: guide.updated.replaceAll("-", "."),
+        })}
       </p>
 
       {/* 인트로 — 질문에 대한 직접 답 (AI 개요 인용 타깃) */}
@@ -188,7 +192,7 @@ export default async function GuidePage({
       {/* FAQ */}
       <section className="mt-12">
         <h2 className="display-kr text-xl font-bold text-white sm:text-[22px]">
-          자주 묻는 질문
+          {t("guide.faqHeading")}
         </h2>
         <div className="mt-5 space-y-3">
           {guide.faq.map((f, i) => (
@@ -214,23 +218,22 @@ export default async function GuidePage({
       {/* CTA */}
       <section className="mt-14 rounded-2xl bg-gradient-to-br from-brand-500/15 to-transparent p-7 text-center ring-1 ring-brand-500/25">
         <h2 className="display-kr text-lg font-bold text-white sm:text-xl">
-          섭외가를 먼저 보고, 직접 문의하세요
+          {t("guide.ctaHeading")}
         </h2>
         <p className="mt-2 text-sm text-white/55">
-          XONG에서는 아티스트별 섭외가 범위가 공개되어 있고, 문의는 소속사 공식
-          창구로 직접 전달됩니다. 매칭 수수료 0%.
+          {t("guide.ctaDesc")}
         </p>
         <Link
           href="/artists"
           className="brand-glow mt-5 inline-block rounded-full bg-brand-500 px-7 py-3 text-sm font-bold text-white"
         >
-          아티스트 찾아보기 →
+          {t("guide.ctaButton")} →
         </Link>
       </section>
 
       {/* 다른 가이드 */}
       <section className="mt-12">
-        <h3 className="text-sm font-bold text-white/40">다른 가이드</h3>
+        <h3 className="text-sm font-bold text-white/40">{t("guide.otherGuides")}</h3>
         <div className="mt-3 space-y-2">
           {GUIDES.filter((g) => g.slug !== guide.slug).map((g) => (
             <Link

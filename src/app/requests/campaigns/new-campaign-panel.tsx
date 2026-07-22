@@ -12,6 +12,7 @@ import { useAuthUi } from "@/lib/auth-ui-store";
 import { fileToWebP } from "@/lib/image";
 import { CATEGORY_LABELS } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { Check, ImagePlus, Loader2, Plus, X } from "lucide-react";
 
 const CATS = Object.entries(CATEGORY_LABELS) as [string, string][];
@@ -19,6 +20,7 @@ const input =
   "w-full rounded-xl bg-white/[0.05] px-4 py-3 text-sm font-medium text-white ring-1 ring-white/12 placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-brand-500";
 
 export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
+  const t = useT();
   const router = useRouter();
   const { openLogin } = useAuthUi();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -60,18 +62,18 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
         body: fd,
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "업로드 실패");
+      if (!res.ok) throw new Error(data.error ?? t("requests.campaigns.uploadFailed"));
       setImageUrl(data.url);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "이미지 업로드에 실패했어요");
+      setError(e instanceof Error ? e.message : t("requests.campaigns.imageUploadError"));
     } finally {
       setUploading(false);
     }
   };
 
   const submit = async () => {
-    if (!title.trim()) return setError("캠페인 제목을 입력해주세요");
-    if (!deadline) return setError("신청 마감일을 정해주세요");
+    if (!title.trim()) return setError(t("requests.campaigns.titleRequired"));
+    if (!deadline) return setError(t("requests.campaigns.deadlineRequired"));
     setSaving(true);
     setError(null);
     try {
@@ -91,10 +93,10 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "생성 실패");
+      if (!res.ok) throw new Error(data.error ?? t("requests.campaigns.createFailed"));
       router.push(`/requests/campaigns/${data.id}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "생성에 실패했어요");
+      setError(e instanceof Error ? e.message : t("requests.campaigns.createError"));
       setSaving(false);
     }
   };
@@ -103,17 +105,17 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
     return (
       <div className="adv-card rounded-2xl p-6 text-center">
         <p className="text-sm font-semibold text-white">
-          로그인하면 캠페인을 올릴 수 있어요
+          {t("requests.campaigns.loginPromptTitle")}
         </p>
         <p className="mt-1 text-xs text-white/45">
-          아티스트·기획사가 직접 지원하는 오픈 캐스팅이에요.
+          {t("requests.campaigns.loginPromptDesc")}
         </p>
         <button
           type="button"
-          onClick={() => openLogin("캠페인을 올리려면 로그인이 필요해요")}
+          onClick={() => openLogin(t("requests.campaigns.loginRequired"))}
           className="mt-4 inline-block rounded-full bg-brand-500 px-5 py-2.5 text-sm font-bold text-white hover:opacity-90"
         >
-          카카오로 시작하기
+          {t("requests.campaigns.kakaoStart")}
         </button>
       </div>
     );
@@ -125,7 +127,7 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
         onClick={() => setOpen(true)}
         className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-white/15 bg-white/[0.02] py-5 text-sm font-bold text-white/70 transition-colors hover:border-brand-500/50 hover:text-white"
       >
-        <Plus className="h-4 w-4" /> 새 오픈 캠페인 만들기
+        <Plus className="h-4 w-4" /> {t("requests.campaigns.createCta")}
       </button>
     );
   }
@@ -133,10 +135,10 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
   return (
     <div className="adv-card space-y-6 rounded-2xl p-6 sm:p-7">
       <div className="flex items-center justify-between">
-        <p className="text-base font-black text-white">새 오픈 캠페인</p>
+        <p className="text-base font-black text-white">{t("requests.campaigns.heading")}</p>
         <button
           onClick={() => setOpen(false)}
-          aria-label="닫기"
+          aria-label={t("common.close")}
           className="text-white/40 hover:text-white"
         >
           <X className="h-4.5 w-4.5" />
@@ -145,34 +147,34 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
 
       <label className="block">
         <span className="mb-1.5 block text-xs font-semibold text-white/55">
-          캠페인 제목 <span className="text-brand-400">*</span>
+          {t("requests.campaigns.titleLabel")} <span className="text-brand-400">*</span>
         </span>
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="예) 신제품 런칭 유튜브 협업 섭외"
+          placeholder={t("requests.campaigns.titlePlaceholder")}
           className={input}
         />
       </label>
 
       <div>
         <span className="mb-2 block text-xs font-semibold text-white/55">
-          어떤 걸 찾나요 <span className="text-brand-400">*</span>
+          {t("requests.campaigns.lookingForLabel")} <span className="text-brand-400">*</span>
         </span>
         <div className="flex flex-wrap gap-2">
-          {EVENT_TYPES.map((t) => (
+          {EVENT_TYPES.map((opt) => (
             <button
-              key={t}
+              key={opt}
               type="button"
-              onClick={() => setEventType(t)}
+              onClick={() => setEventType(opt)}
               className={cn(
                 "rounded-full px-3.5 py-2 text-xs font-semibold ring-1 transition-colors",
-                eventType === t
+                eventType === opt
                   ? "bg-brand-500 text-white ring-brand-500"
                   : "bg-white/[0.03] text-white/60 ring-white/12 hover:text-white"
               )}
             >
-              {t}
+              {opt}
             </button>
           ))}
         </div>
@@ -180,10 +182,10 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
 
       <div>
         <span className="mb-2 block text-xs font-semibold text-white/55">
-          원하는 카테고리 <span className="text-white/30">(복수 선택)</span>
+          {t("requests.campaigns.categoryLabel")} <span className="text-white/30">{t("requests.campaigns.multiSelect")}</span>
         </span>
         <div className="flex flex-wrap gap-2">
-          {CATS.map(([key, label]) => (
+          {CATS.map(([key]) => (
             <button
               key={key}
               type="button"
@@ -195,7 +197,7 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
                   : "bg-white/[0.03] text-white/55 ring-white/10 hover:text-white"
               )}
             >
-              {label}
+              {t(`category.${key}`)}
             </button>
           ))}
         </div>
@@ -204,7 +206,7 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
       {/* 예산 — 프리셋으로 빠르게, 또는 직접 입력(만원) */}
       <div>
         <span className="mb-2 block text-xs font-semibold text-white/55">
-          예산 범위 <span className="text-white/30">(선택 · 만원 단위)</span>
+          {t("requests.campaigns.budgetLabel")} <span className="text-white/30">{t("requests.campaigns.budgetHint")}</span>
         </span>
         <div className="mb-2.5 flex flex-wrap gap-2">
           {BUDGET_PRESETS.map((b) => (
@@ -230,11 +232,11 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
               inputMode="numeric"
               value={budgetMin}
               onChange={(e) => setBudgetMin(e.target.value)}
-              placeholder="최소"
+              placeholder={t("requests.campaigns.budgetMin")}
               className={cn(input, "pr-12")}
             />
             <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-white/35">
-              만원
+              {t("requests.campaigns.manwon")}
             </span>
           </div>
           <span className="text-white/30">~</span>
@@ -244,11 +246,11 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
               inputMode="numeric"
               value={budgetMax}
               onChange={(e) => setBudgetMax(e.target.value)}
-              placeholder="최대"
+              placeholder={t("requests.campaigns.budgetMax")}
               className={cn(input, "pr-12")}
             />
             <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-white/35">
-              만원
+              {t("requests.campaigns.manwon")}
             </span>
           </div>
         </div>
@@ -257,7 +259,7 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="block">
           <span className="mb-1.5 block text-xs font-semibold text-white/55">
-            신청 마감일 <span className="text-brand-400">*</span>
+            {t("requests.campaigns.deadlineLabel")} <span className="text-brand-400">*</span>
           </span>
           <input
             type="date"
@@ -268,7 +270,7 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
         </label>
         <label className="block">
           <span className="mb-1.5 block text-xs font-semibold text-white/55">
-            행사·촬영 예정일 <span className="text-white/30">(선택)</span>
+            {t("requests.campaigns.eventDateLabel")} <span className="text-white/30">{t("common.optional")}</span>
           </span>
           <input
             type="date"
@@ -282,7 +284,7 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
       {/* 브랜드·레퍼런스 이미지 (선택) */}
       <div>
         <span className="mb-2 block text-xs font-semibold text-white/55">
-          브랜드·레퍼런스 이미지 <span className="text-white/30">(선택)</span>
+          {t("requests.campaigns.imageLabel")} <span className="text-white/30">{t("common.optional")}</span>
         </span>
         <input
           ref={fileRef}
@@ -300,13 +302,13 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imageUrl}
-              alt="레퍼런스"
+              alt={t("requests.campaigns.imageAlt")}
               className="h-32 w-full max-w-xs rounded-xl object-cover ring-1 ring-white/10"
             />
             <button
               type="button"
               onClick={() => setImageUrl(null)}
-              aria-label="이미지 삭제"
+              aria-label={t("requests.campaigns.imageDelete")}
               className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur hover:bg-black/80"
             >
               <X className="h-3.5 w-3.5" />
@@ -324,20 +326,20 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
             ) : (
               <ImagePlus className="h-4 w-4" />
             )}
-            {uploading ? "업로드 중…" : "이미지 올리기"}
+            {uploading ? t("requests.campaigns.uploading") : t("requests.campaigns.uploadImage")}
           </button>
         )}
       </div>
 
       <label className="block">
         <span className="mb-1.5 block text-xs font-semibold text-white/55">
-          상세 설명 <span className="text-white/30">(선택)</span>
+          {t("requests.campaigns.descLabel")} <span className="text-white/30">{t("common.optional")}</span>
         </span>
         <textarea
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
           rows={3}
-          placeholder="분량·독점 여부·초상권 조건 등 자유롭게 적어주세요"
+          placeholder={t("requests.campaigns.descPlaceholder")}
           className={cn(input, "resize-none")}
         />
       </label>
@@ -354,7 +356,7 @@ export function NewCampaignPanel({ loggedIn }: { loggedIn: boolean }) {
         ) : (
           <Check className="h-4 w-4" />
         )}
-        캠페인 공개하기
+        {t("requests.campaigns.publishCta")}
       </button>
     </div>
   );

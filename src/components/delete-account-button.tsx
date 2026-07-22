@@ -5,10 +5,12 @@
 import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { useAuthUi } from "@/lib/auth-ui-store";
+import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, Loader2, Trash2 } from "lucide-react";
 
 export function DeleteAccountButton({ dark = false }: { dark?: boolean }) {
+  const t = useT();
   const isLoggedIn = useAuthUi((s) => s.isLoggedIn);
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState("");
@@ -29,11 +31,11 @@ export function DeleteAccountButton({ dark = false }: { dark?: boolean }) {
       });
       if (!res.ok) {
         const d = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(d.error || "삭제에 실패했어요");
+        throw new Error(d.error || t("account.delete.failed"));
       }
       await signOut({ callbackUrl: "/" });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "삭제에 실패했어요");
+      setError(e instanceof Error ? e.message : t("account.delete.failed"));
       setBusy(false);
     }
   };
@@ -56,7 +58,7 @@ export function DeleteAccountButton({ dark = false }: { dark?: boolean }) {
             : "text-red-500/70 hover:text-red-600"
         )}
       >
-        <Trash2 className="h-4 w-4" /> 계정 삭제
+        <Trash2 className="h-4 w-4" /> {t("account.delete.cta")}
       </button>
 
       {open && (
@@ -66,22 +68,22 @@ export function DeleteAccountButton({ dark = false }: { dark?: boolean }) {
               <AlertTriangle className="h-5 w-5" />
             </div>
             <h2 className="mt-4 text-xl font-black text-neutral-900">
-              계정을 삭제할까요?
+              {t("account.delete.title")}
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-neutral-500">
-              계정과 모든 데이터(프로필·소속사·아티스트·섭외 요청·협의
-              메시지·일정·정산 등)가 <b className="text-neutral-700">영구
-              삭제</b>되며 복구할 수 없어요. 계약·결제 기록 등 법령상 보존
-              항목은 분리 보관 후 파기됩니다.
+              {t("account.delete.descBefore")}{" "}
+              <b className="text-neutral-700">{t("account.delete.descBold")}</b>
+              {t("account.delete.descAfter")}
             </p>
             <p className="mt-4 text-sm font-semibold text-neutral-700">
-              계속하려면 <span className="text-red-500">삭제</span> 를
-              입력하세요.
+              {t("account.delete.confirmPromptBefore")}{" "}
+              <span className="text-red-500">{t("account.delete.keyword")}</span>{" "}
+              {t("account.delete.confirmPromptAfter")}
             </p>
             <input
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
-              placeholder="삭제"
+              placeholder={t("account.delete.keyword")}
               autoComplete="off"
               className="mt-2 w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm text-neutral-900 focus:border-red-400 focus:outline-none"
             />
@@ -92,7 +94,7 @@ export function DeleteAccountButton({ dark = false }: { dark?: boolean }) {
                 disabled={busy}
                 className="flex-1 rounded-xl bg-neutral-100 px-4 py-3 text-sm font-bold text-neutral-700 transition-colors hover:bg-neutral-200 disabled:opacity-50"
               >
-                취소
+                {t("common.cancel")}
               </button>
               <button
                 onClick={del}
@@ -104,7 +106,7 @@ export function DeleteAccountButton({ dark = false }: { dark?: boolean }) {
                 ) : (
                   <Trash2 className="h-4 w-4" />
                 )}
-                영구 삭제
+                {t("account.delete.confirmCta")}
               </button>
             </div>
           </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useRoleStore, type Role } from "@/lib/role-store";
 import { ROLE_LABEL, SCENARIOS, type Scenario } from "@/lib/samples";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { Sparkles, X } from "lucide-react";
 
 const ROLE_STYLE: Record<Role, string> = {
@@ -16,6 +17,7 @@ const ROLE_STYLE: Record<Role, string> = {
 const ROLES: Role[] = ["company", "agency", "artist"];
 
 export function SampleLauncher() {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [seen, setSeen] = useState(true);
   const [dismissed, setDismissed] = useState(false);
@@ -79,14 +81,14 @@ export function SampleLauncher() {
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500">
               <Sparkles className="h-3.5 w-3.5" />
             </span>
-            샘플로 둘러보기
+            {t("sample.floatButton")}
             {!seen && (
               <span className="ml-0.5 h-2 w-2 rounded-full bg-brand-500" />
             )}
           </button>
           <button
             onClick={dismiss}
-            aria-label="샘플 버튼 닫기"
+            aria-label={t("sample.dismissFloatButton")}
             className="flex h-8 w-8 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/10 hover:text-white"
           >
             <X className="h-4 w-4" />
@@ -108,16 +110,15 @@ export function SampleLauncher() {
             <div className="flex items-start justify-between gap-4 border-b border-neutral-100 p-6">
               <div>
                 <h2 className="text-lg font-black tracking-tight">
-                  샘플 시나리오로 체험하기
+                  {t("sample.modalTitle")}
                 </h2>
                 <p className="mt-1 text-sm text-neutral-500">
-                  기획사 매니저·광고주·아티스트가 실제로 사용하는 화면을
-                  하드코딩 데이터로 미리 만져보세요
+                  {t("sample.modalDesc")}
                 </p>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                aria-label="닫기"
+                aria-label={t("common.close")}
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
               >
                 <X className="h-4 w-4" />
@@ -139,9 +140,9 @@ export function SampleLauncher() {
                       >
                         {ROLE_LABEL[role]}
                       </span>
-                      {role === "company" && "섭외를 하는 광고주·행사기획사"}
-                      {role === "agency" && "아티스트를 관리하는 소속사·MCN"}
-                      {role === "artist" && "일정과 정산을 확인하는 아티스트"}
+                      {role === "company" && t("sample.roleCompanyDesc")}
+                      {role === "agency" && t("sample.roleAgencyDesc")}
+                      {role === "artist" && t("sample.roleArtistDesc")}
                     </h3>
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                       {items.map((s) => (
@@ -172,14 +173,13 @@ export function SampleLauncher() {
             {/* 푸터 */}
             <div className="flex flex-wrap items-center justify-between gap-2 border-t border-neutral-100 bg-neutral-50 px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-xs text-neutral-500">
               <span>
-                샘플은 실제 데이터가 아니며, 클릭 시 자동으로 해당 역할로 전환된
-                뒤 그 화면으로 이동해요.
+                {t("sample.footerNote")}
               </span>
               <a
                 href="/join"
                 className="font-bold text-brand-600 hover:text-brand-700"
               >
-                당신도 크리에이터라면? 등록 →
+                {t("sample.joinCta")}
               </a>
             </div>
           </div>

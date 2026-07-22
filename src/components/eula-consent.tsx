@@ -7,6 +7,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useT } from "@/lib/i18n/client";
 import { nativePlatform } from "@/lib/native";
 import { useAuthUi } from "@/lib/auth-ui-store";
 import {
@@ -22,6 +23,7 @@ export function EulaConsent({
   label: string;
   redirectTo?: string;
 }) {
+  const t = useT();
   const router = useRouter();
   const closeLogin = useAuthUi((s) => s.closeLogin);
   const [agreed, setAgreed] = useState(false);
@@ -37,13 +39,13 @@ export function EulaConsent({
   const onNativeKakao = async () => {
     setBusy(true);
     const r = await nativeKakaoLogin(redirectTo);
-    if (r === "error") alert("카카오 로그인에 실패했어요. 다시 시도해 주세요.");
+    if (r === "error") alert(t("eula.kakaoLoginFail"));
     if (r !== "redirect") setBusy(false);
   };
   const onNativeApple = async () => {
     setBusy(true);
     const r = await nativeAppleLogin(redirectTo);
-    if (r === "error") alert("Apple 로그인에 실패했어요. 다시 시도해 주세요.");
+    if (r === "error") alert(t("eula.appleLoginFail"));
     setBusy(false);
   };
 
@@ -62,17 +64,17 @@ export function EulaConsent({
             target="_blank"
             className="font-semibold text-neutral-700 underline"
           >
-            이용약관
+            {t("common.terms")}
           </Link>
-          (불쾌 콘텐츠·악성 사용자 무관용 원칙 포함)과{" "}
+          {t("eula.consentMid")}
           <Link
             href="/privacy"
             target="_blank"
             className="font-semibold text-neutral-700 underline"
           >
-            개인정보처리방침
+            {t("common.privacy")}
           </Link>
-          에 동의합니다
+          {t("eula.consentTail")}
         </span>
       </label>
       <button
@@ -83,7 +85,7 @@ export function EulaConsent({
         className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#FEE500] text-[15px] font-bold text-[#191600] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
         <KakaoIcon className="h-5 w-5" />
-        {busy ? "로그인 중…" : label}
+        {busy ? t("eula.loggingIn") : label}
       </button>
       {appleBtn && (
         <button
@@ -93,7 +95,7 @@ export function EulaConsent({
           className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-black text-[15px] font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <AppleIcon className="h-5 w-5" />
-          Apple로 로그인
+          {t("eula.appleLogin")}
         </button>
       )}
       {/* 로그인 없이 전체 기능 둘러보기 — 3역할 데모(App Store 2.1(a) 심사 접근성) */}
@@ -105,7 +107,7 @@ export function EulaConsent({
         }}
         className="w-full pt-1 text-center text-xs font-semibold text-neutral-400 underline underline-offset-2 transition-colors hover:text-neutral-700"
       >
-        로그인 없이 둘러보기
+        {t("eula.browseWithoutLogin")}
       </button>
     </div>
   );

@@ -5,9 +5,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthUi } from "@/lib/auth-ui-store";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { Building2, Loader2, Search } from "lucide-react";
 
 export function RoleChoiceModal() {
+  const t = useT();
   const { roleOpen, closeRole } = useAuthUi();
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
@@ -34,10 +36,10 @@ export function RoleChoiceModal() {
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
         <h2 className="text-center text-xl font-black text-neutral-900">
-          무엇으로 시작할까요?
+          {t("roleModal.title")}
         </h2>
         <p className="mt-1.5 text-center text-sm text-neutral-500">
-          언제든 헤더에서 바꿀 수 있어요.
+          {t("roleModal.subtitle")}
         </p>
 
         <div className="mt-6 space-y-3">
@@ -57,10 +59,10 @@ export function RoleChoiceModal() {
             </span>
             <div>
               <p className="text-base font-black text-neutral-900">
-                섭외하러 왔어요 · 광고주
+                {t("roleModal.companyTitle")}
               </p>
               <p className="text-xs text-neutral-500">
-                아티스트를 찾아 섭외 요청 — 바로 시작
+                {t("roleModal.companyDesc")}
               </p>
             </div>
           </button>
@@ -79,10 +81,10 @@ export function RoleChoiceModal() {
             </span>
             <div>
               <p className="text-base font-black text-neutral-900">
-                아티스트를 관리해요 · 소속사
+                {t("roleModal.agencyTitle")}
               </p>
               <p className="text-xs text-neutral-500">
-                인증 후 로스터·일정·정산 콘솔 — 서류 첨부 필요
+                {t("roleModal.agencyDesc")}
               </p>
             </div>
           </button>

@@ -15,7 +15,8 @@ import { getPublicBundles } from "@/lib/data/bundles";
 import { getCompanyCampaigns } from "@/lib/data/campaigns";
 import { getSessionUser } from "@/lib/data/session";
 import { getMessages } from "@/lib/data/messages";
-import { CATEGORY_LABELS, type ArtistCategory } from "@/lib/types";
+import { getT } from "@/lib/i18n/server";
+import { type ArtistCategory } from "@/lib/types";
 import {
   ArrowUpRight,
   Clock,
@@ -30,6 +31,7 @@ export const metadata = {
 };
 
 export default async function HomePage() {
+  const { t } = await getT();
   const user = await getSessionUser();
   const [ARTISTS, BOOKING_REQUESTS, bundles] = await Promise.all([
     getPublicArtists(),
@@ -87,14 +89,17 @@ export default async function HomePage() {
 
           {/* 텍스트 */}
           <Reveal className="relative max-w-[70%] px-1 pb-6 pt-6 sm:max-w-md sm:pt-12">
-            <Eyebrow>광고주 콘솔</Eyebrow>
+            <Eyebrow>{t("home.eyebrowConsole")}</Eyebrow>
             <h1 className="display-kr mt-3 text-3xl font-black text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] sm:text-5xl">
-              안녕하세요,
-              <br /> {user?.name ?? "브라이트마케팅"}님
+              {t("home.greetingHello")}
+              <br />{" "}
+              {t("home.greetingName", {
+                name: user?.name ?? t("home.demoCompany"),
+              })}
             </h1>
             <div className="mt-5 flex flex-wrap gap-2">
               <span className="rounded-full bg-brand-500 px-3 py-1.5 text-xs font-bold text-white">
-                매칭 수수료 0%
+                {t("home.matchingFeeZero")}
               </span>
             </div>
           </Reveal>
@@ -117,10 +122,10 @@ export default async function HomePage() {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="font-black text-white">
-                  내 오픈 캠페인 {openMine}건 모집 중
+                  {t("home.myOpenCampaigns", { count: openMine })}
                 </p>
                 <p className="text-sm text-white/50">
-                  지원 {myApplicants}명 · 지원자를 확인하고 선정하세요
+                  {t("home.myApplicantsHint", { count: myApplicants })}
                 </p>
               </div>
               <ArrowUpRight className="h-4 w-4 shrink-0 text-white/30" />
@@ -135,17 +140,17 @@ export default async function HomePage() {
             <Link href="/requests" className="group block h-full">
               <div className="glass glass-hover flex h-full flex-col rounded-[1.5rem] p-5">
                 <div className="flex items-center justify-between">
-                  <Eyebrow>진행 현황</Eyebrow>
+                  <Eyebrow>{t("home.progressStatus")}</Eyebrow>
                   <ArrowUpRight className="premium-ease h-4 w-4 text-white/30 group-hover:text-white" />
                 </div>
                 <p className="mt-3 text-4xl font-black text-white">
                   {inProgress.length}
                   <span className="ml-1 text-sm font-semibold text-white/40">
-                    건
+                    {t("home.unitCount")}
                   </span>
                 </p>
                 <p className="mt-auto pt-3 text-xs text-white/45">
-                  섭외가 협의 중이에요
+                  {t("home.inProgressHint")}
                 </p>
               </div>
             </Link>
@@ -162,7 +167,7 @@ export default async function HomePage() {
               <div className="glass glass-hover flex h-full flex-col rounded-[1.5rem] p-5">
                 <div className="flex items-center justify-between">
                   <Eyebrow>
-                    <MessageSquare className="h-3 w-3" /> 메시지
+                    <MessageSquare className="h-3 w-3" /> {t("home.messages")}
                   </Eyebrow>
                   {unread > 0 && (
                     <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-white">
@@ -175,7 +180,9 @@ export default async function HomePage() {
                     &ldquo;{latestMessage.body}&rdquo;
                   </p>
                 ) : (
-                  <p className="mt-3 text-sm text-white/40">메시지 없음</p>
+                  <p className="mt-3 text-sm text-white/40">
+                    {t("home.noMessage")}
+                  </p>
                 )}
               </div>
             </Link>
@@ -185,11 +192,15 @@ export default async function HomePage() {
           <Reveal delay={190} className="col-span-2">
             <div className="glass flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl px-5 py-3.5 text-sm">
               <span className="flex items-center gap-1.5 text-white/55">
-                <Clock className="h-3.5 w-3.5 text-brand-500" /> 평균 응답{" "}
-                <span className="font-black text-white">{avgHours}시간</span>
+                <Clock className="h-3.5 w-3.5 text-brand-500" />{" "}
+                {t("home.avgResponse")}{" "}
+                <span className="font-black text-white">
+                  {t("home.hoursValue", { hours: avgHours })}
+                </span>
               </span>
               <span className="flex items-center gap-1.5 text-white/55">
-                <TrendingUp className="h-3.5 w-3.5 text-brand-500" /> 응답률{" "}
+                <TrendingUp className="h-3.5 w-3.5 text-brand-500" />{" "}
+                {t("home.responseRate")}{" "}
                 <span className="font-black text-white">{avgRate}%</span>
               </span>
               <span className="ml-auto flex items-center gap-1.5 text-xs text-white/45">
@@ -197,7 +208,7 @@ export default async function HomePage() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-500" />
                 </span>
-                지금 소속사 응답 중
+                {t("home.liveAgencyResponding")}
               </span>
             </div>
           </Reveal>
@@ -209,14 +220,14 @@ export default async function HomePage() {
             <div>
               <Eyebrow>Featured</Eyebrow>
               <h2 className="display-kr mt-3 text-xl font-black text-white sm:text-3xl">
-                지금 섭외 가능한 아티스트
+                {t("home.featuredTitle")}
               </h2>
             </div>
             <Link
               href="/artists"
               className="premium-ease flex items-center gap-1.5 text-sm font-semibold text-white hover:text-brand-400"
             >
-              전체
+              {t("home.viewAll")}
               <ArrowUpRight className="h-4 w-4" />
             </Link>
           </Reveal>
@@ -235,7 +246,7 @@ export default async function HomePage() {
             <Reveal>
               <Eyebrow>Curated Sets</Eyebrow>
               <h2 className="display-kr mt-3 text-xl font-black text-white sm:text-3xl">
-                세트로 섭외하면 더 완성도 높게
+                {t("home.curatedTitle")}
               </h2>
             </Reveal>
             <div className="mt-6 grid grid-cols-1 gap-3 sm:gap-6 lg:grid-cols-3">
@@ -262,14 +273,15 @@ export default async function HomePage() {
                 className="glow-orange float-orb pointer-events-none absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full blur-2xl"
               />
               <div className="relative">
-                <Eyebrow className="justify-center">수수료 0%</Eyebrow>
+                <Eyebrow className="justify-center">{t("home.zeroFee")}</Eyebrow>
                 <h2 className="display-kr mx-auto mt-4 max-w-xl text-2xl font-black text-white sm:text-4xl">
-                  첫 섭외 요청까지{" "}
-                  <span className="text-brand-500">5분</span>이면 충분합니다
+                  {t("home.ctaTitlePre")}{" "}
+                  <span className="text-brand-500">{t("home.ctaMinutes")}</span>
+                  {t("home.ctaTitlePost")}
                 </h2>
                 <div className="mt-8 flex justify-center">
                   <PremiumCTA href="/artists" variant="solid">
-                    아티스트 둘러보기
+                    {t("home.browseArtists")}
                   </PremiumCTA>
                 </div>
               </div>

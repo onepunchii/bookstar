@@ -1,9 +1,11 @@
 import { signOut } from "@/auth";
 import { AccountLoginButton } from "@/components/account-login-button";
 import { DeleteAccountButton } from "@/components/delete-account-button";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { Reveal } from "@/components/premium/reveal";
 import { getSessionProfile } from "@/lib/data/session";
+import { getT } from "@/lib/i18n/server";
 import { LogOut, ShieldCheck } from "lucide-react";
 import { MeAccountForm } from "./account-form";
 
@@ -12,18 +14,16 @@ export const metadata = { title: "내 계정" };
 // 광고주 계정 프로필 — 개인/기업 구분·이름·회사명·연락처 수정.
 export default async function MyAccountPage() {
   const me = await getSessionProfile();
+  const { t } = await getT();
 
   return (
     <div className="mx-auto max-w-2xl px-5 py-10 sm:px-8 sm:py-14">
       <Reveal>
-        <Eyebrow>Account</Eyebrow>
+        <Eyebrow>{t("account.eyebrow")}</Eyebrow>
         <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-4xl">
-          내 계정
+          {t("account.title")}
         </h1>
-        <p className="mt-2 text-sm text-white/50">
-          섭외 요청에 사용되는 광고주 프로필이에요. 개인·기업 모두 무료로
-          이용할 수 있어요.
-        </p>
+        <p className="mt-2 text-sm text-white/50">{t("account.subtitle")}</p>
       </Reveal>
 
       {me ? (
@@ -40,7 +40,7 @@ export default async function MyAccountPage() {
               type="submit"
               className="flex w-full items-center justify-center gap-2 rounded-full bg-white/[0.04] px-6 py-3 text-sm font-semibold text-white/60 ring-1 ring-white/10 transition-colors hover:text-white hover:ring-white/25"
             >
-              <LogOut className="h-4 w-4" /> 로그아웃
+              <LogOut className="h-4 w-4" /> {t("account.logout")}
             </button>
           </form>
           <DeleteAccountButton dark />
@@ -50,16 +50,18 @@ export default async function MyAccountPage() {
           <div className="adv-card rounded-[1.75rem] p-8 text-center">
             <ShieldCheck className="mx-auto h-8 w-8 text-brand-500" />
             <p className="mt-4 text-lg font-bold text-white">
-              로그인하면 내 프로필을 관리할 수 있어요
+              {t("account.guestTitle")}
             </p>
-            <p className="mt-1.5 text-sm text-white/50">
-              지금 보고 있는 화면은 테스터용 데모 계정이에요. 카카오 또는
-              Apple로 로그인하면 내 이름·회사명으로 섭외 요청이 나가요.
-            </p>
+            <p className="mt-1.5 text-sm text-white/50">{t("account.guestBody")}</p>
             <AccountLoginButton />
           </div>
         </Reveal>
       )}
+
+      {/* 언어 선택 — 로그인 여부와 무관하게 항상 노출(둘러보는 해외 사용자도 전환 가능) */}
+      <Reveal delay={120} className="mt-4">
+        <LocaleSwitcher dark />
+      </Reveal>
     </div>
   );
 }

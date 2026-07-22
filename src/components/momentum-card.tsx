@@ -4,6 +4,7 @@ import { recentDelta } from "@/lib/metrics";
 import { fetchNaverMomentum } from "@/lib/naver";
 import { formatFollowers } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { getT } from "@/lib/i18n/server";
 import { ArrowUpRight, Link2, TrendingUp } from "lucide-react";
 
 // 카테고리 → 네이버 기사 검색 결합 키워드(동명 단어 오매핑 완화)
@@ -32,6 +33,7 @@ export async function MomentumCard({
   followers?: number;
   dark?: boolean;
 }) {
+  const { t } = await getT();
   const hasYt = typeof youtubeSubscribers === "number" && youtubeSubscribers > 0;
   const hasInsta = !!instagram;
   const hasSns = hasYt || hasInsta;
@@ -52,7 +54,7 @@ export async function MomentumCard({
         )}
       >
         <TrendingUp className="h-4 w-4 text-brand-500" />
-        화제성 · 팬덤
+        {t("home.momentum.title")}
       </h2>
     </div>
   );
@@ -65,7 +67,7 @@ export async function MomentumCard({
         <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-dashed border-white/10 p-4 text-sm">
           <Link2 className={cn("h-4 w-4 shrink-0", dark ? "text-white/40" : "text-neutral-400")} />
           <p className={dark ? "text-white/55" : "text-neutral-500"}>
-            유튜브·인스타그램을 연동하면 구독자·검색·기사 화제성 지표가 표시돼요.
+            {t("home.momentum.empty")}
           </p>
         </div>
       </Wrap>
@@ -84,7 +86,7 @@ export async function MomentumCard({
     series: number[];
   }[] = [
     {
-      label: hasYt ? "유튜브 구독자" : "인스타 팔로워",
+      label: hasYt ? t("home.momentum.ytSubscribers") : t("home.momentum.instaFollowers"),
       value: formatFollowers(followerValue),
       delta: 0,
       series: [],
@@ -92,14 +94,14 @@ export async function MomentumCard({
   ];
   if (real) {
     items.push({
-      label: "검색 트렌드",
+      label: t("home.momentum.searchTrend"),
       value: `${real.searchSeries[real.searchSeries.length - 1]}`,
       delta: recentDelta(real.searchSeries, 7),
       series: real.searchSeries,
     });
     items.push({
-      label: "네이버 기사",
-      value: `${real.newsCount.toLocaleString()}건`,
+      label: t("home.momentum.naverArticles"),
+      value: t("home.momentum.articleCount", { count: real.newsCount.toLocaleString() }),
       delta: 0,
       series: [],
     });
@@ -112,7 +114,7 @@ export async function MomentumCard({
       <div className="flex items-center justify-between">
         {header}
         <p className={cn("text-xs", dark ? "text-white/40" : "text-neutral-400")}>
-          {real ? "네이버·SNS 실데이터" : "SNS 실데이터"}
+          {real ? t("home.momentum.sourceNaverSns") : t("home.momentum.sourceSns")}
         </p>
       </div>
 

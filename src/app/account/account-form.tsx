@@ -5,21 +5,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { SessionProfile } from "@/lib/data/session";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { Building2, Check, Loader2, User } from "lucide-react";
 
 const TYPES = [
-  {
-    value: "personal",
-    icon: User,
-    title: "개인",
-    desc: "개인 자격으로 섭외 요청 — 무료",
-  },
-  {
-    value: "business",
-    icon: Building2,
-    title: "기업 · 브랜드",
-    desc: "회사·브랜드 이름으로 섭외 요청 — 무료",
-  },
+  { value: "personal", icon: User, title: "account.form.personal", desc: "account.form.personalDesc" },
+  { value: "business", icon: Building2, title: "account.form.business", desc: "account.form.businessDesc" },
 ] as const;
 
 const inputCls =
@@ -27,6 +18,7 @@ const inputCls =
 
 export function MeAccountForm({ profile }: { profile: SessionProfile }) {
   const router = useRouter();
+  const t = useT();
   const [accountType, setAccountType] = useState(profile.accountType);
   const [name, setName] = useState(profile.name);
   const [company, setCompany] = useState(profile.company ?? "");
@@ -37,7 +29,7 @@ export function MeAccountForm({ profile }: { profile: SessionProfile }) {
 
   const save = async () => {
     if (!name.trim()) {
-      setError("이름을 입력해 주세요");
+      setError(t("account.form.nameRequired"));
       return;
     }
     setSaving(true);
@@ -58,7 +50,7 @@ export function MeAccountForm({ profile }: { profile: SessionProfile }) {
       setTimeout(() => setSaved(false), 2000);
       router.refresh();
     } catch {
-      setError("저장에 실패했어요. 잠시 후 다시 시도해 주세요.");
+      setError(t("account.form.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -69,16 +61,16 @@ export function MeAccountForm({ profile }: { profile: SessionProfile }) {
       {/* 구분 */}
       <div>
         <p className="text-xs font-bold uppercase tracking-wider text-white/40">
-          계정 구분
+          {t("account.form.typeHeading")}
         </p>
         <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {TYPES.map((t) => {
-            const active = accountType === t.value;
+          {TYPES.map((opt) => {
+            const active = accountType === opt.value;
             return (
               <button
-                key={t.value}
+                key={opt.value}
                 type="button"
-                onClick={() => setAccountType(t.value)}
+                onClick={() => setAccountType(opt.value)}
                 className={cn(
                   "rounded-2xl p-4 text-left ring-1 transition-colors",
                   active
@@ -86,14 +78,14 @@ export function MeAccountForm({ profile }: { profile: SessionProfile }) {
                     : "bg-white/[0.03] ring-white/10 hover:ring-white/25"
                 )}
               >
-                <t.icon
+                <opt.icon
                   className={cn(
                     "h-4.5 w-4.5",
                     active ? "text-brand-400" : "text-white/40"
                   )}
                 />
-                <p className="mt-2 text-sm font-bold text-white">{t.title}</p>
-                <p className="mt-0.5 text-xs text-white/45">{t.desc}</p>
+                <p className="mt-2 text-sm font-bold text-white">{t(opt.title)}</p>
+                <p className="mt-0.5 text-xs text-white/45">{t(opt.desc)}</p>
               </button>
             );
           })}
@@ -104,45 +96,48 @@ export function MeAccountForm({ profile }: { profile: SessionProfile }) {
       <div className="space-y-4">
         <label className="block">
           <span className="mb-1.5 block text-xs font-semibold text-white/55">
-            담당자 이름
+            {t("account.form.name")}
           </span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="홍길동"
+            placeholder={t("account.form.namePlaceholder")}
             className={inputCls}
           />
         </label>
         {accountType === "business" && (
           <label className="block">
             <span className="mb-1.5 block text-xs font-semibold text-white/55">
-              회사 · 브랜드명
+              {t("account.form.company")}
             </span>
             <input
               value={company}
               onChange={(e) => setCompany(e.target.value)}
-              placeholder="브라이트마케팅"
+              placeholder={t("account.form.companyPlaceholder")}
               className={inputCls}
             />
             <span className="mt-1.5 block text-[11px] text-white/35">
-              섭외 요청 시 소속사에 이 이름으로 표시돼요
+              {t("account.form.companyHint")}
             </span>
           </label>
         )}
         <label className="block">
           <span className="mb-1.5 block text-xs font-semibold text-white/55">
-            연락처 <span className="font-normal text-white/30">(선택)</span>
+            {t("account.form.phone")}{" "}
+            <span className="font-normal text-white/30">
+              {t("common.optional")}
+            </span>
           </span>
           <input
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            placeholder="010-0000-0000"
+            placeholder={t("account.form.phonePlaceholder")}
             className={inputCls}
           />
         </label>
         {profile.email && (
           <p className="text-xs text-white/35">
-            로그인 이메일 · {profile.email}
+            {t("account.form.email", { email: profile.email })}
           </p>
         )}
       </div>
@@ -159,7 +154,7 @@ export function MeAccountForm({ profile }: { profile: SessionProfile }) {
         ) : saved ? (
           <Check className="h-4 w-4" />
         ) : null}
-        {saved ? "저장됐어요" : "프로필 저장"}
+        {saved ? t("account.form.saved") : t("account.form.save")}
       </button>
     </div>
   );

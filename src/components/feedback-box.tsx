@@ -3,6 +3,7 @@
 // 건의함 — 제휴·버그·개선 접수. 광고주 홈(다크)·소속사 대시보드(라이트) 하단 공용.
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { Check, Loader2, MessageSquarePlus, Send } from "lucide-react";
 
 const CATEGORIES = ["제휴", "버그", "개선", "기타"] as const;
@@ -14,6 +15,7 @@ export function FeedbackBox({
   role: "company" | "agency";
   dark?: boolean;
 }) {
+  const t = useT();
   const [category, setCategory] = useState<string>("제휴");
   const [body, setBody] = useState("");
   const [contact, setContact] = useState("");
@@ -21,9 +23,18 @@ export function FeedbackBox({
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const categoryLabel = (c: string) =>
+    c === "제휴"
+      ? t("feedback.categoryPartnership")
+      : c === "버그"
+        ? t("feedback.categoryBug")
+        : c === "개선"
+          ? t("feedback.categoryImprove")
+          : t("feedback.categoryEtc");
+
   const submit = async () => {
     if (body.trim().length < 5) {
-      setError("내용을 5자 이상 적어주세요");
+      setError(t("feedback.errorTooShort"));
       return;
     }
     setSending(true);
@@ -40,10 +51,10 @@ export function FeedbackBox({
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "접수 실패");
+      if (!res.ok) throw new Error(data.error ?? t("feedback.errorSubmit"));
       setSent(true);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "접수에 실패했어요");
+      setError(e instanceof Error ? e.message : t("feedback.errorSubmit"));
       setSending(false);
     }
   };
@@ -70,9 +81,9 @@ export function FeedbackBox({
           )}
         />
         <p className={cn("mt-3 font-bold", dark ? "text-white" : "text-neutral-900")}>
-          접수됐어요, 감사합니다!
+          {t("feedback.sentTitle")}
         </p>
-        <p className={subCls}>운영팀이 확인 후 필요하면 연락드릴게요.</p>
+        <p className={subCls}>{t("feedback.sentDesc")}</p>
       </div>
     );
   }
@@ -83,12 +94,9 @@ export function FeedbackBox({
         <MessageSquarePlus
           className={cn("h-5 w-5", dark ? "text-brand-400" : "text-brand-500")}
         />
-        건의함
+        {t("feedback.title")}
       </p>
-      <p className={subCls}>
-        제휴 제안, 버그 제보, 개선 아이디어 — 무엇이든 남겨주세요. 운영팀이 직접
-        읽습니다.
-      </p>
+      <p className={subCls}>{t("feedback.subtitle")}</p>
 
       <div className="mt-5 flex flex-wrap gap-2">
         {CATEGORIES.map((c) => (
@@ -105,7 +113,7 @@ export function FeedbackBox({
                   : "bg-neutral-100 text-neutral-500 hover:text-neutral-900"
             )}
           >
-            {c}
+            {categoryLabel(c)}
           </button>
         ))}
       </div>
@@ -116,17 +124,17 @@ export function FeedbackBox({
         rows={3}
         placeholder={
           category === "제휴"
-            ? "예) 저희 브랜드와 시즌 캠페인 제휴를 제안하고 싶어요"
+            ? t("feedback.bodyPlaceholderPartnership")
             : category === "버그"
-              ? "예) 모바일에서 캘린더가 잘려 보여요"
-              : "자유롭게 적어주세요"
+              ? t("feedback.bodyPlaceholderBug")
+              : t("feedback.bodyPlaceholderDefault")
         }
         className={cn(fieldCls, "mt-3 resize-none")}
       />
       <input
         value={contact}
         onChange={(e) => setContact(e.target.value)}
-        placeholder="회신 받을 이메일·연락처 (선택)"
+        placeholder={t("feedback.contactPlaceholder")}
         className={cn(fieldCls, "mt-2")}
       />
 
@@ -144,7 +152,7 @@ export function FeedbackBox({
         ) : (
           <Send className="h-4 w-4" />
         )}
-        보내기
+        {t("feedback.submit")}
       </button>
     </div>
   );

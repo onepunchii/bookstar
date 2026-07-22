@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import type { AgencyBundle } from "@/lib/data/bundles";
 import { formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { getT } from "@/lib/i18n/server";
 import { ArrowRight, Package } from "lucide-react";
 
 interface Props {
@@ -12,8 +13,9 @@ interface Props {
   dark?: boolean;
 }
 
-export function LineupBundleCard({ bundle, className, dark = false }: Props) {
+export async function LineupBundleCard({ bundle, className, dark = false }: Props) {
   const artists = bundle.artists;
+  const { t } = await getT();
 
   const inner = (
     <>
@@ -22,7 +24,7 @@ export function LineupBundleCard({ bundle, className, dark = false }: Props) {
           <div className="flex items-center gap-1.5">
             <Package className="h-3.5 w-3.5 text-brand-500" />
             <span className="text-xs font-bold text-brand-500">
-              {artists.length}인 세트
+              {t("lineup.setCount", { count: artists.length })}
             </span>
             {bundle.discountPct ? (
               <Badge variant="solid">-{bundle.discountPct}%</Badge>
@@ -102,15 +104,15 @@ export function LineupBundleCard({ bundle, className, dark = false }: Props) {
 
       {bundle.eventTypes.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
-          {bundle.eventTypes.map((t) => (
+          {bundle.eventTypes.map((et) => (
             <span
-              key={t}
+              key={et}
               className={cn(
                 "rounded-full px-2.5 py-0.5 text-xs font-medium",
                 dark ? "bg-white/8 text-white/70" : "bg-neutral-100 text-neutral-600"
               )}
             >
-              {t}
+              {et}
             </span>
           ))}
         </div>
@@ -124,7 +126,7 @@ export function LineupBundleCard({ bundle, className, dark = false }: Props) {
           )}
         >
           <span className={cn("text-xs", dark ? "text-white/40" : "text-neutral-400")}>
-            세트 예산
+            {t("lineup.setBudget")}
           </span>
           <span className={cn("text-lg font-black", dark && "text-white")}>
             {formatBudget(bundle.budgetMin ?? 0)}

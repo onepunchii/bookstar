@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BOOKING_TOPICS, getBookingTopic } from "@/lib/booking-topics";
 import { getPublicArtists } from "@/lib/data/artists";
+import { getT } from "@/lib/i18n/server";
 import { SITE, absoluteUrl } from "@/lib/site";
 
 export const dynamicParams = false;
@@ -47,6 +48,7 @@ export default async function BookingTopicPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const { t } = await getT();
   const { slug } = await params;
   const topic = getBookingTopic(decodeURIComponent(slug));
   if (!topic) notFound();
@@ -94,7 +96,7 @@ export default async function BookingTopicPage({
     <div className="adv-dark min-h-dvh bg-[#0a0a0b] text-white/90">
       <header className="sticky top-0 z-30 border-b border-white/8 bg-[#0a0a0b]/85 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-5">
-          <Link href="/" aria-label="XONG 홈">
+          <Link href="/" aria-label={t("bookingTopic.homeAriaLabel")}>
             <span className="text-lg font-extrabold tracking-tight text-white">
               XO<span className="text-brand-500">NG</span>
             </span>
@@ -103,13 +105,13 @@ export default async function BookingTopicPage({
             href={artistQ}
             className="rounded-full bg-brand-500 px-4 py-1.5 text-xs font-bold text-white brand-glow"
           >
-            아티스트 찾기
+            {t("bookingTopic.findArtist")}
           </Link>
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-5 py-14">
-        <p className="eyebrow text-brand-500">섭외 가이드</p>
+        <p className="eyebrow text-brand-500">{t("bookingTopic.eyebrow")}</p>
         <h1 className="display-kr mt-3 text-3xl font-black text-white sm:text-4xl">
           {topic.keyword}
         </h1>
@@ -129,7 +131,7 @@ export default async function BookingTopicPage({
         {/* 시세표 */}
         <section className="mt-11">
           <h2 className="display-kr text-xl font-bold text-white sm:text-[22px]">
-            {topic.keyword} 시세 범위
+            {t("bookingTopic.priceRangeTitle", { keyword: topic.keyword })}
           </h2>
           <div className="mt-5 overflow-hidden rounded-2xl ring-1 ring-white/10">
             <div className="overflow-x-auto">
@@ -141,9 +143,9 @@ export default async function BookingTopicPage({
                 )}
                 <thead className="bg-white/[0.03] text-xs text-white/45">
                   <tr>
-                    <th className="px-4 py-3 font-semibold">구분</th>
-                    <th className="px-4 py-3 font-semibold">통용 범위</th>
-                    <th className="px-4 py-3 font-semibold">비고</th>
+                    <th className="px-4 py-3 font-semibold">{t("bookingTopic.tableCategory")}</th>
+                    <th className="px-4 py-3 font-semibold">{t("bookingTopic.tableRange")}</th>
+                    <th className="px-4 py-3 font-semibold">{t("bookingTopic.tableNote")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.06]">
@@ -163,7 +165,7 @@ export default async function BookingTopicPage({
             </div>
           </div>
           <p className="mt-2.5 text-xs text-white/35">
-            ※ 업계 통용 범위 참고치입니다. 행사 성격·일정·지역에 따라 달라집니다.
+            {t("bookingTopic.priceDisclaimer")}
           </p>
         </section>
 
@@ -171,11 +173,12 @@ export default async function BookingTopicPage({
         {artists.length > 0 && (
           <section className="mt-11">
             <h2 className="display-kr text-xl font-bold text-white sm:text-[22px]">
-              XONG에서 바로 섭외 가능한 {topic.keyword.replace(" 섭외", "")}
+              {t("bookingTopic.availableNow", {
+                keyword: topic.keyword.replace(" 섭외", ""),
+              })}
             </h2>
             <p className="mt-2 text-sm text-white/50">
-              섭외가 범위가 공개되어 있고, 문의는 소속사 공식 창구로 직접
-              전달됩니다.
+              {t("bookingTopic.availableNowDesc")}
             </p>
             <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {artists.map((a) => (
@@ -189,7 +192,7 @@ export default async function BookingTopicPage({
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={a.imageUrl}
-                        alt={`${a.name} 섭외`}
+                        alt={t("bookingTopic.artistAlt", { name: a.name })}
                         className="h-full w-full object-cover"
                         loading="lazy"
                       />
@@ -208,8 +211,10 @@ export default async function BookingTopicPage({
                     </div>
                     {a.budgetRange[0] > 0 && (
                       <div className="mt-1.5 text-xs font-semibold text-brand-400">
-                        {a.budgetRange[0].toLocaleString()}만~
-                        {a.budgetRange[1].toLocaleString()}만원
+                        {t("bookingTopic.budgetRange", {
+                          min: a.budgetRange[0].toLocaleString(),
+                          max: a.budgetRange[1].toLocaleString(),
+                        })}
                       </div>
                     )}
                   </div>
@@ -220,7 +225,7 @@ export default async function BookingTopicPage({
               href={artistQ}
               className="mt-5 inline-block text-sm font-semibold text-brand-400 hover:text-brand-300"
             >
-              전체 보기 →
+              {t("bookingTopic.viewAll")}
             </Link>
           </section>
         )}
@@ -247,7 +252,7 @@ export default async function BookingTopicPage({
         {/* FAQ */}
         <section className="mt-12">
           <h2 className="display-kr text-xl font-bold text-white sm:text-[22px]">
-            자주 묻는 질문
+            {t("bookingTopic.faqTitle")}
           </h2>
           <div className="mt-5 space-y-3">
             {topic.faq.map((f, i) => (
@@ -256,7 +261,7 @@ export default async function BookingTopicPage({
                 className="group rounded-2xl bg-white/[0.03] ring-1 ring-white/10"
               >
                 <summary className="cursor-pointer list-none px-5 py-4 text-[15px] font-semibold text-white/90 marker:content-none">
-                  <span className="mr-2 text-brand-400">Q.</span>
+                  <span className="mr-2 text-brand-400">{t("bookingTopic.faqQMarker")}</span>
                   {f.q}
                 </summary>
                 <p
@@ -273,31 +278,30 @@ export default async function BookingTopicPage({
         {/* CTA */}
         <section className="mt-14 rounded-2xl bg-gradient-to-br from-brand-500/15 to-transparent p-7 text-center ring-1 ring-brand-500/25">
           <h2 className="display-kr text-lg font-bold text-white sm:text-xl">
-            {topic.keyword}, 지금 직접 문의하세요
+            {t("bookingTopic.ctaTitle", { keyword: topic.keyword })}
           </h2>
           <p className="mt-2 text-sm text-white/55">
-            섭외가 범위를 먼저 확인하고, 소속사 공식 창구에 직접 — 매칭 수수료
-            0%.
+            {t("bookingTopic.ctaDesc")}
           </p>
           <Link
             href={artistQ}
             className="brand-glow mt-5 inline-block rounded-full bg-brand-500 px-7 py-3 text-sm font-bold text-white"
           >
-            아티스트 찾아보기 →
+            {t("bookingTopic.ctaButton")}
           </Link>
         </section>
 
         {/* 다른 카테고리 */}
         <section className="mt-12">
-          <h3 className="text-sm font-bold text-white/40">다른 섭외 카테고리</h3>
+          <h3 className="text-sm font-bold text-white/40">{t("bookingTopic.otherCategories")}</h3>
           <div className="mt-3 flex flex-wrap gap-2">
-            {BOOKING_TOPICS.filter((t) => t.slug !== topic.slug).map((t) => (
+            {BOOKING_TOPICS.filter((item) => item.slug !== topic.slug).map((item) => (
               <Link
-                key={t.slug}
-                href={`/섭외/${encodeURIComponent(t.slug)}`}
+                key={item.slug}
+                href={`/섭외/${encodeURIComponent(item.slug)}`}
                 className="rounded-full bg-white/6 px-3.5 py-1.5 text-xs font-semibold text-white/60 hover:bg-white/10 hover:text-white"
               >
-                {t.keyword}
+                {item.keyword}
               </Link>
             ))}
           </div>
@@ -306,9 +310,9 @@ export default async function BookingTopicPage({
 
       <footer className="border-t border-white/8">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-5 py-8 text-xs text-white/35">
-          <span>XONG — 연예인·인플루언서 섭외를 가장 빠르게 연결합니다</span>
+          <span>{t("bookingTopic.footerTagline")}</span>
           <Link href="/guide" className="hover:text-white/70">
-            섭외 가이드 전체
+            {t("bookingTopic.footerGuideLink")}
           </Link>
         </div>
       </footer>
