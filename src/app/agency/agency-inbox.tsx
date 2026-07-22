@@ -20,6 +20,7 @@ import {
   type ScheduleDay,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import {
   Banknote,
   Calendar,
@@ -76,6 +77,27 @@ const ADVANCING_ITEMS = [
   "큐시트 최종본 수령",
 ];
 
+// 체크리스트 항목(DB 저장값)의 표시용 번역 키 매핑
+const ADVANCING_ITEM_KEYS: Record<string, string> = {
+  "대기실 확보 확인": "agency.inbox.advWaitingRoom",
+  "음향·모니터 스펙 확인": "agency.inbox.advSound",
+  "주차권 · 출입증 수령": "agency.inbox.advParking",
+  "헤메코 공간 확인": "agency.inbox.advGlam",
+  "식사 · 다과 준비": "agency.inbox.advMeal",
+  "큐시트 최종본 수령": "agency.inbox.advCuesheet",
+};
+
+// 행사 유형(데이터 enum)의 표시용 번역 키 매핑 (기존 booking.* 키 재사용)
+const EVENT_TYPE_KEYS: Record<string, string> = {
+  "행사": "booking.typeEvent",
+  "광고": "booking.typeAd",
+  "유튜브": "booking.typeYoutube",
+  "예능": "booking.typeVariety",
+  "팬미팅": "booking.typeFanmeeting",
+  "축제": "booking.typeFestival",
+  "강연": "booking.typeLecture",
+};
+
 function addDays(date: string, days: number): string {
   const d = new Date(date);
   d.setDate(d.getDate() + days);
@@ -96,6 +118,7 @@ export function AgencyInbox({
     { amount: number; includes: string | null; note: string | null }
   >;
 }) {
+  const t = useT();
   const [requests, setRequests] = useState<BookingRequest[]>(initialRequests);
   // 상태 변경 → DB PATCH + 로컬 반영
   const updateStatus = (id: string, status: BookingStatus) => {
@@ -269,8 +292,11 @@ export function AgencyInbox({
     pushNotif({
       type: "booking_accepted",
       role: "agency",
-      title: "데일리 시트 자동 생성",
-      body: `${selected.artistName} · ${selected.date} · 담당 매니저 배정 필요`,
+      title: t("agency.inbox.notifSheetTitle"),
+      body: t("agency.inbox.notifSheetBody", {
+        artist: selected.artistName,
+        date: selected.date,
+      }),
       link: "/agency/today",
     });
     setHoldPlacedFor(selected.id);
@@ -339,14 +365,13 @@ export function AgencyInbox({
               </span>
               <span>
                 <span className="block text-sm font-bold">
-                  AI 공문 인식{" "}
+                  {t("agency.inbox.aiTitle")}{" "}
                   <span className="rounded bg-brand-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
                     BETA
                   </span>
                 </span>
                 <span className="mt-0.5 block text-xs text-neutral-400">
-                  공문·큐시트 PDF를 올리면 날짜·출연료·담당자를 추출해 요청
-                  카드로 만들어요
+                  {t("agency.inbox.aiDesc")}
                 </span>
               </span>
             </button>
@@ -358,35 +383,37 @@ export function AgencyInbox({
                 <span className="font-semibold text-neutral-900">
                   섭외공문_성동구청.pdf
                 </span>{" "}
-                분석 중…
+                {t("agency.inbox.aiAnalyzing")}
               </p>
             </div>
           )}
           {aiState === "done" && (
             <div>
               <p className="flex items-center gap-1.5 text-sm font-bold text-brand-700">
-                <Sparkles className="h-3.5 w-3.5" /> 인식 완료
+                <Sparkles className="h-3.5 w-3.5" /> {t("agency.inbox.aiDone")}
               </p>
               <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-neutral-600">
-                <span>주최: 성동구청 문화체육과</span>
-                <span>대상: QWER</span>
-                <span>일시: 2026-08-22</span>
-                <span>장소: 서울숲 야외무대</span>
-                <span>출연료: 4,500만원</span>
-                <span>유형: 축제</span>
+                <span>{t("agency.inbox.aiHost")}: 성동구청 문화체육과</span>
+                <span>{t("agency.inbox.aiTarget")}: QWER</span>
+                <span>{t("agency.inbox.aiDate")}: 2026-08-22</span>
+                <span>{t("agency.inbox.aiPlace")}: 서울숲 야외무대</span>
+                <span>{t("agency.inbox.aiFee")}: 4,500만원</span>
+                <span>
+                  {t("agency.inbox.aiType")}: {t("booking.typeFestival")}
+                </span>
               </div>
               <div className="mt-3 flex gap-2">
                 <button
                   onClick={addAiRequest}
                   className="rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-brand-600"
                 >
-                  요청으로 추가
+                  {t("agency.inbox.addAsRequest")}
                 </button>
                 <button
                   onClick={() => setAiState("idle")}
                   className="rounded-lg px-3 py-1.5 text-xs font-semibold text-neutral-400 hover:text-neutral-900"
                 >
-                  취소
+                  {t("common.cancel")}
                 </button>
               </div>
             </div>
@@ -418,10 +445,14 @@ export function AgencyInbox({
               <StatusBadge status={req.status} />
             </div>
             <p className="mt-1 truncate text-xs text-neutral-500">
-              {req.artistName} · {req.eventType} · {req.date}
+              {req.artistName} ·{" "}
+              {EVENT_TYPE_KEYS[req.eventType]
+                ? t(EVENT_TYPE_KEYS[req.eventType])
+                : req.eventType}{" "}
+              · {req.date}
             </p>
             <p className="mt-0.5 text-xs font-semibold text-neutral-700">
-              예산 {formatBudget(req.budget)}
+              {t("agency.inbox.budget")} {formatBudget(req.budget)}
             </p>
           </button>
         ))}
@@ -439,34 +470,44 @@ export function AgencyInbox({
                   </h2>
                   {selected.companyVerified ? (
                     <Badge variant="brand">
-                      <ShieldCheck className="h-3 w-3" /> 사업자 인증
+                      <ShieldCheck className="h-3 w-3" />{" "}
+                      {t("agency.inbox.verified")}
                     </Badge>
                   ) : (
                     <Badge variant="outline">
-                      <ShieldAlert className="h-3 w-3" /> 미인증 주최자
+                      <ShieldAlert className="h-3 w-3" />{" "}
+                      {t("agency.inbox.unverified")}
                     </Badge>
                   )}
-                  <Badge>{selected.eventType}</Badge>
+                  <Badge>
+                    {EVENT_TYPE_KEYS[selected.eventType]
+                      ? t(EVENT_TYPE_KEYS[selected.eventType])
+                      : selected.eventType}
+                  </Badge>
                   <StatusBadge status={selected.status} />
                 </div>
                 <p className="mt-1 text-sm text-neutral-500">
-                  {selected.artistName} 섭외 요청
+                  {t("agency.inbox.bookingRequestFor", {
+                    artist: selected.artistName,
+                  })}
                   {selected.companyVerified &&
                     selected.companyEventCount &&
-                    ` · 플랫폼 행사 이력 ${selected.companyEventCount}회`}
+                    t("agency.inbox.eventHistory", {
+                      n: selected.companyEventCount,
+                    })}
                 </p>
               </div>
               {selected.status === "pending" && (
                 <div className="flex gap-2">
                   <Button size="sm" onClick={accept}>
-                    <Check className="h-3.5 w-3.5" /> 수락
+                    <Check className="h-3.5 w-3.5" /> {t("agency.inbox.accept")}
                   </Button>
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => setStatus(selected.id, "rejected")}
                   >
-                    <X className="h-3.5 w-3.5" /> 거절
+                    <X className="h-3.5 w-3.5" /> {t("agency.inbox.reject")}
                   </Button>
                 </div>
               )}
@@ -476,11 +517,7 @@ export function AgencyInbox({
             {!selected.companyVerified && (
               <div className="mt-4 flex items-start gap-2 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600">
                 <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-                <p>
-                  사업자 인증이 완료되지 않은 주최자예요. 계약 전 신원 확인을
-                  권장하며, 에스크로 결제(2차 오픈)를 사용하면 안전하게 진행할
-                  수 있어요.
-                </p>
+                <p>{t("agency.inbox.unverifiedWarn")}</p>
               </div>
             )}
 
@@ -490,11 +527,13 @@ export function AgencyInbox({
                 <CloudRain className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
                 <p>
                   <span className="font-bold">
-                    {selected!.date} {selected!.location} 강수확률{" "}
-                    {forecast.rainProb}%
+                    {t("agency.inbox.rainProb", {
+                      date: selected!.date,
+                      location: selected!.location,
+                      prob: forecast.rainProb,
+                    })}
                   </span>{" "}
-                  · 야외 행사예요. 우천 시 대체 계획을 미리 요청하세요. (
-                  {forecast.tierLabel})
+                  {t("agency.inbox.rainWarn", { tier: forecast.tierLabel })}
                 </p>
               </div>
             )}
@@ -505,13 +544,16 @@ export function AgencyInbox({
                 <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
                 <p>
                   <span className="font-bold">
-                    {selected.date}은 이미{" "}
-                    {holdOnDate
-                      ? `${holdOnDate.companyName} 홀드`
-                      : "불가 일정"}
-                    이 있어요.
+                    {t("agency.inbox.conflictTitle", {
+                      date: selected.date,
+                      what: holdOnDate
+                        ? t("agency.inbox.companyHold", {
+                            company: holdOnDate.companyName ?? "",
+                          })
+                        : t("agency.inbox.unavailableSlot"),
+                    })}
                   </span>{" "}
-                  수락하면 더블부킹이 됩니다. 일정을 먼저 확인하세요.
+                  {t("agency.inbox.conflictWarn")}
                 </p>
               </div>
             )}
@@ -522,10 +564,11 @@ export function AgencyInbox({
                 <CalendarClock className="mt-0.5 h-4 w-4 shrink-0" />
                 <p>
                   <span className="font-bold">
-                    {selected.date}에 홀드가 자동 생성됐어요.
+                    {t("agency.inbox.holdCreated", { date: selected.date })}
                   </span>{" "}
-                  {addDays(TODAY, HOLD_DAYS)}까지 계약이 확정되지 않으면
-                  자동으로 풀립니다. 일정 관리에서 확인하세요.
+                  {t("agency.inbox.holdExpiry", {
+                    date: addDays(TODAY, HOLD_DAYS),
+                  })}
                 </p>
               </div>
             )}
@@ -534,7 +577,7 @@ export function AgencyInbox({
             <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div className="rounded-xl bg-neutral-50 px-4 py-3">
                 <p className="flex items-center gap-1 text-xs text-neutral-400">
-                  <Calendar className="h-3 w-3" /> 희망 날짜
+                  <Calendar className="h-3 w-3" /> {t("agency.inbox.desiredDate")}
                 </p>
                 <p className="mt-0.5 text-sm font-bold">{selected.date}</p>
                 <p
@@ -548,15 +591,19 @@ export function AgencyInbox({
                   )}
                 >
                   {holdOnDate
-                    ? `홀드 중 (${holdOnDate.companyName})`
+                    ? t("agency.inbox.onHold", {
+                        company: holdOnDate.companyName ?? "",
+                      })
                     : baseDay
-                      ? `현재 ${AVAILABILITY_LABELS[baseDay.availability]}`
-                      : "일정 미등록"}
+                      ? t("agency.inbox.currentStatus", {
+                          status: AVAILABILITY_LABELS[baseDay.availability],
+                        })
+                      : t("agency.inbox.noSchedule")}
                 </p>
               </div>
               <div className="rounded-xl bg-neutral-50 px-4 py-3">
                 <p className="flex items-center gap-1 text-xs text-neutral-400">
-                  <MapPin className="h-3 w-3" /> 지역
+                  <MapPin className="h-3 w-3" /> {t("agency.inbox.region")}
                 </p>
                 <p className="mt-0.5 text-sm font-bold">
                   {selected.location}
@@ -564,7 +611,7 @@ export function AgencyInbox({
               </div>
               <div className="rounded-xl bg-neutral-50 px-4 py-3">
                 <p className="flex items-center gap-1 text-xs text-neutral-400">
-                  <Banknote className="h-3 w-3" /> 제안 예산
+                  <Banknote className="h-3 w-3" /> {t("agency.inbox.proposedBudget")}
                 </p>
                 <p className="mt-0.5 text-sm font-bold">
                   {formatBudget(selected.budget)}
@@ -574,7 +621,7 @@ export function AgencyInbox({
 
             <div className="mt-4 rounded-xl border border-neutral-100 p-4">
               <p className="text-xs font-semibold text-neutral-400">
-                요청 내용
+                {t("agency.inbox.requestContent")}
               </p>
               <p className="mt-1.5 text-sm leading-relaxed text-neutral-700">
                 {selected.message}
@@ -588,10 +635,10 @@ export function AgencyInbox({
                   <div>
                     <h3 className="flex items-center gap-1.5 font-bold">
                       <ClipboardCheck className="h-4 w-4 text-brand-500" />
-                      행사 준비 체크리스트
+                      {t("agency.inbox.checklistTitle")}
                     </h3>
                     <p className="mt-1 text-xs text-neutral-400">
-                      체크 상태는 자동 저장돼요
+                      {t("agency.inbox.checklistAutoSave")}
                     </p>
                   </div>
                 </div>
@@ -619,7 +666,9 @@ export function AgencyInbox({
                         >
                           {done && <Check className="h-3 w-3" />}
                         </span>
-                        {item}
+                        {ADVANCING_ITEM_KEYS[item]
+                          ? t(ADVANCING_ITEM_KEYS[item])
+                          : item}
                       </button>
                     );
                   })}
@@ -630,33 +679,35 @@ export function AgencyInbox({
             {/* 견적 */}
             {selected.status === "rejected" ? (
               <p className="mt-6 rounded-xl bg-neutral-50 p-4 text-sm text-neutral-500">
-                거절한 요청입니다. 사유는 광고주에게 자동 안내됐어요.
+                {t("agency.inbox.rejectedNote")}
               </p>
             ) : sentQuote ? (
               <div className="mt-6 rounded-2xl border border-brand-200 bg-brand-50/50 p-5">
                 <p className="flex items-center gap-1.5 text-sm font-bold text-brand-700">
-                  <CheckCircle2 className="h-4 w-4" /> 견적을 보냈어요
+                  <CheckCircle2 className="h-4 w-4" />{" "}
+                  {t("agency.inbox.quoteSent")}
                 </p>
                 <p className="mt-2 text-2xl font-black">
                   {formatBudget(sentQuote.amount)}
                 </p>
                 {sentQuote.items && (
                   <p className="mt-1 text-sm text-neutral-600">
-                    포함: {sentQuote.items}
+                    {t("agency.inbox.includesLabel")}: {sentQuote.items}
                   </p>
                 )}
                 <p className="mt-3 text-xs text-neutral-400">
-                  광고주가 수락하면 계약 단계로 진행됩니다. 협의 채팅으로
-                  조건을 조율할 수 있어요.
+                  {t("agency.inbox.quoteSentNote")}
                 </p>
               </div>
             ) : (
               <div className="mt-6 rounded-2xl border border-neutral-200 p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <h3 className="font-bold">견적 회신</h3>
+                    <h3 className="font-bold">
+                      {t("agency.inbox.quoteReply")}
+                    </h3>
                     <p className="mt-1 text-xs text-neutral-400">
-                      견적을 보내면 자동으로 협의 상태로 전환됩니다
+                      {t("agency.inbox.quoteReplyDesc")}
                     </p>
                   </div>
                   {preset && (
@@ -665,41 +716,51 @@ export function AgencyInbox({
                       className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-brand-200 bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-700 transition-colors hover:bg-brand-100"
                     >
                       <Sparkles className="h-3.5 w-3.5" />
-                      {selected.artistName} 프리셋 ·{" "}
-                      {formatBudget(preset.baseFee)}
+                      {t("agency.inbox.presetLabel", {
+                        artist: selected.artistName,
+                      })}{" "}
+                      · {formatBudget(preset.baseFee)}
                     </button>
                   )}
                 </div>
                 <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <Label htmlFor="quote-amount">총액 (만원)</Label>
+                    <Label htmlFor="quote-amount">
+                      {t("agency.inbox.totalAmount")}
+                    </Label>
                     <Input
                       id="quote-amount"
                       type="number"
                       min={0}
                       value={quoteAmount}
                       onChange={(e) => setQuoteAmount(e.target.value)}
-                      placeholder={`제안 예산 ${selected.budget.toLocaleString()}만원`}
+                      placeholder={t("agency.inbox.amountPlaceholder", {
+                        budget: selected.budget.toLocaleString(),
+                      })}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="quote-items">포함 항목</Label>
+                    <Label htmlFor="quote-items">
+                      {t("agency.inbox.includeItems")}
+                    </Label>
                     <Input
                       id="quote-items"
                       value={quoteItems}
                       onChange={(e) => setQuoteItems(e.target.value)}
-                      placeholder="예: 출연 2시간 + SNS 포스팅 1회"
+                      placeholder={t("agency.inbox.includeItemsPlaceholder")}
                     />
                   </div>
                 </div>
                 <div className="mt-4">
-                  <Label htmlFor="quote-note">메모 (선택)</Label>
+                  <Label htmlFor="quote-note">
+                    {t("agency.inbox.memoOptional")}
+                  </Label>
                   <Textarea
                     id="quote-note"
                     rows={2}
                     value={quoteNote}
                     onChange={(e) => setQuoteNote(e.target.value)}
-                    placeholder="조건, 협의 가능 범위 등"
+                    placeholder={t("agency.inbox.memoPlaceholder")}
                   />
                 </div>
                 <Button
@@ -707,14 +768,15 @@ export function AgencyInbox({
                   disabled={!quoteAmount}
                   onClick={sendQuote}
                 >
-                  <SendHorizonal className="h-3.5 w-3.5" /> 견적 보내기
+                  <SendHorizonal className="h-3.5 w-3.5" />{" "}
+                  {t("agency.inbox.sendQuote")}
                 </Button>
               </div>
             )}
           </Card>
         ) : (
           <Card className="flex h-64 items-center justify-center text-sm text-neutral-400">
-            왼쪽에서 요청을 선택하세요
+            {t("agency.inbox.selectPrompt")}
           </Card>
         )}
       </div>

@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { Check, Share2 } from "lucide-react";
+import { useT } from "@/lib/i18n/client";
 
 export function ShareButton({ url }: { url: string }) {
+  const t = useT();
   const [copied, setCopied] = useState(false);
   const share = async () => {
     // 모바일은 네이티브 공유 시트, 그 외엔 클립보드 복사
@@ -26,7 +28,7 @@ export function ShareButton({ url }: { url: string }) {
   return (
     <button
       onClick={share}
-      aria-label="공유"
+      aria-label={t("profile.share")}
       className="flex h-10 flex-1 items-center justify-center rounded-lg text-white/60 ring-1 ring-white/15 transition-colors hover:text-white hover:ring-white/40"
     >
       {copied ? (

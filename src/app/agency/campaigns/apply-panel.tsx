@@ -4,15 +4,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { Check, Loader2, Send } from "lucide-react";
-
-const APP_STATUS: Record<string, string> = {
-  applied: "지원함",
-  shortlisted: "후보 선정됨",
-  selected: "🎉 선정됐어요",
-  rejected: "미선정",
-  withdrawn: "철회함",
-};
 
 export function ApplyPanel({
   campaignId,
@@ -25,7 +18,15 @@ export function ApplyPanel({
   applied: { status: string } | null;
   closed: boolean;
 }) {
+  const t = useT();
   const router = useRouter();
+  const APP_STATUS: Record<string, string> = {
+    applied: t("agency.campaigns.statusApplied"),
+    shortlisted: t("agency.campaigns.statusShortlisted"),
+    selected: t("agency.campaigns.statusSelected"),
+    rejected: t("agency.campaigns.statusRejected"),
+    withdrawn: t("agency.campaigns.statusWithdrawn"),
+  };
   const [open, setOpen] = useState(false);
   const [artistId, setArtistId] = useState(artists[0]?.id ?? "");
   const [pitch, setPitch] = useState("");
@@ -45,7 +46,7 @@ export function ApplyPanel({
               : "bg-brand-50 text-brand-700"
         )}
       >
-        {APP_STATUS[applied.status] ?? "지원함"}
+        {APP_STATUS[applied.status] ?? t("agency.campaigns.statusApplied")}
       </div>
     );
   }
@@ -53,7 +54,7 @@ export function ApplyPanel({
   if (closed) {
     return (
       <div className="rounded-xl bg-neutral-100 px-4 py-2.5 text-sm font-semibold text-neutral-400">
-        마감된 캠페인
+        {t("agency.campaigns.closed")}
       </div>
     );
   }
@@ -61,13 +62,13 @@ export function ApplyPanel({
   if (artists.length === 0) {
     return (
       <p className="text-xs text-neutral-400">
-        지원하려면 먼저 아티스트를 등록해주세요.
+        {t("agency.campaigns.needArtist")}
       </p>
     );
   }
 
   const submit = async () => {
-    if (!artistId) return setError("아티스트를 선택해주세요");
+    if (!artistId) return setError(t("agency.campaigns.selectArtist"));
     setSaving(true);
     setError(null);
     try {
@@ -81,11 +82,11 @@ export function ApplyPanel({
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "지원 실패");
+      if (!res.ok) throw new Error(data.error ?? t("agency.campaigns.applyFailed"));
       setOpen(false);
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "지원에 실패했어요");
+      setError(e instanceof Error ? e.message : t("agency.campaigns.applyFailedRetry"));
       setSaving(false);
     }
   };
@@ -96,7 +97,7 @@ export function ApplyPanel({
         onClick={() => setOpen(true)}
         className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-4 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90"
       >
-        <Send className="h-3.5 w-3.5" /> 지원하기
+        <Send className="h-3.5 w-3.5" /> {t("agency.campaigns.applyCta")}
       </button>
     );
   }
@@ -105,7 +106,7 @@ export function ApplyPanel({
     <div className="mt-3 space-y-3 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
       <div>
         <label className="mb-1 block text-xs font-semibold text-neutral-500">
-          지원할 아티스트
+          {t("agency.campaigns.fieldArtist")}
         </label>
         <select
           value={artistId}
@@ -121,25 +122,31 @@ export function ApplyPanel({
       </div>
       <div>
         <label className="mb-1 block text-xs font-semibold text-neutral-500">
-          어필 <span className="font-normal text-neutral-400">(선택)</span>
+          {t("agency.campaigns.fieldPitch")}{" "}
+          <span className="font-normal text-neutral-400">
+            {t("common.optional")}
+          </span>
         </label>
         <textarea
           value={pitch}
           onChange={(e) => setPitch(e.target.value)}
           rows={2}
-          placeholder="이 캠페인에 왜 적합한지 한 줄로 어필해주세요"
+          placeholder={t("agency.campaigns.pitchPlaceholder")}
           className="w-full resize-none rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </div>
       <div>
         <label className="mb-1 block text-xs font-semibold text-neutral-500">
-          제안 견적 <span className="font-normal text-neutral-400">(만원, 선택)</span>
+          {t("agency.campaigns.fieldFee")}{" "}
+          <span className="font-normal text-neutral-400">
+            {t("agency.campaigns.fieldFeeHint")}
+          </span>
         </label>
         <input
           type="number"
           value={fee}
           onChange={(e) => setFee(e.target.value)}
-          placeholder="예) 2000"
+          placeholder={t("agency.campaigns.feePlaceholder")}
           className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </div>
@@ -155,13 +162,13 @@ export function ApplyPanel({
           ) : (
             <Check className="h-4 w-4" />
           )}
-          지원 제출
+          {t("agency.campaigns.submitCta")}
         </button>
         <button
           onClick={() => setOpen(false)}
           className="rounded-full px-4 py-2.5 text-sm font-semibold text-neutral-500 hover:text-neutral-900"
         >
-          취소
+          {t("common.cancel")}
         </button>
       </div>
     </div>

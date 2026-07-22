@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Plus } from "lucide-react";
+import { useT } from "@/lib/i18n/client";
 
 export function NewArtistButton() {
+  const t = useT();
   const router = useRouter();
   const [creating, setCreating] = useState(false);
 
@@ -19,7 +21,7 @@ export function NewArtistButton() {
         upgrade?: boolean;
       };
       if (res.status === 403 && data.upgrade) {
-        if (confirm(`${data.error}\n\n계정·요금제로 이동할까요?`))
+        if (confirm(`${data.error}\n\n${t("agency.artists.goToPlanConfirm")}`))
           router.push("/agency/account");
         setCreating(false);
         return;
@@ -27,7 +29,7 @@ export function NewArtistButton() {
       if (!res.ok || !data.slug) throw new Error();
       router.push(`/agency/artists/${data.slug}`);
     } catch {
-      alert("등록에 실패했어요. 다시 시도해주세요.");
+      alert(t("agency.artists.createFailed"));
       setCreating(false);
     }
   };
@@ -47,7 +49,7 @@ export function NewArtistButton() {
         )}
       </span>
       <span className="text-sm font-semibold">
-        {creating ? "등록 중…" : "새 아티스트 등록"}
+        {creating ? t("agency.artists.creating") : t("agency.artists.newArtist")}
       </span>
     </button>
   );

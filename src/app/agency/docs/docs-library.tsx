@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { useT } from "@/lib/i18n/client";
 import type { DocType, DocumentItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Download, FileText, Loader2, Upload } from "lucide-react";
@@ -16,12 +17,30 @@ const TYPES: (DocType | "전체")[] = [
 ];
 
 export function DocsLibrary({ documents }: { documents: DocumentItem[] }) {
+  const t = useT();
   const [filter, setFilter] = useState<DocType | "전체">("전체");
   const [docs, setDocs] = useState<DocumentItem[]>(documents);
   const [uploadType, setUploadType] = useState<DocType>("계약서");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const typeLabel = (type: DocType | "전체") => {
+    switch (type) {
+      case "전체":
+        return t("agency.docs.typeAll");
+      case "계약서":
+        return t("agency.docs.typeContract");
+      case "큐시트":
+        return t("agency.docs.typeCuesheet");
+      case "공문":
+        return t("agency.docs.typeOfficial");
+      case "정산서":
+        return t("agency.docs.typeSettlement");
+      default:
+        return type;
+    }
+  };
 
   const visible = docs.filter((d) => filter === "전체" || d.type === filter);
 
@@ -35,7 +54,7 @@ export function DocsLibrary({ documents }: { documents: DocumentItem[] }) {
       fd.append("type", uploadType);
       const res = await fetch("/api/documents", { method: "POST", body: fd });
       if (res.status === 401) {
-        setError("로그인 후 업로드할 수 있어요.");
+        setError(t("agency.docs.errorLogin"));
         return;
       }
       if (!res.ok) throw new Error();
@@ -53,7 +72,7 @@ export function DocsLibrary({ documents }: { documents: DocumentItem[] }) {
         ...prev,
       ]);
     } catch {
-      setError("업로드에 실패했어요. 다시 시도해주세요.");
+      setError(t("agency.docs.errorUpload"));
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -64,18 +83,18 @@ export function DocsLibrary({ documents }: { documents: DocumentItem[] }) {
     <div>
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
-          {TYPES.map((t) => (
+          {TYPES.map((docType) => (
             <button
-              key={t}
-              onClick={() => setFilter(t)}
+              key={docType}
+              onClick={() => setFilter(docType)}
               className={cn(
                 "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-                filter === t
+                filter === docType
                   ? "bg-neutral-900 text-white"
                   : "border border-neutral-200 text-neutral-600 hover:border-neutral-900"
               )}
             >
-              {t}
+              {typeLabel(docType)}
             </button>
           ))}
         </div>
@@ -84,11 +103,11 @@ export function DocsLibrary({ documents }: { documents: DocumentItem[] }) {
             value={uploadType}
             onChange={(e) => setUploadType(e.target.value as DocType)}
             className="h-10 rounded-lg border border-neutral-300 bg-white px-2.5 text-sm"
-            aria-label="문서 유형"
+            aria-label={t("agency.docs.typeSelectLabel")}
           >
-            {TYPES.filter((t) => t !== "전체").map((t) => (
-              <option key={t} value={t}>
-                {t}
+            {TYPES.filter((docType) => docType !== "전체").map((docType) => (
+              <option key={docType} value={docType}>
+                {typeLabel(docType)}
               </option>
             ))}
           </select>
@@ -109,7 +128,7 @@ export function DocsLibrary({ documents }: { documents: DocumentItem[] }) {
             ) : (
               <Upload className="h-4 w-4" />
             )}
-            {uploading ? "업로드 중…" : "문서 업로드"}
+            {uploading ? t("agency.docs.uploading") : t("agency.docs.uploadCta")}
           </button>
         </div>
       </div>
@@ -135,7 +154,7 @@ export function DocsLibrary({ documents }: { documents: DocumentItem[] }) {
                 <p className="truncate text-sm font-semibold">{doc.name}</p>
                 {doc.demo && (
                   <span className="shrink-0 rounded-full bg-neutral-200 px-1.5 py-0.5 text-[10px] font-bold text-neutral-500">
-                    예시
+                    {t("agency.docs.demoBadge")}
                   </span>
                 )}
               </div>
@@ -146,11 +165,11 @@ export function DocsLibrary({ documents }: { documents: DocumentItem[] }) {
               </p>
             </div>
             <Badge variant={doc.type === "계약서" ? "brand" : "default"}>
-              {doc.type}
+              {typeLabel(doc.type)}
             </Badge>
             {doc.demo ? (
               <span
-                title="예시 문서"
+                title={t("agency.docs.demoDocTitle")}
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-neutral-200"
               >
                 <Download className="h-4 w-4" />
@@ -161,14 +180,14 @@ export function DocsLibrary({ documents }: { documents: DocumentItem[] }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 download={doc.name}
-                aria-label="다운로드"
+                aria-label={t("agency.docs.download")}
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
               >
                 <Download className="h-4 w-4" />
               </a>
             ) : (
               <span
-                title="샘플 문서 (파일 없음)"
+                title={t("agency.docs.sampleNoFile")}
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-neutral-200"
               >
                 <Download className="h-4 w-4" />
@@ -179,18 +198,17 @@ export function DocsLibrary({ documents }: { documents: DocumentItem[] }) {
         {visible.length === 0 && (
           <div className="rounded-2xl border border-dashed border-neutral-300 py-12 text-center">
             <p className="text-sm font-semibold text-neutral-700">
-              아직 보관된 서류가 없어요
+              {t("agency.docs.emptyTitle")}
             </p>
             <p className="mt-1 text-xs text-neutral-400">
-              문서 업로드로 계약서·큐시트·정산서를 보관하세요. 전자계약으로
-              체결한 계약서는 자동으로 쌓여요.
+              {t("agency.docs.emptyDesc")}
             </p>
           </div>
         )}
       </div>
 
       <p className="mt-4 text-xs text-neutral-400">
-        전자계약(2차 오픈)으로 체결한 계약서는 자동으로 서류함에 보관됩니다.
+        {t("agency.docs.autoArchiveNote")}
       </p>
     </div>
   );

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label, Textarea } from "@/components/ui/input";
+import { useT } from "@/lib/i18n/client";
 import { fileToWebP, type WebPResult } from "@/lib/image";
 import { profileCompleteness } from "@/lib/profile";
 import {
@@ -38,6 +39,7 @@ const TAG_SUGGESTIONS: Record<ArtistCategory, string[]> = {
 const COMMON_TAGS = ["기업행사", "신년회", "브랜드협업", "지방가능", "당일확정"];
 
 export function ArtistEditor({ artist }: { artist: Artist }) {
+  const t = useT();
   const [categories, setCategories] = useState<ArtistCategory[]>(
     artist.categories
   );
@@ -86,7 +88,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
         const data = (await res.json()) as { url: string };
         setSavedUrls((prev) => prev.map((u, i) => (i === idx ? data.url : u)));
       } catch {
-        setCoverError("사진 저장에 실패했어요. 다시 시도해주세요.");
+        setCoverError(t("agency.artistEditor.photoSaveError"));
       } finally {
         setUploadingIdx(null);
       }
@@ -103,8 +105,8 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
     );
 
   const addTag = () => {
-    const t = tagInput.trim();
-    if (t && !tags.includes(t)) setTags((prev) => [...prev, t]);
+    const v = tagInput.trim();
+    if (v && !tags.includes(v)) setTags((prev) => [...prev, v]);
     setTagInput("");
   };
 
@@ -149,7 +151,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
       setSaved(true);
       setTimeout(() => setSaved(false), 4000);
     } catch {
-      setSaveError("저장에 실패했어요. 다시 시도해주세요.");
+      setSaveError(t("agency.artistEditor.saveError"));
     } finally {
       setSaving(false);
     }
@@ -161,13 +163,13 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
         href="/agency/artists"
         className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-neutral-500 hover:text-neutral-900"
       >
-        <ArrowLeft className="h-3.5 w-3.5" /> 아티스트 목록
+        <ArrowLeft className="h-3.5 w-3.5" /> {t("agency.artistEditor.backToList")}
       </Link>
 
       {saved && (
         <div className="mb-4 flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm font-semibold text-brand-700">
-          <CheckCircle2 className="h-4 w-4" /> 저장되었습니다. 변경 내용은 검수
-          후 프로필에 반영돼요.
+          <CheckCircle2 className="h-4 w-4" />{" "}
+          {t("agency.artistEditor.savedNotice")}
         </div>
       )}
 
@@ -178,21 +180,22 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
           <Card className="p-6">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <div>
-                <h2 className="font-bold">사진</h2>
+                <h2 className="font-bold">{t("agency.artistEditor.photosTitle")}</h2>
                 <p className="mt-1 text-xs text-neutral-400">
-                  대표 사진 1장 + 추가 사진 3장. 첫 사진이 검색 결과에
-                  노출됩니다.
+                  {t("agency.artistEditor.photosDesc")}
                 </p>
               </div>
               <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-[10px] font-bold text-brand-700">
-                업로드 시 WebP 자동 변환
+                {t("agency.artistEditor.webpBadge")}
               </span>
             </div>
             <div className="mt-4 grid grid-cols-4 gap-3">
               {[0, 1, 2, 3].map((idx) => {
                 const photo = photos[idx];
                 const isCover = idx === 0;
-                const label = isCover ? "대표 사진 업로드" : null;
+                const label = isCover
+                  ? t("agency.artistEditor.coverUpload")
+                  : null;
                 const previewSrc = photo?.dataUrl ?? savedUrls[idx];
                 return (
                   <label
@@ -241,18 +244,20 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                         )}
                         {uploadingIdx === idx && (
                           <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-xs font-bold text-white">
-                            저장 중…
+                            {t("agency.artistEditor.saving")}
                           </span>
                         )}
                         {uploadingIdx !== idx && savedUrls[idx] && (
                           <span className="absolute right-1.5 top-1.5 rounded-full bg-brand-500 px-2 py-0.5 text-[10px] font-bold text-white">
-                            {isCover ? "공개 프로필 반영됨" : "저장됨"}
+                            {isCover
+                              ? t("agency.artistEditor.coverApplied")
+                              : t("agency.artistEditor.savedBadge")}
                           </span>
                         )}
                       </>
                     ) : converting === idx ? (
                       <span className="text-xs font-semibold text-neutral-500">
-                        변환 중…
+                        {t("agency.artistEditor.convertingLabel")}
                       </span>
                     ) : isCover ? (
                       <>
@@ -261,7 +266,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                           {label}
                         </span>
                         <span className="mt-1 text-[10px]">
-                          JPG·PNG·HEIC, 3:4 권장
+                          {t("agency.artistEditor.coverFormats")}
                         </span>
                       </>
                     ) : (
@@ -280,14 +285,14 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
 
           {/* 기본 정보 */}
           <Card className="space-y-4 p-6">
-            <h2 className="font-bold">기본 정보</h2>
+            <h2 className="font-bold">{t("agency.artistEditor.basicInfo")}</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <Label htmlFor="name">활동명</Label>
+                <Label htmlFor="name">{t("agency.artistEditor.stageName")}</Label>
                 <Input id="name" name="name" defaultValue={artist.name} />
               </div>
               <div>
-                <Label htmlFor="group">그룹명 (선택)</Label>
+                <Label htmlFor="group">{t("agency.artistEditor.groupName")}</Label>
                 <Input
                   id="group"
                   name="groupName"
@@ -296,14 +301,14 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
               </div>
             </div>
             <div>
-              <Label htmlFor="tagline">한 줄 소개</Label>
+              <Label htmlFor="tagline">{t("agency.artistEditor.tagline")}</Label>
               <Input id="tagline" name="tagline" defaultValue={artist.tagline} />
               <p className="mt-1 text-xs text-neutral-400">
-                광고주가 검색 결과에서 가장 먼저 보는 문장이에요
+                {t("agency.artistEditor.taglineHint")}
               </p>
             </div>
             <div>
-              <Label>카테고리 (복수 선택)</Label>
+              <Label>{t("agency.artistEditor.categoryLabel")}</Label>
               <div className="flex flex-wrap gap-2">
                 {(Object.keys(CATEGORY_LABELS) as ArtistCategory[]).map(
                   (c) => (
@@ -321,23 +326,23 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                       {categories.includes(c) && (
                         <Check className="h-3 w-3" />
                       )}
-                      {CATEGORY_LABELS[c]}
+                      {t(`category.${c}`)}
                     </button>
                   )
                 )}
               </div>
             </div>
             <div>
-              <Label htmlFor="tag-input">태그</Label>
+              <Label htmlFor="tag-input">{t("agency.artistEditor.tagsLabel")}</Label>
               <div className="flex flex-wrap items-center gap-1.5">
-                {tags.map((t) => (
-                  <Badge key={t} className="gap-1 py-1">
-                    {t}
+                {tags.map((tag) => (
+                  <Badge key={tag} className="gap-1 py-1">
+                    {tag}
                     <button
                       type="button"
-                      aria-label={`${t} 삭제`}
+                      aria-label={t("agency.artistEditor.tagRemove", { tag })}
                       onClick={() =>
-                        setTags((prev) => prev.filter((x) => x !== t))
+                        setTags((prev) => prev.filter((x) => x !== tag))
                       }
                       className="text-neutral-400 hover:text-neutral-900"
                     >
@@ -356,7 +361,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                     }
                   }}
                   onBlur={addTag}
-                  placeholder="직접 입력 후 Enter"
+                  placeholder={t("agency.artistEditor.tagInputPlaceholder")}
                   className="h-8 w-36 rounded-lg border border-neutral-200 px-2.5 text-sm placeholder:text-neutral-300 focus:border-brand-500 focus:outline-none"
                 />
               </div>
@@ -367,30 +372,30 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                   ...COMMON_TAGS,
                 ];
                 const suggestions = [...new Set(pool)].filter(
-                  (t) => !tags.includes(t)
+                  (tag) => !tags.includes(tag)
                 );
                 if (suggestions.length === 0) return null;
                 return (
                   <div className="mt-2.5">
                     <p className="mb-1.5 text-xs font-medium text-neutral-400">
                       {categories.length === 0
-                        ? "추천 태그 (카테고리를 고르면 더 정확해져요)"
-                        : "추천 태그 — 눌러서 추가"}
+                        ? t("agency.artistEditor.suggestEmpty")
+                        : t("agency.artistEditor.suggestPick")}
                     </p>
                     <div className="flex flex-wrap gap-1.5">
-                      {suggestions.slice(0, 12).map((t) => (
+                      {suggestions.slice(0, 12).map((tag) => (
                         <button
-                          key={t}
+                          key={tag}
                           type="button"
                           onClick={() =>
                             setTags((prev) =>
-                              prev.includes(t) ? prev : [...prev, t]
+                              prev.includes(tag) ? prev : [...prev, tag]
                             )
                           }
                           className="inline-flex items-center gap-1 rounded-full border border-dashed border-neutral-300 px-2.5 py-1 text-xs font-medium text-neutral-500 transition-colors hover:border-brand-500 hover:bg-brand-50 hover:text-brand-600"
                         >
                           <Plus className="h-3 w-3" />
-                          {t}
+                          {tag}
                         </button>
                       ))}
                     </div>
@@ -402,10 +407,10 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
 
           {/* 섭외 조건 */}
           <Card className="space-y-4 p-6">
-            <h2 className="font-bold">섭외 조건</h2>
+            <h2 className="font-bold">{t("agency.artistEditor.bookingTerms")}</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <Label htmlFor="budget-min">최소 예산 (만원)</Label>
+                <Label htmlFor="budget-min">{t("agency.artistEditor.budgetMin")}</Label>
                 <Input
                   id="budget-min"
                   name="budgetMin"
@@ -414,7 +419,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                 />
               </div>
               <div>
-                <Label htmlFor="budget-max">최대 예산 (만원)</Label>
+                <Label htmlFor="budget-max">{t("agency.artistEditor.budgetMax")}</Label>
                 <Input
                   id="budget-max"
                   name="budgetMax"
@@ -424,16 +429,15 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
               </div>
             </div>
             <p className="text-xs text-neutral-400">
-              정확한 금액은 공개되지 않아요. 광고주 예산 필터 매칭에만
-              사용됩니다.
+              {t("agency.artistEditor.budgetHint")}
             </p>
             <div>
-              <Label htmlFor="profile">상세 프로필</Label>
+              <Label htmlFor="profile">{t("agency.artistEditor.profileDetail")}</Label>
               <Textarea
                 id="profile"
                 name="recentWork"
                 rows={4}
-                placeholder="활동 이력, 수상, 대표 작품 등을 적어주세요"
+                placeholder={t("agency.artistEditor.profilePlaceholder")}
                 defaultValue={artist.recentWork.join("\n")}
               />
             </div>
@@ -442,45 +446,45 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
           {/* 견적 프리셋 */}
           <Card className="space-y-4 p-6">
             <div>
-              <h2 className="font-bold">견적 프리셋</h2>
+              <h2 className="font-bold">{t("agency.artistEditor.quotePreset")}</h2>
               <p className="mt-1 text-xs text-neutral-400">
-                저장해두면 인박스에서 견적 회신 시 원클릭으로 채워져요
+                {t("agency.artistEditor.quotePresetHint")}
               </p>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <Label htmlFor="preset-fee">기본 출연료 (만원)</Label>
+                <Label htmlFor="preset-fee">{t("agency.artistEditor.baseFee")}</Label>
                 <Input
                   id="preset-fee"
                   name="presetFee"
                   type="number"
                   defaultValue={artist.quotePreset?.baseFee}
-                  placeholder="예: 3000"
+                  placeholder={t("agency.artistEditor.baseFeePlaceholder")}
                 />
               </div>
               <div>
-                <Label htmlFor="preset-includes">기본 포함 항목</Label>
+                <Label htmlFor="preset-includes">{t("agency.artistEditor.includes")}</Label>
                 <Input
                   id="preset-includes"
                   name="presetIncludes"
                   defaultValue={artist.quotePreset?.includes}
-                  placeholder="예: 공연 30분 + 포토타임"
+                  placeholder={t("agency.artistEditor.includesPlaceholder")}
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="preset-note">조건 메모</Label>
+              <Label htmlFor="preset-note">{t("agency.artistEditor.conditionNote")}</Label>
               <Input
                 id="preset-note"
                 name="presetNote"
                 defaultValue={artist.quotePreset?.note}
-                placeholder="예: 지방 행사 시 이동비 별도, 심야 할증 20%"
+                placeholder={t("agency.artistEditor.conditionNotePlaceholder")}
               />
             </div>
             <div className="grid grid-cols-1 gap-4 border-t border-neutral-100 pt-4 sm:grid-cols-2">
               <div>
                 <Label htmlFor="preset-rate">
-                  소속사 분배율 (%)
+                  {t("agency.artistEditor.agencyRate")}
                 </Label>
                 <Input
                   id="preset-rate"
@@ -493,18 +497,21 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                   )}
                 />
                 <p className="mt-1 text-xs text-neutral-400">
-                  정산 등록 시 기본값으로 채워져요
+                  {t("agency.artistEditor.agencyRateHint")}
                 </p>
               </div>
               <div className="flex items-end">
                 <div className="w-full rounded-xl bg-neutral-50 p-3 text-xs">
-                  <p className="text-neutral-500">현재 설정</p>
+                  <p className="text-neutral-500">{t("agency.artistEditor.currentSetting")}</p>
                   <p className="mt-0.5 font-black">
-                    소속사{" "}
-                    {Math.round((artist.defaultAgencyRate ?? 0.3) * 100)}% ·
-                    아티스트{" "}
-                    {100 - Math.round((artist.defaultAgencyRate ?? 0.3) * 100)}
-                    %
+                    {t("agency.artistEditor.splitCurrent", {
+                      agency: Math.round(
+                        (artist.defaultAgencyRate ?? 0.3) * 100
+                      ),
+                      artist:
+                        100 -
+                        Math.round((artist.defaultAgencyRate ?? 0.3) * 100),
+                    })}
                   </p>
                 </div>
               </div>
@@ -513,10 +520,10 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
 
           {/* SNS */}
           <Card className="space-y-4 p-6">
-            <h2 className="font-bold">SNS 연동</h2>
+            <h2 className="font-bold">{t("agency.artistEditor.snsTitle")}</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <Label htmlFor="instagram">인스타그램</Label>
+                <Label htmlFor="instagram">{t("agency.artistEditor.instagram")}</Label>
                 <Input
                   id="instagram"
                   name="instagram"
@@ -525,17 +532,17 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                 />
               </div>
               <div>
-                <Label htmlFor="youtube">유튜브</Label>
+                <Label htmlFor="youtube">{t("agency.artistEditor.youtube")}</Label>
                 <Input
                   id="youtube"
                   name="youtube"
                   defaultValue={artist.youtube}
-                  placeholder="채널 URL"
+                  placeholder={t("agency.artistEditor.youtubePlaceholder")}
                 />
               </div>
             </div>
             <p className="text-xs text-neutral-400">
-              연동하면 팔로워 수가 자동으로 갱신되고 프로필 신뢰도가 올라가요
+              {t("agency.artistEditor.snsHint")}
             </p>
           </Card>
 
@@ -544,7 +551,9 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
           )}
           <div className="flex gap-3">
             <Button size="lg" type="submit" disabled={saving}>
-              {saving ? "저장 중…" : "저장하기"}
+              {saving
+                ? t("agency.artistEditor.saving")
+                : t("agency.artistEditor.saveCta")}
             </Button>
             <Button
               size="lg"
@@ -552,7 +561,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
               type="button"
               onClick={() => window.open(`/@${artist.slug}`, "_blank")}
             >
-              공개 프로필 미리보기
+              {t("agency.artistEditor.previewPublic")}
             </Button>
           </div>
         </form>
@@ -561,7 +570,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
         <div>
           <Card className="sticky top-24 p-6">
             <h3 className="text-sm font-bold text-neutral-500">
-              프로필 완성도
+              {t("agency.artistEditor.completeness")}
             </h3>
             <p className="mt-2 text-3xl font-black">
               {score}
@@ -602,8 +611,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
               ))}
             </ul>
             <p className="mt-4 rounded-xl bg-neutral-50 p-3 text-xs leading-relaxed text-neutral-500">
-              완성도 100% 프로필은 검색 결과 상단에 우선 노출되고, 섭외 요청
-              전환율이 평균 2.4배 높아요.
+              {t("agency.artistEditor.completenessHint")}
             </p>
           </Card>
         </div>

@@ -15,6 +15,7 @@ import {
   type ScheduleDay,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import {
   CalendarClock,
   CalendarDays,
@@ -26,7 +27,6 @@ import {
 } from "lucide-react";
 
 const TODAY = todayKST();
-const DOW = ["일", "월", "화", "수", "목", "금", "토"];
 const CYCLE: Availability[] = ["available", "partial", "hold", "busy"];
 
 const CELL_STYLES: Record<Availability, string> = {
@@ -56,6 +56,16 @@ export function ScheduleManager({
   initialLeaves: LeaveRequest[];
   feedTokens?: Record<string, string>;
 }) {
+  const t = useT();
+  const DOW = [
+    t("agency.schedule.dowSun"),
+    t("agency.schedule.dowMon"),
+    t("agency.schedule.dowTue"),
+    t("agency.schedule.dowWed"),
+    t("agency.schedule.dowThu"),
+    t("agency.schedule.dowFri"),
+    t("agency.schedule.dowSat"),
+  ];
   const [artistId, setArtistId] = useState(artists[0]?.id ?? "");
   const [edits, setEdits] = useState<Record<string, Availability>>({});
   const [saved, setSaved] = useState(false);
@@ -67,9 +77,9 @@ export function ScheduleManager({
     useState<Record<string, ScheduleDay[]>>(schedulesByArtist);
 
   const copyFeed = () => {
-    const t = feedTokens[artistId];
-    if (!t) return;
-    const url = `${window.location.origin}/api/calendar/${artistId}?t=${t}`;
+    const token = feedTokens[artistId];
+    if (!token) return;
+    const url = `${window.location.origin}/api/calendar/${artistId}?t=${token}`;
     navigator.clipboard?.writeText(url).catch(() => {});
     setCopiedFeed(true);
     setTimeout(() => setCopiedFeed(false), 1800);
@@ -134,8 +144,8 @@ export function ScheduleManager({
 
   // 월 이동 — 오늘 기준월에서 시작
   const [month, setMonth] = useState(() => {
-    const t = todayKST();
-    return { y: Number(t.slice(0, 4)), m: Number(t.slice(5, 7)) };
+    const today = todayKST();
+    return { y: Number(today.slice(0, 4)), m: Number(today.slice(5, 7)) };
   });
   const monthKey = `${month.y}-${String(month.m).padStart(2, "0")}`;
   const daysInMonth = new Date(month.y, month.m, 0).getDate();
@@ -267,7 +277,7 @@ export function ScheduleManager({
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch {
-      setSaveError("저장에 실패했어요. 다시 시도해주세요.");
+      setSaveError(t("agency.schedule.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -299,17 +309,17 @@ export function ScheduleManager({
             <div className="flex items-center gap-1">
               <button
                 onClick={() => moveMonth(-1)}
-                aria-label="이전 달"
+                aria-label={t("agency.schedule.prevMonth")}
                 className="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 transition-colors hover:border-neutral-900"
               >
                 ‹
               </button>
               <h2 className="min-w-28 text-center text-lg font-bold">
-                {month.y}년 {month.m}월
+                {t("agency.schedule.monthLabel", { y: month.y, m: month.m })}
               </h2>
               <button
                 onClick={() => moveMonth(1)}
-                aria-label="다음 달"
+                aria-label={t("agency.schedule.nextMonth")}
                 className="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 transition-colors hover:border-neutral-900"
               >
                 ›
@@ -348,8 +358,17 @@ export function ScheduleManager({
                   onMouseEnter={() => extendDrag(i)}
                   title={
                     hold
-                      ? `${dayNum}일 · 홀드 — ${hold.companyName ?? "요청"} (${hold.expiresAt} 만료)`
-                      : `${dayNum}일 · ${AVAILABILITY_LABELS[day.availability]}`
+                      ? t("agency.schedule.cellHoldTitle", {
+                          d: dayNum,
+                          company:
+                            hold.companyName ??
+                            t("agency.schedule.holdCompanyFallback"),
+                          expires: hold.expiresAt,
+                        })
+                      : t("agency.schedule.cellTitle", {
+                          d: dayNum,
+                          label: AVAILABILITY_LABELS[day.availability],
+                        })
                   }
                   className={cn(
                     "relative flex h-16 flex-col items-center justify-center gap-1 rounded-lg text-sm font-medium transition-colors",
@@ -378,7 +397,7 @@ export function ScheduleManager({
           {selection.size > 0 ? (
             <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-neutral-900 bg-neutral-950 px-4 py-3">
               <span className="mr-1 text-sm font-bold text-white">
-                {selection.size}일 선택
+                {t("agency.schedule.daysSelected", { n: selection.size })}
               </span>
               {CYCLE.map((k) => (
                 <button
@@ -401,13 +420,13 @@ export function ScheduleManager({
                 onClick={() => setSelection(new Set())}
                 className="ml-auto text-xs font-semibold text-neutral-400 hover:text-white"
               >
-                취소
+                {t("common.cancel")}
               </button>
             </div>
           ) : (
             <p className="mt-4 flex items-center gap-1.5 text-xs text-neutral-400">
-              <MousePointerClick className="h-3.5 w-3.5" /> 클릭하면 상태가
-              순환하고, 드래그하면 여러 날을 한 번에 바꿀 수 있어요
+              <MousePointerClick className="h-3.5 w-3.5" />{" "}
+              {t("agency.schedule.dragHint")}
             </p>
           )}
         </Card>
@@ -416,7 +435,9 @@ export function ScheduleManager({
       {/* 사이드 요약 */}
       <div className="space-y-4">
         <Card className="p-6">
-          <h3 className="text-sm font-bold text-neutral-500">{month.m}월 요약</h3>
+          <h3 className="text-sm font-bold text-neutral-500">
+            {t("agency.schedule.monthSummary", { m: month.m })}
+          </h3>
           <div className="mt-3 space-y-2.5">
             {CYCLE.map((k) => (
               <div
@@ -427,7 +448,9 @@ export function ScheduleManager({
                   <span className={cn("h-2.5 w-2.5 rounded", DOT_STYLES[k])} />
                   {AVAILABILITY_LABELS[k]}
                 </span>
-                <span className="font-bold">{counts[k] ?? 0}일</span>
+                <span className="font-bold">
+                  {t("agency.schedule.dayCount", { n: counts[k] ?? 0 })}
+                </span>
               </div>
             ))}
           </div>
@@ -437,8 +460,8 @@ export function ScheduleManager({
         {pendingLeaves.length > 0 && (
           <Card className="border-brand-200 p-6">
             <h3 className="flex items-center gap-1.5 text-sm font-bold text-brand-700">
-              <Palmtree className="h-3.5 w-3.5" /> 휴가 신청{" "}
-              {pendingLeaves.length}건
+              <Palmtree className="h-3.5 w-3.5" />{" "}
+              {t("agency.schedule.leaveRequests", { n: pendingLeaves.length })}
             </h3>
             <div className="mt-3 space-y-3">
               {pendingLeaves.map((req) => (
@@ -457,32 +480,32 @@ export function ScheduleManager({
                       onClick={() => decide(req.id, "approved")}
                       className="rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-neutral-700"
                     >
-                      승인
+                      {t("agency.schedule.approve")}
                     </button>
                     <button
                       onClick={() => decide(req.id, "rejected")}
                       className="rounded-lg px-3 py-1.5 text-xs font-semibold text-neutral-400 hover:text-neutral-900"
                     >
-                      거절
+                      {t("agency.schedule.reject")}
                     </button>
                   </div>
                 </div>
               ))}
             </div>
             <p className="mt-3 text-xs text-neutral-400">
-              승인하면 해당 날짜가 자동으로 &lsquo;불가&rsquo; 처리돼요
+              {t("agency.schedule.leaveApproveNote")}
             </p>
           </Card>
         )}
 
         <Card className="p-6">
           <h3 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
-            <CalendarClock className="h-3.5 w-3.5 text-brand-500" /> 활성 홀드
+            <CalendarClock className="h-3.5 w-3.5 text-brand-500" />{" "}
+            {t("agency.schedule.activeHolds")}
           </h3>
           {artistHolds.length === 0 ? (
             <p className="mt-2 text-sm text-neutral-400">
-              활성 홀드가 없어요. 인박스에서 요청을 수락하면 자동으로
-              생성됩니다.
+              {t("agency.schedule.noHolds")}
             </p>
           ) : (
             <div className="mt-3 space-y-3">
@@ -503,17 +526,17 @@ export function ScheduleManager({
                             : "bg-neutral-200 text-neutral-600"
                         )}
                       >
-                        만료 D-{dday}
+                        {t("agency.schedule.expiresDday", { n: dday })}
                       </span>
                     </div>
                     <p className="mt-0.5 truncate text-xs text-neutral-500">
-                      {hold.companyName ?? "요청 홀드"}
+                      {hold.companyName ?? t("agency.schedule.requestHold")}
                     </p>
                     <button
                       onClick={() => releaseHold(hold.artistId, hold.date)}
                       className="mt-2 text-xs font-semibold text-neutral-400 transition-colors hover:text-neutral-900"
                     >
-                      홀드 해제
+                      {t("agency.schedule.releaseHold")}
                     </button>
                   </div>
                 );
@@ -525,11 +548,11 @@ export function ScheduleManager({
         {/* .ics 구독 피드 */}
         <Card className="p-6">
           <h3 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
-            <CalendarDays className="h-3.5 w-3.5 text-brand-500" /> 캘린더
-            구독 링크
+            <CalendarDays className="h-3.5 w-3.5 text-brand-500" />{" "}
+            {t("agency.schedule.calendarSubTitle")}
           </h3>
           <p className="mt-1 text-xs text-neutral-400">
-            구글/애플 캘린더에 구독하면 확정 일정이 자동으로 들어와요
+            {t("agency.schedule.calendarSubDesc")}
           </p>
           <button
             onClick={copyFeed}
@@ -537,21 +560,28 @@ export function ScheduleManager({
           >
             {copiedFeed ? (
               <>
-                <Check className="h-3.5 w-3.5 text-brand-500" /> URL 복사됨
+                <Check className="h-3.5 w-3.5 text-brand-500" />{" "}
+                {t("agency.schedule.urlCopied")}
               </>
             ) : (
               <>
-                <Link2 className="h-3.5 w-3.5" /> .ics 구독 URL 복사
+                <Link2 className="h-3.5 w-3.5" />{" "}
+                {t("agency.schedule.copyIcsUrl")}
               </>
             )}
           </button>
         </Card>
 
         <Card className="p-6">
-          <h3 className="text-sm font-bold text-neutral-500">공개 범위</h3>
+          <h3 className="text-sm font-bold text-neutral-500">
+            {t("agency.schedule.publicScopeTitle")}
+          </h3>
           <p className="mt-2 text-sm leading-relaxed text-neutral-600">
-            광고주에게는 <span className="font-semibold">가능 여부만</span>{" "}
-            공개됩니다. 장소·세부 일정·촬영 내용은 절대 노출되지 않아요.
+            {t("agency.schedule.publicScopePrefix")}{" "}
+            <span className="font-semibold">
+              {t("agency.schedule.publicScopeEmph")}
+            </span>{" "}
+            {t("agency.schedule.publicScopeSuffix")}
           </p>
         </Card>
 
@@ -560,8 +590,8 @@ export function ScheduleManager({
         )}
         {saved ? (
           <div className="flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm font-semibold text-brand-700">
-            <CheckCircle2 className="h-4 w-4" /> 저장 완료 · 공개 프로필에
-            반영됐어요
+            <CheckCircle2 className="h-4 w-4" />{" "}
+            {t("agency.schedule.saveDone")}
           </div>
         ) : (
           <Button
@@ -570,7 +600,9 @@ export function ScheduleManager({
             disabled={!dirty || saving}
             onClick={handleSave}
           >
-            {saving ? "저장 중…" : "변경사항 저장"}
+            {saving
+              ? t("agency.schedule.saving")
+              : t("agency.schedule.saveChanges")}
           </Button>
         )}
       </div>

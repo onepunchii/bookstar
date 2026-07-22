@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useT } from "@/lib/i18n/client";
 import { todayKST } from "@/lib/date";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -39,6 +40,7 @@ export function DaySheet({
   artists: Artist[];
   managers: Manager[];
 }) {
+  const t = useT();
   const [schedules, setSchedules] = useState<DaySchedule[]>(initialSchedules);
   const [dateIdx, setDateIdx] = useState(0);
   const [sent, setSent] = useState<Record<string, boolean>>({});
@@ -133,7 +135,7 @@ export function DaySheet({
           <button
             onClick={() => setDateIdx((i) => Math.max(0, i - 1))}
             disabled={safeIdx === 0}
-            aria-label="이전 날짜"
+            aria-label={t("agency.today.prevDate")}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 transition-colors hover:border-neutral-900 disabled:opacity-30"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -142,21 +144,21 @@ export function DaySheet({
             {formatDate(date)}
             {date === TODAY && (
               <span className="ml-1.5 align-middle text-xs font-bold text-brand-500">
-                오늘
+                {t("agency.today.todayBadge")}
               </span>
             )}
           </h2>
           <button
             onClick={() => setDateIdx((i) => Math.min(dates.length - 1, i + 1))}
             disabled={safeIdx === dates.length - 1}
-            aria-label="다음 날짜"
+            aria-label={t("agency.today.nextDate")}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 transition-colors hover:border-neutral-900 disabled:opacity-30"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
           <button
             onClick={() => setCalOpen((v) => !v)}
-            aria-label="캘린더로 보기"
+            aria-label={t("agency.today.viewCalendar")}
             className={cn(
               "flex h-9 w-9 items-center justify-center rounded-lg border transition-colors",
               calOpen
@@ -172,14 +174,14 @@ export function DaySheet({
             onClick={() => setEditorState({ mode: "create", date })}
             className="flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-neutral-200 bg-white px-4 text-sm font-semibold text-neutral-700 transition-colors hover:border-neutral-900"
           >
-            <Plus className="h-4 w-4" /> 새 스케줄
+            <Plus className="h-4 w-4" /> {t("agency.today.newSchedule")}
           </button>
           {daySchedules.length > 0 && (
             <button
               onClick={sendAll}
               className="flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
             >
-              <MessageCircle className="h-4 w-4" /> 전체 카톡 전파
+              <MessageCircle className="h-4 w-4" /> {t("agency.today.broadcastAll")}
             </button>
           )}
         </div>
@@ -190,19 +192,19 @@ export function DaySheet({
         <Card className="mb-5 p-5">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="text-base font-bold">
-              {calY}년 {calM}월
+              {t("agency.today.yearMonth", { y: calY, m: calM })}
             </h3>
             <div className="flex gap-1">
               <button
                 onClick={() => setCalOffset((v) => v - 1)}
-                aria-label="이전 달"
+                aria-label={t("agency.today.prevMonth")}
                 className="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 hover:border-neutral-900"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
               </button>
               <button
                 onClick={() => setCalOffset((v) => v + 1)}
-                aria-label="다음 달"
+                aria-label={t("agency.today.nextMonth")}
                 className="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 hover:border-neutral-900"
               >
                 <ChevronRight className="h-3.5 w-3.5" />
@@ -210,9 +212,17 @@ export function DaySheet({
             </div>
           </div>
           <div className="grid grid-cols-7 gap-1.5">
-            {["일", "월", "화", "수", "목", "금", "토"].map((d) => (
+            {[
+              t("agency.today.dowSun"),
+              t("agency.today.dowMon"),
+              t("agency.today.dowTue"),
+              t("agency.today.dowWed"),
+              t("agency.today.dowThu"),
+              t("agency.today.dowFri"),
+              t("agency.today.dowSat"),
+            ].map((d, di) => (
               <div
-                key={d}
+                key={di}
                 className="pb-1 text-center text-xs font-medium text-neutral-400"
               >
                 {d}
@@ -243,7 +253,7 @@ export function DaySheet({
                   {i + 1}
                   {count > 0 && (
                     <span className="text-[9px] font-bold leading-none opacity-90">
-                      {count}건
+                      {t("agency.today.countUnit", { n: count })}
                     </span>
                   )}
                 </button>
@@ -251,18 +261,15 @@ export function DaySheet({
             })}
           </div>
           <p className="mt-3 text-xs text-neutral-400">
-            색칠된 날짜를 누르면 해당 날짜 시트로 이동해요
+            {t("agency.today.calendarHint")}
           </p>
         </Card>
       )}
 
       {daySchedules.length === 0 ? (
         <Card className="flex h-48 flex-col items-center justify-center gap-2 text-neutral-400">
-          <p className="font-semibold">이 날은 등록된 스케줄이 없어요</p>
-          <p className="text-sm">
-            확정된 섭외는 자동으로 데일리에 내려오고, 위의 &lsquo;새
-            스케줄&rsquo; 버튼으로 직접 등록할 수도 있어요
-          </p>
+          <p className="font-semibold">{t("agency.today.empty")}</p>
+          <p className="text-sm">{t("agency.today.emptyDesc")}</p>
         </Card>
       ) : (
         <div className="space-y-4">
@@ -290,7 +297,7 @@ export function DaySheet({
                     onClick={() =>
                       setEditorState({ mode: "edit", schedule: s })
                     }
-                    aria-label="편집"
+                    aria-label={t("agency.today.edit")}
                     className="flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 transition-colors hover:border-neutral-900 hover:text-neutral-900"
                   >
                     <Pencil className="h-3.5 w-3.5" />
@@ -301,24 +308,24 @@ export function DaySheet({
                   >
                     {copied === s.id ? (
                       <>
-                        <Check className="h-3.5 w-3.5 text-brand-500" /> 복사됨
+                        <Check className="h-3.5 w-3.5 text-brand-500" /> {t("agency.today.copied")}
                       </>
                     ) : (
                       <>
-                        <Link2 className="h-3.5 w-3.5" /> 공유 링크
+                        <Link2 className="h-3.5 w-3.5" /> {t("agency.today.shareLink")}
                       </>
                     )}
                   </button>
                   {sent[s.id] ? (
                     <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-neutral-100 px-3 py-2 text-xs font-semibold text-neutral-500">
-                      <Check className="h-3.5 w-3.5 text-brand-500" /> 전파됨
+                      <Check className="h-3.5 w-3.5 text-brand-500" /> {t("agency.today.broadcasted")}
                     </span>
                   ) : (
                     <button
                       onClick={() => broadcast(s.id)}
                       className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-brand-500 hover:text-brand-600"
                     >
-                      <MessageCircle className="h-3.5 w-3.5" /> 카톡 전파
+                      <MessageCircle className="h-3.5 w-3.5" /> {t("agency.today.broadcast")}
                     </button>
                   )}
                 </div>

@@ -1,7 +1,18 @@
+"use client";
+
 import { AVAILABILITY_LABELS, type ScheduleDay } from "@/lib/types";
+import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 
-const DOW = ["일", "월", "화", "수", "목", "금", "토"];
+const DOW_KEYS = [
+  "sun",
+  "mon",
+  "tue",
+  "wed",
+  "thu",
+  "fri",
+  "sat",
+] as const;
 
 const CELL_STYLES: Record<ScheduleDay["availability"], string> = {
   available: "bg-brand-500 text-white",
@@ -28,6 +39,7 @@ export function AvailabilityCalendar({
   firstDayOffset: number; // 1일의 요일 (0=일)
   dark?: boolean;
 }) {
+  const t = useT();
   const styles = dark ? CELL_STYLES_DARK : CELL_STYLES;
   return (
     <div>
@@ -50,15 +62,15 @@ export function AvailabilityCalendar({
         </div>
       </div>
       <div className="grid grid-cols-7 gap-1.5">
-        {DOW.map((d) => (
+        {DOW_KEYS.map((k) => (
           <div
-            key={d}
+            key={k}
             className={cn(
               "pb-1 text-center text-xs font-medium",
               dark ? "text-white/35" : "text-neutral-400"
             )}
           >
-            {d}
+            {t(`sched.calendar.${k}`)}
           </div>
         ))}
         {Array.from({ length: firstDayOffset }).map((_, i) => (
@@ -69,20 +81,24 @@ export function AvailabilityCalendar({
           return (
             <div
               key={day.date}
-              title={`${dayNum}일 ${AVAILABILITY_LABELS[day.availability]}${day.note ? ` · ${day.note}` : ""}`}
+              title={`${t("sched.calendar.dayTitle", { n: dayNum, label: AVAILABILITY_LABELS[day.availability] })}${day.note ? ` · ${day.note}` : ""}`}
               className={cn(
                 "flex h-11 flex-col items-center justify-center rounded-lg text-sm font-medium",
                 styles[day.availability]
               )}
             >
               {dayNum}
-              {day.note && <span className="text-[9px] leading-none">오전</span>}
+              {day.note && (
+                <span className="text-[9px] leading-none">
+                  {t("sched.calendar.morning")}
+                </span>
+              )}
             </div>
           );
         })}
       </div>
       <p className={cn("mt-3 text-xs", dark ? "text-white/40" : "text-neutral-400")}>
-        가능 여부만 공개됩니다. 상세 일정·장소는 소속사만 확인할 수 있어요.
+        {t("sched.calendar.notice")}
       </p>
     </div>
   );

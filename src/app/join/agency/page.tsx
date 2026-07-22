@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/wordmark";
+import { getT } from "@/lib/i18n/server";
 import { Building2, Mail, Phone, Sparkles } from "lucide-react";
 
 export const metadata = {
@@ -9,19 +10,20 @@ export const metadata = {
   alternates: { canonical: "/join/agency" },
 };
 
-export default function AgencyJoinPage() {
+export default async function AgencyJoinPage() {
+  const { t } = await getT();
   return (
     <div className="min-h-dvh bg-white">
       <header className="border-b border-neutral-200">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4 sm:px-6">
-          <Link href="/join" aria-label="가입 처음으로">
+          <Link href="/join" aria-label={t("join.agency.backToStart")}>
             <Wordmark height={20} />
           </Link>
           <Link
             href="/join/creator"
             className="text-xs font-semibold text-neutral-400 hover:text-neutral-900"
           >
-            개인 크리에이터로 등록 →
+            {t("join.agency.registerAsCreator")}
           </Link>
         </div>
       </header>
@@ -31,14 +33,16 @@ export default function AgencyJoinPage() {
           <Building2 className="h-6 w-6" />
         </div>
         <h1 className="mt-5 text-center text-3xl font-black tracking-tight">
-          소속사·MCN 입점 문의
+          {t("join.agency.title")}
         </h1>
         <p className="mt-3 text-center leading-relaxed text-neutral-600">
-          소속 아티스트 다수를 xong 소속사 센터로 관리하시려면 담당자와의
-          짧은 미팅을 거쳐 초대 링크를 발급해드려요.
+          {t("join.agency.lead")}
           <br />
-          검수·시연 포함 평균{" "}
-          <span className="font-bold text-neutral-900">2 영업일</span> 소요됩니다.
+          {t("join.agency.turnaroundPrefix")}{" "}
+          <span className="font-bold text-neutral-900">
+            {t("join.agency.turnaroundDays")}
+          </span>{" "}
+          {t("join.agency.turnaroundSuffix")}
         </p>
 
         <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -50,7 +54,7 @@ export default function AgencyJoinPage() {
               <Mail className="h-4.5 w-4.5" />
             </span>
             <div>
-              <p className="text-sm font-bold">이메일 문의</p>
+              <p className="text-sm font-bold">{t("join.agency.emailInquiry")}</p>
               <p className="mt-0.5 text-xs text-neutral-500">
                 hello@xong.co.kr
               </p>
@@ -64,7 +68,7 @@ export default function AgencyJoinPage() {
               <Phone className="h-4.5 w-4.5" />
             </span>
             <div>
-              <p className="text-sm font-bold">전화 문의</p>
+              <p className="text-sm font-bold">{t("join.agency.phoneInquiry")}</p>
               <p className="mt-0.5 text-xs text-neutral-500">02-555-1234</p>
             </div>
           </a>
@@ -72,20 +76,20 @@ export default function AgencyJoinPage() {
 
         <div className="mt-8 rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
           <p className="flex items-center gap-1.5 text-sm font-bold text-neutral-900">
-            <Sparkles className="h-4 w-4 text-brand-500" /> 이런 소속사에게
-            추천해요
+            <Sparkles className="h-4 w-4 text-brand-500" />{" "}
+            {t("join.agency.recommendTitle")}
           </p>
           <ul className="mt-3 space-y-1.5 text-sm text-neutral-600">
-            <li>· 소속 아티스트 3팀 이상, 카톡·엑셀로 일정 관리 중</li>
-            <li>· 대행사 거치지 않는 직거래 채널이 필요한 곳</li>
-            <li>· 매니저별 담당 아티스트 분리·정산 자동화가 필요한 곳</li>
+            <li>{t("join.agency.recommend1")}</li>
+            <li>{t("join.agency.recommend2")}</li>
+            <li>{t("join.agency.recommend3")}</li>
           </ul>
         </div>
 
         <p className="mt-8 text-center text-xs text-neutral-400">
-          시연을 먼저 보시겠어요?{" "}
+          {t("join.agency.demoPrompt")}{" "}
           <Link href="/" className="font-semibold text-neutral-900">
-            데모 대시보드 열기
+            {t("join.agency.demoCta")}
           </Link>
         </p>
       </div>

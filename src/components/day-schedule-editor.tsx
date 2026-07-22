@@ -5,10 +5,22 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import type { Artist, DaySchedule, DayStop, Manager } from "@/lib/types";
 import { Car, MapPin, Plus, Trash2, UserRound, X } from "lucide-react";
 
 const EVENT_TYPES = ["방송", "예능", "광고", "축제", "행사", "유튜브", "강연"];
+
+// 표시용 라벨 키(값은 백엔드로 가는 한국어 enum 그대로 유지)
+const EVENT_TYPE_KEYS: Record<string, string> = {
+  방송: "sched.dayEditor.typeBroadcast",
+  예능: "booking.typeVariety",
+  광고: "booking.typeAd",
+  축제: "booking.typeFestival",
+  행사: "booking.typeEvent",
+  유튜브: "booking.typeYoutube",
+  강연: "booking.typeLecture",
+};
 
 const EMPTY_STOP: DayStop = { time: "10:00", label: "현장 도착", location: "" };
 
@@ -33,6 +45,7 @@ export function DayScheduleEditor({
   onSaved,
   onDeleted,
 }: Props) {
+  const t = useT();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -106,7 +119,7 @@ export function DayScheduleEditor({
       }
       onClose();
     } catch {
-      setError("저장에 실패했어요. 다시 시도해주세요.");
+      setError(t("sched.dayEditor.saveError"));
     } finally {
       setSaving(false);
     }
@@ -114,7 +127,8 @@ export function DayScheduleEditor({
 
   const del = async () => {
     if (!initial) return;
-    if (!confirm(`${initial.title} 스케줄을 삭제할까요?`)) return;
+    if (!confirm(t("sched.dayEditor.confirmDelete", { title: initial.title })))
+      return;
     setSaving(true);
     setError(null);
     try {
@@ -127,7 +141,7 @@ export function DayScheduleEditor({
       onDeleted(initial.id);
       onClose();
     } catch {
-      setError("삭제에 실패했어요. 다시 시도해주세요.");
+      setError(t("sched.dayEditor.deleteError"));
     } finally {
       setSaving(false);
     }
@@ -162,15 +176,17 @@ export function DayScheduleEditor({
         <div className="flex items-start justify-between gap-4 border-b border-neutral-100 p-6">
           <div>
             <h2 className="text-lg font-black tracking-tight">
-              {mode === "create" ? "새 데일리 스케줄" : "데일리 스케줄 편집"}
+              {mode === "create"
+                ? t("sched.dayEditor.titleCreate")
+                : t("sched.dayEditor.titleEdit")}
             </h2>
             <p className="mt-0.5 text-sm text-neutral-500">
-              현장 매니저·아티스트에게 카톡으로 전파될 스케줄이에요
+              {t("sched.dayEditor.desc")}
             </p>
           </div>
           <button
             onClick={onClose}
-            aria-label="닫기"
+            aria-label={t("common.close")}
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-neutral-400 hover:bg-neutral-100"
           >
             <X className="h-4 w-4" />
@@ -182,7 +198,7 @@ export function DayScheduleEditor({
           {/* 아티스트·날짜 */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <Label htmlFor="d-artist">아티스트</Label>
+              <Label htmlFor="d-artist">{t("sched.dayEditor.artist")}</Label>
               <Select
                 id="d-artist"
                 value={artistId}
@@ -197,7 +213,7 @@ export function DayScheduleEditor({
               </Select>
             </div>
             <div>
-              <Label htmlFor="d-date">날짜</Label>
+              <Label htmlFor="d-date">{t("sched.dayEditor.date")}</Label>
               <Input
                 id="d-date"
                 type="date"
@@ -209,32 +225,32 @@ export function DayScheduleEditor({
 
           {/* 타이틀 */}
           <div>
-            <Label htmlFor="d-title">행사명</Label>
+            <Label htmlFor="d-title">{t("sched.dayEditor.eventName")}</Label>
             <Input
               id="d-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="예: 음악방송 생방송, 브랜드 협업 촬영"
+              placeholder={t("sched.dayEditor.titlePlaceholder")}
             />
           </div>
 
           {/* 이벤트 유형 */}
           <div>
-            <Label>이벤트 유형</Label>
+            <Label>{t("sched.dayEditor.eventType")}</Label>
             <div className="flex flex-wrap gap-2">
-              {EVENT_TYPES.map((t) => (
+              {EVENT_TYPES.map((opt) => (
                 <button
-                  key={t}
+                  key={opt}
                   type="button"
-                  onClick={() => setEventType(t)}
+                  onClick={() => setEventType(opt)}
                   className={cn(
                     "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
-                    eventType === t
+                    eventType === opt
                       ? "bg-brand-500 text-white"
                       : "border border-neutral-200 text-neutral-600 hover:border-brand-500"
                   )}
                 >
-                  {t}
+                  {t(EVENT_TYPE_KEYS[opt] ?? opt)}
                 </button>
               ))}
             </div>
@@ -244,14 +260,15 @@ export function DayScheduleEditor({
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <Label htmlFor="d-manager">
-                <UserRound className="mr-1 inline h-3 w-3" /> 담당 매니저
+                <UserRound className="mr-1 inline h-3 w-3" />{" "}
+                {t("sched.dayEditor.manager")}
               </Label>
               <Select
                 id="d-manager"
                 value={manager}
                 onChange={(e) => setManager(e.target.value)}
               >
-                <option value="">— 배정 안 함 —</option>
+                <option value="">{t("sched.dayEditor.managerNone")}</option>
                 {managers.map((m) => (
                   <option key={m.id} value={`${m.name} ${m.role}`}>
                     {m.name} {m.role} · {m.phone}
@@ -261,13 +278,14 @@ export function DayScheduleEditor({
             </div>
             <div>
               <Label htmlFor="d-vehicle">
-                <Car className="mr-1 inline h-3 w-3" /> 차량 (선택)
+                <Car className="mr-1 inline h-3 w-3" />{" "}
+                {t("sched.dayEditor.vehicle")} {t("common.optional")}
               </Label>
               <Input
                 id="d-vehicle"
                 value={vehicle}
                 onChange={(e) => setVehicle(e.target.value)}
-                placeholder="예: 카니발 12허 3456"
+                placeholder={t("sched.dayEditor.vehiclePlaceholder")}
               />
             </div>
           </div>
@@ -275,13 +293,13 @@ export function DayScheduleEditor({
           {/* 타임라인 스텝 */}
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <Label>타임라인 스텝</Label>
+              <Label>{t("sched.dayEditor.timeline")}</Label>
               <button
                 type="button"
                 onClick={addStop}
                 className="flex items-center gap-1 rounded-lg border border-brand-200 bg-brand-50 px-2.5 py-1 text-xs font-bold text-brand-700 hover:bg-brand-100"
               >
-                <Plus className="h-3 w-3" /> 스텝 추가
+                <Plus className="h-3 w-3" /> {t("sched.dayEditor.addStep")}
               </button>
             </div>
             <div className="space-y-2">
@@ -303,7 +321,7 @@ export function DayScheduleEditor({
                         onChange={(e) =>
                           updateStop(i, { label: e.target.value })
                         }
-                        placeholder="라벨 (예: 픽업, 헤메코)"
+                        placeholder={t("sched.dayEditor.stopLabelPlaceholder")}
                       />
                     </div>
                     <div className="sm:col-span-4">
@@ -314,7 +332,9 @@ export function DayScheduleEditor({
                           onChange={(e) =>
                             updateStop(i, { location: e.target.value })
                           }
-                          placeholder="장소 (선택)"
+                          placeholder={t(
+                            "sched.dayEditor.stopLocationPlaceholder"
+                          )}
                           className="pl-6"
                         />
                       </div>
@@ -323,7 +343,7 @@ export function DayScheduleEditor({
                       <button
                         type="button"
                         onClick={() => removeStop(i)}
-                        aria-label="스텝 삭제"
+                        aria-label={t("sched.dayEditor.deleteStep")}
                         className="flex h-9 w-9 items-center justify-center rounded-lg text-neutral-400 hover:bg-neutral-100 hover:text-neutral-900"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -337,13 +357,15 @@ export function DayScheduleEditor({
 
           {/* 메모 */}
           <div>
-            <Label htmlFor="d-memo">메모 (선택)</Label>
+            <Label htmlFor="d-memo">
+              {t("sched.dayEditor.memo")} {t("common.optional")}
+            </Label>
             <Textarea
               id="d-memo"
               rows={2}
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
-              placeholder="예: 포토타임 있음, 의상 2벌 준비, 심야 예상"
+              placeholder={t("sched.dayEditor.memoPlaceholder")}
             />
           </div>
         </div>
@@ -355,7 +377,7 @@ export function DayScheduleEditor({
               onClick={del}
               className="flex items-center gap-1 text-xs font-semibold text-neutral-400 hover:text-brand-600"
             >
-              <Trash2 className="h-3.5 w-3.5" /> 이 스케줄 삭제
+              <Trash2 className="h-3.5 w-3.5" /> {t("sched.dayEditor.deleteThis")}
             </button>
           ) : (
             <span />
@@ -367,10 +389,10 @@ export function DayScheduleEditor({
               </span>
             )}
             <Button variant="ghost" size="md" onClick={onClose}>
-              취소
+              {t("common.cancel")}
             </Button>
             <Button size="md" disabled={!canSave || saving} onClick={save}>
-              {saving ? "저장 중…" : "저장"}
+              {saving ? t("sched.dayEditor.saving") : t("common.save")}
             </Button>
           </div>
         </div>

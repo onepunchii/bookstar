@@ -3,6 +3,7 @@
 // 가용 캘린더 월 이동 래퍼 — 이번달부터 미래(monthsAhead)까지만.
 // 행사는 미리 잡으므로 지난달은 표시하지 않는다.
 import { useState } from "react";
+import { useT } from "@/lib/i18n/client";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
 import { todayKST } from "@/lib/date";
 import type { ScheduleDay } from "@/lib/types";
@@ -18,9 +19,10 @@ export function MonthAvailability({
   dark?: boolean;
   monthsAhead?: number; // 이번달 + N개월
 }) {
-  const t = todayKST();
-  const baseY = Number(t.slice(0, 4));
-  const baseM = Number(t.slice(5, 7));
+  const t = useT();
+  const today = todayKST();
+  const baseY = Number(today.slice(0, 4));
+  const baseM = Number(today.slice(5, 7));
   const [offset, setOffset] = useState(0); // 0=이번달
 
   const d = new Date(baseY, baseM - 1 + offset, 1);
@@ -55,7 +57,7 @@ export function MonthAvailability({
         <button
           onClick={() => setOffset((v) => Math.max(0, v - 1))}
           disabled={offset === 0}
-          aria-label="이전 달"
+          aria-label={t("sched.month.prevMonth")}
           className={btn}
         >
           <ChevronLeft className="h-3.5 w-3.5" />
@@ -71,7 +73,7 @@ export function MonthAvailability({
         <button
           onClick={() => setOffset((v) => Math.min(monthsAhead, v + 1))}
           disabled={offset === monthsAhead}
-          aria-label="다음 달"
+          aria-label={t("sched.month.nextMonth")}
           className={btn}
         >
           <ChevronRight className="h-3.5 w-3.5" />
@@ -79,7 +81,7 @@ export function MonthAvailability({
       </div>
       <AvailabilityCalendar
         days={days}
-        monthLabel={`${y}년 ${m}월`}
+        monthLabel={t("sched.month.monthLabel", { y, m })}
         firstDayOffset={firstOffset}
         dark={dark}
       />

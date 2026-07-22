@@ -7,11 +7,13 @@ import { artistLimit } from "@/lib/plan";
 import { profileCompleteness } from "@/lib/profile";
 import { CATEGORY_LABELS, formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { getT } from "@/lib/i18n/server";
 import { Camera, Pencil } from "lucide-react";
 import { NewArtistButton } from "./new-artist-button";
 import { StartAgencyButton } from "../start-agency-button";
 
 export default async function AgencyArtistsPage() {
+  const { t } = await getT();
   const agency = await getSessionAgency();
   const visible = await getAgencyArtists(agency?.id);
   const demo = !agency;
@@ -19,8 +21,8 @@ export default async function AgencyArtistsPage() {
     <div>
       {demo && (
         <div className="mb-4 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-700">
-          👀 <span className="font-bold">테스터 보기</span> — 샘플 데이터예요.
-          소속사로 시작하면 여기부터 내 아티스트만 실제로 관리해요.
+          👀 <span className="font-bold">{t("agency.artists.demoBadge")}</span> —{" "}
+          {t("agency.artists.demoDesc")}
           <div>
             <StartAgencyButton />
           </div>
@@ -28,11 +30,11 @@ export default async function AgencyArtistsPage() {
       )}
       <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-neutral-500">
-          소속 아티스트 {visible.length}팀
+          {t("agency.artists.teamCount", { n: visible.length })}
           {agency &&
             Number.isFinite(artistLimit(agency.agencyType)) &&
-            ` / ${artistLimit(agency.agencyType)}팀`}{" "}
-          · 프로필과 사진은 여기서 관리해요
+            ` / ${t("agency.artists.teamLimit", { n: artistLimit(agency.agencyType) })}`}{" "}
+          {t("agency.artists.manageHint")}
         </p>
         {agency &&
           agency.agencyType === "solo" &&
@@ -41,7 +43,7 @@ export default async function AgencyArtistsPage() {
               href="/agency/account"
               className="rounded-full bg-brand-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-brand-600"
             >
-              여러 팀 관리 → 소속사로 업그레이드
+              {t("agency.artists.upgradeCta")}
             </Link>
           )}
       </div>
@@ -59,7 +61,7 @@ export default async function AgencyArtistsPage() {
                 </span>
                 {!artist.imageUrl && (
                   <span className="absolute bottom-2 right-2 flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-[10px] font-semibold text-neutral-500">
-                    <Camera className="h-3 w-3" /> 사진 미등록
+                    <Camera className="h-3 w-3" /> {t("agency.artists.noPhoto")}
                   </span>
                 )}
               </div>
@@ -74,16 +76,22 @@ export default async function AgencyArtistsPage() {
                   <Badge
                     variant={artist.verified ? "dark" : "outline"}
                   >
-                    {artist.verified ? "공개 중" : "검수 대기"}
+                    {artist.verified
+                      ? t("agency.artists.statusPublic")
+                      : t("agency.artists.statusReview")}
                   </Badge>
                 </div>
                 <p className="mt-1 text-xs text-neutral-500">
-                  예산대 {formatBudget(artist.budgetRange[0])}~
-                  {formatBudget(artist.budgetRange[1])}
+                  {t("agency.artists.budgetRange", {
+                    min: formatBudget(artist.budgetRange[0]),
+                    max: formatBudget(artist.budgetRange[1]),
+                  })}
                 </p>
                 <div className="mt-3">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-neutral-400">프로필 완성도</span>
+                    <span className="text-neutral-400">
+                      {t("agency.artists.completeness")}
+                    </span>
                     <span
                       className={cn(
                         "font-bold",
@@ -104,7 +112,8 @@ export default async function AgencyArtistsPage() {
                   href={`/agency/artists/${artist.slug}`}
                   className="mt-4 flex h-9 items-center justify-center gap-1.5 rounded-lg border border-neutral-200 text-sm font-semibold transition-colors hover:border-neutral-900"
                 >
-                  <Pencil className="h-3.5 w-3.5" /> 프로필 관리
+                  <Pencil className="h-3.5 w-3.5" />{" "}
+                  {t("agency.artists.manageProfile")}
                 </Link>
               </div>
             </Card>

@@ -9,6 +9,7 @@ import { getAgencyArtists, getPublicScheduleMap } from "@/lib/data/artists";
 import { getBookingRequests } from "@/lib/data/booking-requests";
 import { countOpenCampaigns } from "@/lib/data/campaigns";
 import { getSessionAgency } from "@/lib/data/session";
+import { getT } from "@/lib/i18n/server";
 import { generateMetrics, recentDelta } from "@/lib/metrics";
 import { mockIdForSlug } from "@/lib/mock-data";
 import { getAgencyBundles } from "@/lib/data/bundles";
@@ -30,6 +31,7 @@ import {
 const TODAY = todayKST();
 
 export default async function AgencyDashboardPage() {
+  const { t } = await getT();
   const agency = await getSessionAgency();
   const [ARTISTS, BOOKING_REQUESTS, scheduleMap, openCampaigns, bundles] =
     await Promise.all([
@@ -79,10 +81,10 @@ export default async function AgencyDashboardPage() {
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-black text-neutral-900">
-              오픈 캠페인 {openCampaigns}건 모집 중
+              {t("agency.dashboard.openCampaigns", { n: openCampaigns })}
             </p>
             <p className="text-xs text-neutral-500">
-              광고주가 올린 섭외 건에 우리 아티스트로 직접 지원하세요
+              {t("agency.dashboard.openCampaignsDesc")}
             </p>
           </div>
           <ArrowRight className="h-4 w-4 shrink-0 text-brand-500" />
@@ -93,30 +95,30 @@ export default async function AgencyDashboardPage() {
       {[
         {
           icon: Inbox,
-          label: "새 요청",
-          value: `${pending.length}건`,
-          sub: "응답 대기 중",
+          label: t("agency.dashboard.kpiNewRequests"),
+          value: t("agency.dashboard.countCases", { n: pending.length }),
+          sub: t("agency.dashboard.kpiNewRequestsSub"),
           highlight: true,
           href: "/agency/inbox",
         },
         {
           icon: TrendingUp,
-          label: "협의 중",
-          value: `${negotiating.length}건`,
-          sub: "견적 진행 중",
+          label: t("agency.dashboard.kpiNegotiating"),
+          value: t("agency.dashboard.countCases", { n: negotiating.length }),
+          sub: t("agency.dashboard.kpiNegotiatingSub"),
           href: "/agency/inbox",
         },
         {
           icon: Clock,
-          label: "평균 응답",
-          value: "4시간",
-          sub: "응답률 98% · 빠른 응답 배지 유지 중",
+          label: t("agency.dashboard.kpiAvgResponse"),
+          value: t("agency.dashboard.kpiAvgResponseValue"),
+          sub: t("agency.dashboard.kpiAvgResponseSub"),
         },
         {
           icon: CalendarDays,
-          label: "이번 달 확정",
+          label: t("agency.dashboard.kpiConfirmedThisMonth"),
           value: formatBudget(confirmedRevenue),
-          sub: `수락 ${accepted.length}건 기준`,
+          sub: t("agency.dashboard.kpiConfirmedSub", { n: accepted.length }),
         },
       ].map((kpi) => {
         const inner = (
@@ -165,12 +167,12 @@ export default async function AgencyDashboardPage() {
       {/* 응답 대기 요청 */}
       <Card className="p-6 md:col-span-2 lg:col-span-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold">응답을 기다리는 요청</h2>
+          <h2 className="text-lg font-bold">{t("agency.dashboard.pendingRequestsTitle")}</h2>
           <Link
             href="/agency/inbox"
             className="flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700"
           >
-            인박스 <ArrowRight className="h-3.5 w-3.5" />
+            {t("agency.dashboard.inbox")} <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
         <div className="mt-4 space-y-3">
@@ -187,8 +189,11 @@ export default async function AgencyDashboardPage() {
                   <Badge>{req.eventType}</Badge>
                 </div>
                 <p className="mt-0.5 truncate text-xs text-neutral-500">
-                  {req.artistName} · {req.date} · 예산{" "}
-                  {formatBudget(req.budget)}
+                  {t("agency.dashboard.requestMeta", {
+                    artist: req.artistName,
+                    date: req.date,
+                    budget: formatBudget(req.budget),
+                  })}
                 </p>
               </div>
               <StatusBadge status={req.status} />
@@ -200,7 +205,10 @@ export default async function AgencyDashboardPage() {
       {/* 오늘 일정 */}
       <Card className="p-6">
         <h2 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
-          <CalendarDays className="h-3.5 w-3.5 text-brand-500" /> 오늘 ({Number(TODAY.slice(5, 7))}/{Number(TODAY.slice(8))})
+          <CalendarDays className="h-3.5 w-3.5 text-brand-500" />{" "}
+          {t("agency.dashboard.today", {
+            date: `${Number(TODAY.slice(5, 7))}/${Number(TODAY.slice(8))}`,
+          })}
         </h2>
         <div className="mt-3 space-y-2.5">
           {todaySchedule.slice(0, 5).map(({ artist, day }) => (
@@ -228,7 +236,7 @@ export default async function AgencyDashboardPage() {
           href="/agency/schedule"
           className="mt-4 block text-xs font-semibold text-brand-600 hover:text-brand-700"
         >
-          일정 관리로 이동 →
+          {t("agency.dashboard.goToSchedule")} →
         </Link>
       </Card>
 
@@ -242,10 +250,11 @@ export default async function AgencyDashboardPage() {
       {/* 화제성 급증 */}
       <Card className="p-6">
         <h2 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
-          <Flame className="h-3.5 w-3.5 text-brand-500" /> 화제성 급증
+          <Flame className="h-3.5 w-3.5 text-brand-500" />{" "}
+          {t("agency.dashboard.trendingTitle")}
         </h2>
         <p className="mt-1 text-xs text-neutral-400">
-          최근 7일 기사 증감률 Top 3
+          {t("agency.dashboard.trendingDesc")}
         </p>
         <div className="mt-3 space-y-3">
           {trending.map(({ artist, delta, series }) => (
@@ -284,11 +293,11 @@ export default async function AgencyDashboardPage() {
       {/* 프로필 완성도 */}
       <Card className="p-6">
         <h2 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
-          <CircleAlert className="h-3.5 w-3.5 text-brand-500" /> 프로필
-          완성도
+          <CircleAlert className="h-3.5 w-3.5 text-brand-500" />{" "}
+          {t("agency.dashboard.profileCompleteness")}
         </h2>
         <p className="mt-1 text-xs text-neutral-400">
-          완성도가 높을수록 검색 노출이 올라가요
+          {t("agency.dashboard.profileCompletenessDesc")}
         </p>
         <div className="mt-3 space-y-3">
           {incomplete.map(({ artist, score }) => (

@@ -2,9 +2,11 @@
 
 import { getCurrentManager, useScopeStore } from "@/lib/scope-store";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { Filter, UserRound } from "lucide-react";
 
 export function ScopeToggle({ className }: { className?: string }) {
+  const t = useT();
   const { currentManagerId, myArtistsOnly, toggleMyOnly } = useScopeStore();
   const manager = getCurrentManager(currentManagerId);
   return (
@@ -23,7 +25,9 @@ export function ScopeToggle({ className }: { className?: string }) {
       ) : (
         <Filter className="h-3 w-3" />
       )}
-      {myArtistsOnly ? `내 담당 (${manager.name})만 보기` : "전체 보기"}
+      {myArtistsOnly
+        ? t("scope.myOnly", { name: manager.name })
+        : t("scope.all")}
     </button>
   );
 }

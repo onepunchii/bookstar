@@ -4,11 +4,12 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { Building2, Check, FileText, Loader2, Upload, UserRound, X } from "lucide-react";
 
 const TYPES = [
-  { value: "solo", icon: UserRound, title: "1인 기획사 · 유튜버", desc: "무료" },
-  { value: "company", icon: Building2, title: "기업 · MCN", desc: "SaaS" },
+  { value: "solo", icon: UserRound },
+  { value: "company", icon: Building2 },
 ] as const;
 
 const field =
@@ -19,6 +20,7 @@ export function VerifyForm({
 }: {
   initial: { companyName: string; manager: string; phone: string; agencyType: string };
 }) {
+  const t = useT();
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [agencyType, setAgencyType] = useState(initial.agencyType || "solo");
@@ -42,7 +44,7 @@ export function VerifyForm({
       fd.append("file", file, file.name);
       const res = await fetch("/api/join/agency/doc", { method: "POST", body: fd });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "업로드 실패");
+      if (!res.ok) throw new Error(data.error ?? t("agency.verify.uploadFailed"));
       setDocUrl(data.url);
       setDocName(file.name);
       // OCR 자동 입력 — 서류에서 인식된 값으로 빈 칸 채움
@@ -60,17 +62,17 @@ export function VerifyForm({
       }
       if (ocr?.bizType) setBizType(ocr.bizType);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "서류 업로드 실패");
+      setError(e instanceof Error ? e.message : t("agency.verify.docUploadFailed"));
     } finally {
       setUploading(false);
     }
   };
 
   const submit = async () => {
-    if (!companyName.trim()) return setError("소속사명을 입력해주세요");
+    if (!companyName.trim()) return setError(t("agency.verify.errNameRequired"));
     // 기업·MCN(company)만 사업자등록증 필수. 1인·인플루언서(solo)는 서류 없이 즉시 인증.
     if (agencyType === "company" && !docUrl)
-      return setError("사업자등록증 등 인증 서류를 첨부해주세요");
+      return setError(t("agency.verify.errDocRequired"));
     setSaving(true);
     setError(null);
     try {
@@ -88,11 +90,11 @@ export function VerifyForm({
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "제출 실패");
+      if (!res.ok) throw new Error(data.error ?? t("agency.verify.submitFailed"));
       router.push("/agency");
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "제출에 실패했어요");
+      setError(e instanceof Error ? e.message : t("agency.verify.submitFailed2"));
       setSaving(false);
     }
   };
@@ -101,23 +103,28 @@ export function VerifyForm({
     <div className="space-y-6">
       {/* 유형 */}
       <div>
-        <p className="mb-2 text-sm font-semibold text-neutral-700">소속사 유형</p>
+        <p className="mb-2 text-sm font-semibold text-neutral-700">{t("agency.verify.typeLabel")}</p>
         <div className="grid grid-cols-2 gap-3">
-          {TYPES.map((t) => {
-            const active = agencyType === t.value;
+          {TYPES.map((opt) => {
+            const active = agencyType === opt.value;
+            const title =
+              opt.value === "solo"
+                ? t("agency.verify.typeSoloTitle")
+                : t("agency.verify.typeCompanyTitle");
+            const desc = opt.value === "solo" ? t("common.free") : "SaaS";
             return (
               <button
-                key={t.value}
+                key={opt.value}
                 type="button"
-                onClick={() => setAgencyType(t.value)}
+                onClick={() => setAgencyType(opt.value)}
                 className={cn(
                   "rounded-2xl border-2 p-4 text-left transition-colors",
                   active ? "border-brand-500 bg-brand-50" : "border-neutral-200 hover:border-neutral-400"
                 )}
               >
-                <t.icon className={cn("h-5 w-5", active ? "text-brand-500" : "text-neutral-400")} />
-                <p className="mt-2 text-sm font-bold text-neutral-900">{t.title}</p>
-                <p className="text-xs text-neutral-500">{t.desc}</p>
+                <opt.icon className={cn("h-5 w-5", active ? "text-brand-500" : "text-neutral-400")} />
+                <p className="mt-2 text-sm font-bold text-neutral-900">{title}</p>
+                <p className="text-xs text-neutral-500">{desc}</p>
               </button>
             );
           })}
@@ -125,26 +132,26 @@ export function VerifyForm({
       </div>
 
       <label className="block">
-        <span className="mb-1.5 block text-sm font-semibold text-neutral-700">소속사명 *</span>
-        <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="예) 스타원엔터테인먼트" className={field} />
+        <span className="mb-1.5 block text-sm font-semibold text-neutral-700">{t("agency.verify.nameLabel")}</span>
+        <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder={t("agency.verify.namePlaceholder")} className={field} />
       </label>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="mb-1.5 block text-sm font-semibold text-neutral-700">담당자</span>
-          <input value={manager} onChange={(e) => setManager(e.target.value)} placeholder="예) 박세진 실장" className={field} />
+          <span className="mb-1.5 block text-sm font-semibold text-neutral-700">{t("agency.verify.managerLabel")}</span>
+          <input value={manager} onChange={(e) => setManager(e.target.value)} placeholder={t("agency.verify.managerPlaceholder")} className={field} />
         </label>
         <label className="block">
-          <span className="mb-1.5 block text-sm font-semibold text-neutral-700">연락처</span>
+          <span className="mb-1.5 block text-sm font-semibold text-neutral-700">{t("agency.verify.phoneLabel")}</span>
           <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="010-0000-0000" className={field} />
         </label>
       </div>
 
       <label className="block">
         <span className="mb-1.5 block text-sm font-semibold text-neutral-700">
-          사업자등록번호{" "}
+          {t("agency.verify.bizNumberLabel")}{" "}
           <span className="font-normal text-neutral-400">
-            (서류 첨부 시 자동 인식)
+            {t("agency.verify.bizNumberHint")}
           </span>
         </span>
         <input
@@ -158,17 +165,17 @@ export function VerifyForm({
       {/* 서류 — 기업·MCN만 필수, 1인·인플루언서는 선택 */}
       <div>
         <p className="mb-1.5 text-sm font-semibold text-neutral-700">
-          인증 서류{" "}
+          {t("agency.verify.docLabel")}{" "}
           {agencyType === "company" ? (
             <>
               <span className="text-brand-500">*</span>{" "}
               <span className="font-normal text-neutral-400">
-                사업자등록증 (PDF·이미지)
+                {t("agency.verify.docHint")}
               </span>
             </>
           ) : (
             <span className="font-bold text-brand-600">
-              (선택) 개인은 서류 없이 바로 시작할 수 있어요 ✨
+              {t("agency.verify.docOptional")}
             </span>
           )}
         </p>
@@ -188,14 +195,13 @@ export function VerifyForm({
             <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
               <FileText className="h-5 w-5 shrink-0 text-emerald-600" />
               <span className="min-w-0 flex-1 truncate text-sm font-medium text-emerald-800">{docName}</span>
-              <button type="button" onClick={() => { setDocUrl(null); setDocName(null); setOcrFilled(false); }} aria-label="삭제" className="text-emerald-600 hover:text-emerald-800">
+              <button type="button" onClick={() => { setDocUrl(null); setDocName(null); setOcrFilled(false); }} aria-label={t("agency.verify.delete")} className="text-emerald-600 hover:text-emerald-800">
                 <X className="h-4 w-4" />
               </button>
             </div>
             {ocrFilled && (
               <p className="mt-1.5 text-xs font-medium text-brand-600">
-                ✨ 서류에서 상호·대표자·사업자번호를 자동 입력했어요 — 확인 후
-                제출해 주세요
+                {t("agency.verify.ocrFilled")}
               </p>
             )}
           </div>
@@ -207,7 +213,7 @@ export function VerifyForm({
             className="flex h-24 w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-neutral-300 bg-neutral-50 text-sm font-semibold text-neutral-500 transition-colors hover:border-brand-400 hover:text-neutral-900 disabled:opacity-50"
           >
             {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-            {uploading ? "업로드 중…" : "서류 첨부하기"}
+            {uploading ? t("agency.verify.uploading") : t("agency.verify.attachDoc")}
           </button>
         )}
       </div>
@@ -220,11 +226,10 @@ export function VerifyForm({
         className="flex w-full items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 py-3.5 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
       >
         {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-        인증하고 바로 시작하기
+        {t("agency.verify.submitCta")}
       </button>
       <p className="text-center text-xs text-neutral-400">
-        서류가 자동 확인되면 즉시 소속사 센터가 열려요. 지금은 모든 기능이
-        무료입니다.
+        {t("agency.verify.footnote")}
       </p>
     </div>
   );

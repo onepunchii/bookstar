@@ -10,9 +10,19 @@ import type { AgencyBundle } from "@/lib/data/bundles";
 import type { Artist } from "@/lib/types";
 import { formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { Check, Loader2, Package, Plus, Trash2, X } from "lucide-react";
 
 const EVENT_TYPES = ["행사", "광고", "축제", "팬미팅", "강연", "예능"];
+// 백엔드로 가는 값(한국어)은 유지, 표시용은 booking.type* 키로 번역
+const EVENT_TYPE_KEYS: Record<string, string> = {
+  행사: "booking.typeEvent",
+  광고: "booking.typeAd",
+  축제: "booking.typeFestival",
+  팬미팅: "booking.typeFanmeeting",
+  강연: "booking.typeLecture",
+  예능: "booking.typeVariety",
+};
 
 export function BundlesPanel({
   bundles,
@@ -23,6 +33,7 @@ export function BundlesPanel({
   artists: Artist[];
   agencyType: string;
 }) {
+  const t = useT();
   const router = useRouter();
   const canCreate = agencyType === "company" && artists.length >= 2;
   const [open, setOpen] = useState(false);
@@ -39,8 +50,8 @@ export function BundlesPanel({
     set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
   const submit = async () => {
-    if (!title.trim()) return setError("세트 이름을 입력해주세요");
-    if (picked.length < 2) return setError("아티스트를 2팀 이상 골라주세요");
+    if (!title.trim()) return setError(t("agency.bundles.errNameRequired"));
+    if (picked.length < 2) return setError(t("agency.bundles.errPickTwo"));
     setSaving(true);
     setError(null);
     // 구성 아티스트 예산 합으로 세트 예산 범위 자동 계산
@@ -62,7 +73,7 @@ export function BundlesPanel({
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "생성 실패");
+      if (!res.ok) throw new Error(data.error ?? t("agency.bundles.createFailed"));
       setOpen(false);
       setTitle("");
       setSubtitle("");
@@ -71,20 +82,20 @@ export function BundlesPanel({
       setDiscount("");
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "생성에 실패했어요");
+      setError(e instanceof Error ? e.message : t("agency.bundles.createFailedRetry"));
       setSaving(false);
     }
   };
 
   const remove = async (id: string) => {
-    if (!confirm("이 번들을 삭제할까요?")) return;
+    if (!confirm(t("agency.bundles.deleteConfirm"))) return;
     setBusyDel(id);
     try {
       const res = await fetch(`/api/bundles/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error();
       router.refresh();
     } catch {
-      alert("삭제에 실패했어요.");
+      alert(t("agency.bundles.deleteFailed"));
       setBusyDel(null);
     }
   };
@@ -93,8 +104,8 @@ export function BundlesPanel({
     <Card className="p-6 md:col-span-2">
       <div className="flex items-center justify-between">
         <h2 className="flex items-center gap-1.5 text-sm font-bold text-neutral-500">
-          <Package className="h-3.5 w-3.5 text-brand-500" /> 번들 상품{" "}
-          {bundles.length}개
+          <Package className="h-3.5 w-3.5 text-brand-500" />{" "}
+          {t("agency.bundles.title", { n: bundles.length })}
         </h2>
         {canCreate ? (
           <button
@@ -102,7 +113,7 @@ export function BundlesPanel({
             className="flex shrink-0 items-center gap-1 whitespace-nowrap text-xs font-semibold text-brand-600 hover:text-brand-700"
           >
             {open ? <X className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
-            {open ? "닫기" : "새 번들 만들기"}
+            {open ? t("common.close") : t("agency.bundles.newBundle")}
           </button>
         ) : (
           <Link
@@ -110,13 +121,13 @@ export function BundlesPanel({
             className="shrink-0 whitespace-nowrap rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] font-semibold text-neutral-400 hover:text-neutral-700"
           >
             {agencyType !== "company"
-              ? "기업·MCN 전용 → 업그레이드"
-              : "아티스트 2팀+ 필요"}
+              ? t("agency.bundles.companyOnlyUpgrade")
+              : t("agency.bundles.needTwoArtists")}
           </Link>
         )}
       </div>
       <p className="mt-1 text-xs text-neutral-400">
-        아티스트 조합을 세트로 팔면 단건보다 전환율이 높아요
+        {t("agency.bundles.subtitle")}
       </p>
 
       {/* 생성 폼 */}
@@ -125,18 +136,18 @@ export function BundlesPanel({
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="세트 이름 (예: 여름 페스티벌 세트)"
+            placeholder={t("agency.bundles.namePlaceholder")}
             className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
           <input
             value={subtitle}
             onChange={(e) => setSubtitle(e.target.value)}
-            placeholder="한 줄 설명 (선택)"
+            placeholder={t("agency.bundles.subtitlePlaceholder")}
             className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
           <div>
             <p className="mb-1.5 text-xs font-semibold text-neutral-500">
-              구성 아티스트 (2팀+)
+              {t("agency.bundles.artistsLabel")}
             </p>
             <div className="flex flex-wrap gap-1.5">
               {artists.map((a) => (
@@ -158,35 +169,35 @@ export function BundlesPanel({
           </div>
           <div>
             <p className="mb-1.5 text-xs font-semibold text-neutral-500">
-              행사 유형 (선택)
+              {t("agency.bundles.eventTypesLabel")}
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {EVENT_TYPES.map((t) => (
+              {EVENT_TYPES.map((evt) => (
                 <button
-                  key={t}
+                  key={evt}
                   type="button"
-                  onClick={() => toggle(events, t, setEvents)}
+                  onClick={() => toggle(events, evt, setEvents)}
                   className={cn(
                     "rounded-full px-3 py-1 text-xs font-medium transition-colors",
-                    events.includes(t)
+                    events.includes(evt)
                       ? "bg-neutral-900 text-white"
                       : "bg-white text-neutral-500 ring-1 ring-neutral-200 hover:text-neutral-900"
                   )}
                 >
-                  {t}
+                  {t(EVENT_TYPE_KEYS[evt])}
                 </button>
               ))}
             </div>
           </div>
           <div className="flex items-center gap-2">
             <label className="text-xs font-semibold text-neutral-500">
-              세트 할인율
+              {t("agency.bundles.discountLabel")}
             </label>
             <input
               type="number"
               value={discount}
               onChange={(e) => setDiscount(e.target.value)}
-              placeholder="예: 10"
+              placeholder={t("agency.bundles.discountPlaceholder")}
               className="w-20 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
             <span className="text-xs text-neutral-400">%</span>
@@ -202,7 +213,7 @@ export function BundlesPanel({
             ) : (
               <Check className="h-4 w-4" />
             )}
-            번들 만들기
+            {t("agency.bundles.createCta")}
           </button>
         </div>
       )}
@@ -247,7 +258,7 @@ export function BundlesPanel({
             <button
               onClick={() => remove(b.id)}
               disabled={busyDel === b.id}
-              aria-label="번들 삭제"
+              aria-label={t("agency.bundles.deleteAria")}
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-neutral-300 hover:bg-neutral-100 hover:text-neutral-700 disabled:opacity-50"
             >
               {busyDel === b.id ? (
@@ -261,10 +272,10 @@ export function BundlesPanel({
         {bundles.length === 0 && !open && (
           <div className="rounded-xl border border-dashed border-neutral-200 py-8 text-center text-xs text-neutral-400">
             {canCreate
-              ? "아직 만든 번들이 없어요. '새 번들 만들기'로 아티스트를 세트로 묶어보세요."
+              ? t("agency.bundles.emptyCanCreate")
               : agencyType !== "company"
-                ? "번들은 기업·MCN(소속사) 전용이에요. 계정·요금제에서 전환하면 세트 상품을 만들 수 있어요."
-                : "아티스트를 2팀 이상 등록하면 세트로 묶을 수 있어요."}
+                ? t("agency.bundles.emptyCompanyOnly")
+                : t("agency.bundles.emptyNeedTwo")}
           </div>
         )}
       </div>

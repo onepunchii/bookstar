@@ -4,10 +4,12 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { AGENCY_TABS, activeTabIndex } from "./tabs";
 
 export function AgencyTabs() {
   const pathname = usePathname();
+  const t = useT();
   const scrollRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef<HTMLAnchorElement>(null);
   const activeIdx = activeTabIndex(pathname);
@@ -85,7 +87,7 @@ export function AgencyTabs() {
                 : "border-transparent text-neutral-400 hover:text-neutral-700"
             )}
           >
-            {tab.label}
+            {t(tab.label)}
           </Link>
         );
       })}

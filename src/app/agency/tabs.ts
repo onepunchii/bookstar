@@ -1,15 +1,15 @@
 // 소속사 센터 탭 정의 — 탭바와 스와이프 네비게이션이 공유.
 export const AGENCY_TABS: { href: string; label: string }[] = [
-  { href: "/agency", label: "대시보드" },
-  { href: "/agency/today", label: "데일리" },
-  { href: "/agency/inbox", label: "섭외 인박스" },
-  { href: "/agency/campaigns", label: "오픈 캠페인" },
-  { href: "/agency/artists", label: "아티스트" },
-  { href: "/agency/schedule", label: "일정 관리" },
-  { href: "/agency/settlement", label: "정산" },
-  { href: "/agency/docs", label: "서류함" },
-  { href: "/agency/account", label: "계정·요금제" },
-  { href: "/agency/settings", label: "설정" },
+  { href: "/agency", label: "nav.agency.dashboard" },
+  { href: "/agency/today", label: "nav.agency.today" },
+  { href: "/agency/inbox", label: "agency.tab.inbox" },
+  { href: "/agency/campaigns", label: "agency.tab.campaigns" },
+  { href: "/agency/artists", label: "nav.agency.artists" },
+  { href: "/agency/schedule", label: "agency.tab.schedule" },
+  { href: "/agency/settlement", label: "nav.agency.settlement" },
+  { href: "/agency/docs", label: "agency.tab.docs" },
+  { href: "/agency/account", label: "agency.tab.account" },
+  { href: "/agency/settings", label: "agency.tab.settings" },
 ];
 
 // 현재 경로의 탭 인덱스 (하위 경로 포함)

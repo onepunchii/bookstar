@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import type { Artist, Manager } from "@/lib/types";
 import { Loader2, Phone, Plus, UserRound, X } from "lucide-react";
+import { useT } from "@/lib/i18n/client";
 
 const ROLES = ["실장", "팀장", "로드매니저"];
 
@@ -15,6 +16,7 @@ export function ManagersPanel({
   initialManagers: Manager[];
   artists: Artist[];
 }) {
+  const t = useT();
   const [managers, setManagers] = useState<Manager[]>(initialManagers);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [name, setName] = useState("");
@@ -36,7 +38,7 @@ export function ManagersPanel({
         body: JSON.stringify({ name, role, phone }),
       });
       if (res.status === 401) {
-        setError("로그인 후 초대할 수 있어요.");
+        setError(t("agency.managers.errLogin"));
         return;
       }
       if (!res.ok) throw new Error();
@@ -49,7 +51,7 @@ export function ManagersPanel({
       setPhone("");
       setInviteOpen(false);
     } catch {
-      setError("초대에 실패했어요.");
+      setError(t("agency.managers.errInvite"));
     } finally {
       setSaving(false);
     }
@@ -78,9 +80,9 @@ export function ManagersPanel({
     <section>
       <div className="mb-5 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold">매니저 관리</h2>
+          <h2 className="text-lg font-bold">{t("agency.managers.title")}</h2>
           <p className="mt-0.5 text-sm text-neutral-500">
-            담당 매니저는 자기 담당 아티스트의 일정과 요청만 볼 수 있어요
+            {t("agency.managers.subtitle")}
           </p>
         </div>
         <button
@@ -88,7 +90,7 @@ export function ManagersPanel({
           className="flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
         >
           {inviteOpen ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-          {inviteOpen ? "닫기" : "매니저 초대"}
+          {inviteOpen ? t("common.close") : t("agency.managers.invite")}
         </button>
       </div>
 
@@ -98,7 +100,7 @@ export function ManagersPanel({
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="이름"
+              placeholder={t("agency.managers.namePlaceholder")}
               className="h-10 rounded-lg border border-neutral-300 px-3 text-sm"
             />
             <select
@@ -113,7 +115,7 @@ export function ManagersPanel({
             <input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="연락처 (선택)"
+              placeholder={t("agency.managers.phonePlaceholder")}
               className="h-10 rounded-lg border border-neutral-300 px-3 text-sm"
             />
             <button
@@ -122,7 +124,7 @@ export function ManagersPanel({
               className="flex h-10 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg bg-neutral-900 px-4 text-sm font-semibold text-white disabled:opacity-50"
             >
               {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-              초대하기
+              {t("agency.managers.inviteSubmit")}
             </button>
           </div>
           {error && (
@@ -134,11 +136,10 @@ export function ManagersPanel({
       {managers.length === 0 && (
         <div className="rounded-2xl border border-dashed border-neutral-300 py-12 text-center">
           <p className="text-sm font-semibold text-neutral-700">
-            아직 등록된 매니저가 없어요
+            {t("agency.managers.empty")}
           </p>
           <p className="mt-1 text-xs text-neutral-400">
-            &lsquo;매니저 초대&rsquo;로 담당자를 추가하면 담당 아티스트별로 권한을
-            나눌 수 있어요.
+            {t("agency.managers.emptyHint")}
           </p>
         </div>
       )}
@@ -158,7 +159,7 @@ export function ManagersPanel({
                   </Badge>
                   {m.demo && (
                     <span className="rounded-full bg-neutral-200 px-1.5 py-0.5 text-[10px] font-bold text-neutral-500">
-                      예시
+                      {t("agency.managers.demoBadge")}
                     </span>
                   )}
                 </div>
@@ -171,7 +172,7 @@ export function ManagersPanel({
             </div>
             <div className="mt-4">
               <p className="text-xs font-semibold text-neutral-400">
-                담당 아티스트
+                {t("agency.managers.assignedArtists")}
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {m.artistIds.map((id) => {
@@ -180,7 +181,7 @@ export function ManagersPanel({
                     <button
                       key={id}
                       onClick={() => toggleAssign(m.id, id)}
-                      title="클릭하면 배정 해제"
+                      title={t("agency.managers.unassignHint")}
                       className="group"
                     >
                       <Badge variant="brand">
@@ -192,7 +193,7 @@ export function ManagersPanel({
                 })}
                 {m.demo ? (
                   <span className="rounded-full border border-dashed border-neutral-200 px-2.5 py-0.5 text-xs text-neutral-300">
-                    예시 · 초대 후 배정 가능
+                    {t("agency.managers.demoAssignHint")}
                   </span>
                 ) : (
                   <button
@@ -201,7 +202,7 @@ export function ManagersPanel({
                     }
                     className="rounded-full border border-dashed border-neutral-300 px-2.5 py-0.5 text-xs font-medium text-neutral-400 transition-colors hover:border-brand-500 hover:text-brand-600"
                   >
-                    + 배정
+                    + {t("agency.managers.assign")}
                   </button>
                 )}
               </div>
@@ -221,7 +222,7 @@ export function ManagersPanel({
                   {artists.filter((a) => !m.artistIds.includes(a.id))
                     .length === 0 && (
                     <span className="text-xs text-neutral-400">
-                      배정할 아티스트가 없어요
+                      {t("agency.managers.noArtistsToAssign")}
                     </span>
                   )}
                 </div>

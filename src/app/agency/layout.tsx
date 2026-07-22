@@ -4,6 +4,7 @@ import { signOut } from "@/auth";
 import { DemoBanner } from "@/components/demo-banner";
 import { ScopeToggle } from "@/components/scope-toggle";
 import { getSessionAgency, getSessionUser } from "@/lib/data/session";
+import { getT } from "@/lib/i18n/server";
 import { AgencyGate } from "./agency-gate";
 import { AgencyTabs } from "./agency-tabs";
 import { SwipeNav } from "./swipe-nav";
@@ -14,7 +15,6 @@ export const metadata: Metadata = {
 };
 
 const PLAN_LABEL: Record<string, string> = {
-  free: "무료",
   growth: "Growth",
   enterprise: "Enterprise",
 };
@@ -24,6 +24,7 @@ export default async function AgencyLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { t } = await getT();
   const [user, agency, cookieStore] = await Promise.all([
     getSessionUser(),
     getSessionAgency(),
@@ -37,16 +38,18 @@ export default async function AgencyLayout({
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <div className="mb-1 flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-black tracking-tight">소속사 센터</h1>
+        <h1 className="text-2xl font-black tracking-tight">{t("agency.layout.title")}</h1>
         <div className="flex items-center gap-3">
           {verified && <ScopeToggle />}
           <span className="hidden items-center gap-1.5 text-sm text-neutral-400 sm:inline-flex">
             {demo
-              ? "둘러보기 · 샘플 소속사"
-              : (agency?.companyName ?? "소속사 미인증")}
+              ? t("agency.layout.demoLabel")
+              : (agency?.companyName ?? t("agency.layout.unverified"))}
             {verified && agency && (
               <span className="rounded-full bg-neutral-900 px-2 py-0.5 text-[10px] font-bold text-white">
-                {PLAN_LABEL[agency.plan] ?? agency.plan}
+                {agency.plan === "free"
+                  ? t("common.free")
+                  : (PLAN_LABEL[agency.plan] ?? agency.plan)}
               </span>
             )}
           </span>
@@ -61,14 +64,14 @@ export default async function AgencyLayout({
                 type="submit"
                 className="rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-semibold text-neutral-500 transition-colors hover:border-neutral-900 hover:text-neutral-900"
               >
-                로그아웃
+                {t("common.logout")}
               </button>
             </form>
           )}
         </div>
       </div>
       <p className="mb-5 text-sm text-neutral-500">
-        아티스트 프로필, 일정, 섭외 요청을 한 곳에서 관리하세요
+        {t("agency.layout.subtitle")}
       </p>
       <AgencyTabs />
       {showConsole ? (

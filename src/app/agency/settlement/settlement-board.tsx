@@ -11,13 +11,8 @@ import {
   type Settlement,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { BellRing, Check, FileText, Plus } from "lucide-react";
-
-const STATUS_LABEL = {
-  paid: "지급 완료",
-  pending: "지급 대기",
-  overdue: "미수금",
-} as const;
 
 const STATUS_STYLE = {
   paid: "bg-neutral-100 text-neutral-500",
@@ -32,6 +27,7 @@ export function SettlementBoard({
   initialSettlements: Settlement[];
   artists: Artist[];
 }) {
+  const t = useT();
   const [reminded, setReminded] = useState<Record<string, boolean>>({});
   const [editorOpen, setEditorOpen] = useState(false);
   const [visible, setVisible] = useState<Settlement[]>(initialSettlements);
@@ -67,25 +63,24 @@ export function SettlementBoard({
       <div className="mb-5 flex items-center justify-between">
         <div>
           <p className="text-sm text-neutral-500">
-            정산 {visible.length}건 · 아티스트별 분배율은 프로필에서 기본값
-            설정
+            {t("agency.settlement.subtitle", { n: visible.length })}
           </p>
         </div>
         <button
           onClick={() => setEditorOpen(true)}
           className="flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
         >
-          <Plus className="h-4 w-4" /> 새 정산 등록
+          <Plus className="h-4 w-4" /> {t("agency.settlement.newCta")}
         </button>
       </div>
 
       {/* 요약 */}
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
-          { label: "이번 분기 총 정산", value: formatBudget(total) },
-          { label: "지급 대기", value: formatBudget(pending) },
+          { label: t("agency.settlement.kpiTotal"), value: formatBudget(total) },
+          { label: t("agency.settlement.kpiPending"), value: formatBudget(pending) },
           {
-            label: "미수금",
+            label: t("agency.settlement.kpiOverdue"),
             value: formatBudget(overdue),
             highlight: overdue > 0,
           },
@@ -124,11 +119,11 @@ export function SettlementBoard({
                         STATUS_STYLE[s.status]
                       )}
                     >
-                      {STATUS_LABEL[s.status]}
+                      {t(`agency.settlement.status.${s.status}`)}
                     </span>
                     {hasInvoice && (
                       <Badge variant="outline">
-                        <FileText className="h-3 w-3" /> 세금계산서 발행
+                        <FileText className="h-3 w-3" /> {t("agency.settlement.taxInvoice")}
                       </Badge>
                     )}
                   </div>
@@ -142,14 +137,14 @@ export function SettlementBoard({
                       onClick={() => markInvoice(s.id)}
                       className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-neutral-900"
                     >
-                      <FileText className="h-3.5 w-3.5" /> 세금계산서 발행
+                      <FileText className="h-3.5 w-3.5" /> {t("agency.settlement.taxInvoice")}
                     </button>
                   )}
                   {s.status === "overdue" &&
                     (reminded[s.id] ? (
                       <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-neutral-100 px-3 py-2 text-xs font-semibold text-neutral-500">
                         <Check className="h-3.5 w-3.5 text-brand-500" />{" "}
-                        리마인더 발송됨
+                        {t("agency.settlement.reminderSent")}
                       </span>
                     ) : (
                       <button
@@ -158,7 +153,7 @@ export function SettlementBoard({
                         }
                         className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-brand-500 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-600"
                       >
-                        <BellRing className="h-3.5 w-3.5" /> 입금 리마인더
+                        <BellRing className="h-3.5 w-3.5" /> {t("agency.settlement.remindPayment")}
                       </button>
                     ))}
                 </div>
@@ -167,12 +162,12 @@ export function SettlementBoard({
               {/* 분배 내역 */}
               <div className="mt-4 grid grid-cols-2 gap-3 rounded-xl bg-neutral-50 p-4 text-sm sm:grid-cols-5">
                 <div>
-                  <p className="text-xs text-neutral-400">총 출연료</p>
+                  <p className="text-xs text-neutral-400">{t("agency.settlement.grossLabel")}</p>
                   <p className="mt-0.5 font-bold">{formatBudget(s.gross)}</p>
                 </div>
                 <div>
                   <p className="text-xs text-neutral-400">
-                    소속사 ({Math.round(s.agencyRate * 100)}%)
+                    {t("agency.settlement.agencyShareLabel", { rate: Math.round(s.agencyRate * 100) })}
                   </p>
                   <p className="mt-0.5 font-bold">
                     {formatBudget(b.agencyShare)}
@@ -180,22 +175,22 @@ export function SettlementBoard({
                 </div>
                 <div>
                   <p className="text-xs text-neutral-400">
-                    아티스트 ({Math.round((1 - s.agencyRate) * 100)}%)
+                    {t("agency.settlement.artistShareLabel", { rate: Math.round((1 - s.agencyRate) * 100) })}
                   </p>
                   <p className="mt-0.5 font-bold">
                     {formatBudget(b.artistGross)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-neutral-400">원천징수 3.3%</p>
+                  <p className="text-xs text-neutral-400">{t("agency.settlement.withholdingLabel")}</p>
                   <p className="mt-0.5 font-bold text-neutral-500">
-                    -{b.withholding.toLocaleString()}만원
+                    -{t("agency.settlement.manwon", { value: b.withholding.toLocaleString() })}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-neutral-400">실지급액</p>
+                  <p className="text-xs text-neutral-400">{t("agency.settlement.netLabel")}</p>
                   <p className="mt-0.5 font-black text-brand-600">
-                    {b.artistNet.toLocaleString()}만원
+                    {t("agency.settlement.manwon", { value: b.artistNet.toLocaleString() })}
                   </p>
                 </div>
               </div>
@@ -205,8 +200,7 @@ export function SettlementBoard({
       </div>
 
       <p className="mt-4 text-xs text-neutral-400">
-        분배율은 아티스트별 계약 조건에 따라 설정됩니다. 정산 내역은 아티스트
-        계정에도 동일하게 공개돼요.
+        {t("agency.settlement.footnote")}
       </p>
 
       {editorOpen && (

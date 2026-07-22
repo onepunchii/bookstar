@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
 import type { LeaveRequest } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 
 const STATUS_STYLE = {
   pending: "bg-neutral-900 text-white",
@@ -14,9 +15,9 @@ const STATUS_STYLE = {
 } as const;
 
 const STATUS_LABEL = {
-  pending: "승인 대기",
-  approved: "승인됨",
-  rejected: "거절됨",
+  pending: "me.leave.statusPending",
+  approved: "me.leave.statusApproved",
+  rejected: "me.leave.statusRejected",
 } as const;
 
 export function LeaveForm({
@@ -28,6 +29,7 @@ export function LeaveForm({
   artistName: string;
   initialRequests: LeaveRequest[];
 }) {
+  const t = useT();
   const [myRequests, setMyRequests] =
     useState<LeaveRequest[]>(initialRequests);
   const [startDate, setStartDate] = useState("");
@@ -72,16 +74,16 @@ export function LeaveForm({
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-      <h1 className="text-2xl font-black tracking-tight">휴가 신청</h1>
+      <h1 className="text-2xl font-black tracking-tight">{t("me.leave.title")}</h1>
       <p className="mt-1 text-sm text-neutral-500">
-        승인되면 해당 날짜는 자동으로 섭외 불가 처리돼요
+        {t("me.leave.subtitle")}
       </p>
 
       <Card className="mt-6 p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <Label htmlFor="leave-start">시작일</Label>
+              <Label htmlFor="leave-start">{t("me.leave.startDate")}</Label>
               <Input
                 id="leave-start"
                 type="date"
@@ -91,7 +93,7 @@ export function LeaveForm({
               />
             </div>
             <div>
-              <Label htmlFor="leave-end">종료일 (하루면 비워두세요)</Label>
+              <Label htmlFor="leave-end">{t("me.leave.endDate")}</Label>
               <Input
                 id="leave-end"
                 type="date"
@@ -101,22 +103,22 @@ export function LeaveForm({
             </div>
           </div>
           <div>
-            <Label htmlFor="leave-reason">사유</Label>
+            <Label htmlFor="leave-reason">{t("me.leave.reason")}</Label>
             <Input
               id="leave-reason"
               required
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              placeholder="예: 개인 일정, 병원, 가족 행사"
+              placeholder={t("me.leave.reasonPlaceholder")}
             />
           </div>
           <Button type="submit" disabled={!startDate || !reason}>
-            신청하기
+            {t("me.leave.submit")}
           </Button>
         </form>
       </Card>
 
-      <h2 className="mt-8 text-lg font-bold">신청 내역</h2>
+      <h2 className="mt-8 text-lg font-bold">{t("me.leave.historyTitle")}</h2>
       <div className="mt-3 space-y-2">
         {myRequests.map((req) => (
           <Card
@@ -136,7 +138,7 @@ export function LeaveForm({
                 STATUS_STYLE[req.status]
               )}
             >
-              {STATUS_LABEL[req.status]}
+              {t(STATUS_LABEL[req.status])}
             </span>
           </Card>
         ))}

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useT } from "@/lib/i18n/client";
 import { todayKST } from "@/lib/date";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -34,6 +35,7 @@ export function MySchedule({
   artistName: string;
   leaves: LeaveRequest[];
 }) {
+  const t = useT();
   const myLeaves = leaves;
   const today = schedules.find((s) => s.date === TODAY);
   const upcoming = schedules.filter((s) => s.date > TODAY);
@@ -42,16 +44,19 @@ export function MySchedule({
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
       <h1 className="text-2xl font-black tracking-tight">
-        안녕하세요, {artistName}님
+        {t("me.schedule.greeting", { name: artistName })}
       </h1>
-      <p className="mt-1 text-sm text-neutral-500">{formatToday(TODAY)} · 오늘</p>
+      <p className="mt-1 text-sm text-neutral-500">
+        {formatToday(TODAY)} · {t("me.schedule.today")}
+      </p>
 
       {/* 오늘의 콜타임 */}
       {today && callTime ? (
         <Card className="mt-6 overflow-hidden">
           <div className="bg-neutral-950 p-6 text-white">
             <p className="flex items-center gap-1.5 text-xs font-semibold text-neutral-400">
-              <Clock className="h-3.5 w-3.5 text-brand-500" /> 오늘의 콜타임
+              <Clock className="h-3.5 w-3.5 text-brand-500" />{" "}
+              {t("me.schedule.callTime")}
             </p>
             <p className="mt-2 text-4xl font-black">
               {callTime.time}
@@ -97,7 +102,8 @@ export function MySchedule({
                           rel="noopener noreferrer"
                           className="flex items-center gap-1 rounded-lg bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700 transition-colors hover:bg-brand-100"
                         >
-                          <Navigation className="h-3 w-3" /> 내비
+                          <Navigation className="h-3 w-3" />{" "}
+                          {t("me.schedule.navigate")}
                         </a>
                       )}
                     </div>
@@ -112,8 +118,8 @@ export function MySchedule({
             </ol>
             <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 border-t border-neutral-100 pt-4 text-sm text-neutral-500">
               <span className="flex items-center gap-1.5">
-                <UserRound className="h-3.5 w-3.5 text-neutral-400" /> 담당:{" "}
-                {today.manager}
+                <UserRound className="h-3.5 w-3.5 text-neutral-400" />{" "}
+                {t("me.schedule.manager", { name: today.manager })}
               </span>
               {today.vehicle && (
                 <span className="flex items-center gap-1.5">
@@ -126,24 +132,24 @@ export function MySchedule({
         </Card>
       ) : (
         <Card className="mt-6 flex h-40 flex-col items-center justify-center gap-1 text-neutral-400">
-          <p className="font-semibold">오늘은 일정이 없어요</p>
-          <p className="text-sm">푹 쉬세요 🍊</p>
+          <p className="font-semibold">{t("me.schedule.noToday")}</p>
+          <p className="text-sm">{t("me.schedule.rest")}</p>
         </Card>
       )}
 
       {/* 다가오는 일정 */}
-      <h2 className="mt-8 text-lg font-bold">다가오는 일정</h2>
+      <h2 className="mt-8 text-lg font-bold">{t("me.schedule.upcoming")}</h2>
       <div className="mt-3 space-y-2">
         {upcoming.length === 0 ? (
           <p className="text-sm text-neutral-400">
-            예정된 일정이 없어요. 새 일정이 확정되면 알림으로 알려드릴게요.
+            {t("me.schedule.upcomingEmpty")}
           </p>
         ) : (
           upcoming.map((s) => (
             <Card key={s.id} className="flex items-center gap-4 p-4">
               <div className="w-14 shrink-0 text-center">
                 <p className="text-xs text-neutral-400">
-                  {Number(s.date.slice(5, 7))}월
+                  {t("me.schedule.monthLabel", { n: Number(s.date.slice(5, 7)) })}
                 </p>
                 <p className="text-xl font-black">
                   {Number(s.date.slice(8))}
@@ -169,11 +175,13 @@ export function MySchedule({
             <Palmtree className="h-4.5 w-4.5 text-brand-600" />
           </span>
           <div className="flex-1">
-            <p className="text-sm font-bold">휴가 신청</p>
+            <p className="text-sm font-bold">{t("me.schedule.leaveTitle")}</p>
             <p className="mt-0.5 text-xs text-neutral-400">
               {myLeaves.filter((l) => l.status === "pending").length > 0
-                ? `승인 대기 ${myLeaves.filter((l) => l.status === "pending").length}건`
-                : "대기 중인 신청 없음"}
+                ? t("me.schedule.pendingCount", {
+                    n: myLeaves.filter((l) => l.status === "pending").length,
+                  })
+                : t("me.schedule.noPending")}
             </p>
           </div>
           <ChevronRight className="h-4 w-4 text-neutral-300" />

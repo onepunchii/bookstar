@@ -13,6 +13,7 @@ import { getRatingSummaryBySlug } from "@/lib/mock-data";
 import { YoutubeVideos } from "@/components/youtube-videos";
 import { fetchYoutubeSubscribers } from "@/lib/youtube";
 import { absoluteUrl, artistPublicUrl, SITE } from "@/lib/site";
+import { getT } from "@/lib/i18n/server";
 import { ShareButton } from "./share-button";
 
 // SNS 입력(@핸들 또는 URL) → 실제 링크
@@ -122,6 +123,7 @@ export async function generateMetadata({
 }
 
 export default async function ArtistPublicPage({ params }: PageProps) {
+  const { t } = await getT();
   const { slug } = await params;
   const artist = await getPublicArtistBySlug(slug);
   if (!artist) notFound();
@@ -138,7 +140,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
     ? await fetchYoutubeSubscribers(artist.youtube)
     : null;
   const followerValue = ytSubs ?? artist.followers;
-  const followerLabel = ytSubs ? "구독자" : "팔로워";
+  const followerLabel = ytSubs ? t("profile.subscribers") : t("profile.followers");
   const instagramUrl = instagramHref(artist.instagram);
   const youtubeUrl = youtubeHref(artist.youtube);
 
@@ -205,12 +207,12 @@ export default async function ArtistPublicPage({ params }: PageProps) {
       {/* 상단 얇은 브랜드 바 — 히어로 위에 오버레이 */}
       <div className="absolute inset-x-0 top-0 z-20">
         <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-5 sm:px-6">
-          <Link href="/" aria-label="xong 홈으로">
+          <Link href="/" aria-label={t("profile.homeAria")}>
             <Wordmark height={18} />
           </Link>
           <div className="flex items-center gap-1">
             <span className="rounded-full bg-black/40 px-3 py-1 text-[11px] font-semibold text-white/60 backdrop-blur">
-              공개 프로필
+              {t("profile.publicBadge")}
             </span>
             <SafetyMenu
               targetType="artist_profile"
@@ -231,7 +233,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={artist.imageUrl}
-            alt={`${artist.name} 프로필 사진`}
+            alt={t("profile.photoAlt", { name: artist.name })}
             className="absolute inset-0 h-full w-full object-cover object-top"
           />
         ) : (
@@ -262,7 +264,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
               ))}
               {artist.verified && (
                 <span className="flex items-center gap-1 rounded-full bg-brand-500 px-3 py-1 text-xs font-bold text-white">
-                  <BadgeCheck className="h-3 w-3" /> 인증 소속사
+                  <BadgeCheck className="h-3 w-3" /> {t("profile.verifiedAgency")}
                 </span>
               )}
             </div>
@@ -273,7 +275,8 @@ export default async function ArtistPublicPage({ params }: PageProps) {
               {artist.tagline}
             </p>
             <p className="mt-3 text-sm text-white/45">
-              소속 <span className="text-white/75">{artist.agencyName}</span>
+              {t("profile.affiliation")}{" "}
+              <span className="text-white/75">{artist.agencyName}</span>
             </p>
           </div>
         </div>
@@ -292,7 +295,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           </div>
           <div className="px-4 text-center sm:px-6">
             <p className="flex items-center justify-center gap-1.5 text-xs text-white/40">
-              <TrendingUp className="h-3 w-3" /> 응답률
+              <TrendingUp className="h-3 w-3" /> {t("profile.responseRate")}
             </p>
             <p className="mt-1 text-2xl font-black text-brand-400 sm:text-3xl">
               {artist.responseRate}%
@@ -300,12 +303,12 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           </div>
           <div className="px-4 text-center sm:px-6">
             <p className="flex items-center justify-center gap-1.5 text-xs text-white/40">
-              <Clock className="h-3 w-3" /> 평균 응답
+              <Clock className="h-3 w-3" /> {t("profile.avgResponse")}
             </p>
             <p className="mt-1 text-2xl font-black sm:text-3xl">
               {artist.responseHours}
               <span className="ml-1 text-lg font-bold text-white/40">
-                시간
+                {t("profile.hoursUnit")}
               </span>
             </p>
           </div>
@@ -323,12 +326,12 @@ export default async function ArtistPublicPage({ params }: PageProps) {
                 Tag
               </h2>
               <div className="flex flex-wrap gap-1.5">
-                {artist.tags.map((t) => (
+                {artist.tags.map((tag) => (
                   <span
-                    key={t}
+                    key={tag}
                     className="rounded-full bg-white/8 px-3 py-1 text-xs font-medium text-white/70"
                   >
-                    {t}
+                    {tag}
                   </span>
                 ))}
               </div>
@@ -407,7 +410,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
               <span className="text-base font-bold text-white/40">~</span>
             </p>
             <p className="text-xs text-white/45">
-              행사 유형과 조건에 따라 달라져요
+              {t("profile.budgetNote")}
             </p>
 
             <Link
@@ -415,10 +418,10 @@ export default async function ArtistPublicPage({ params }: PageProps) {
               className="premium-ease mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-500 text-sm font-bold text-white hover:bg-brand-600"
             >
               <MessageSquare className="h-4 w-4" />
-              섭외 문의하기
+              {t("profile.bookingCta")}
             </Link>
             <p className="text-center text-[11px] text-white/40">
-              매칭 수수료 0% · 평균 {artist.responseHours}시간 내 응답
+              {t("profile.feeNote", { n: artist.responseHours })}
             </p>
 
             <div className="my-4 h-px bg-white/10" />
@@ -458,7 +461,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
       {/* 섭외 안내 FAQ — "{이름} 섭외" 검색 인텐트 대응 (스키마와 동일 내용) */}
       <section className="mx-auto max-w-4xl px-4 pb-14 sm:px-6">
         <h2 className="display-kr text-lg font-bold text-white sm:text-xl">
-          {artist.name} 섭외 안내
+          {t("profile.faqHeading", { name: artist.name })}
         </h2>
         <div className="mt-4 space-y-2.5">
           {bookingFaq.map((f, i) => (
@@ -485,11 +488,11 @@ export default async function ArtistPublicPage({ params }: PageProps) {
       <footer className="border-t border-white/8">
         <div className="mx-auto flex max-w-4xl flex-col items-start justify-between gap-2 px-4 py-6 text-xs text-white/35 sm:flex-row sm:items-center sm:px-6">
           <p>
-            이 페이지는{" "}
+            {t("profile.footerPre")}{" "}
             <Link href="/" className="font-semibold text-white/80">
               xong
             </Link>
-            에서 발행됐어요 · 검증된 소속사의 공식 섭외 창구
+            {t("profile.footerPost")}
           </p>
           <p>xong.co.kr/@{artist.slug}</p>
         </div>

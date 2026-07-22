@@ -39,16 +39,16 @@ const NAV_BY_ROLE: Record<
     { href: "/requests", label: "nav.company.requests", icon: Inbox },
   ],
   agency: [
-    { href: "/agency", label: "대시보드", icon: LayoutGrid },
-    { href: "/agency/today", label: "데일리", icon: CalendarDays },
-    { href: "/agency/inbox", label: "인박스", icon: Inbox },
-    { href: "/agency/artists", label: "아티스트", icon: Users },
-    { href: "/agency/settlement", label: "정산", icon: Banknote },
+    { href: "/agency", label: "nav.agency.dashboard", icon: LayoutGrid },
+    { href: "/agency/today", label: "nav.agency.today", icon: CalendarDays },
+    { href: "/agency/inbox", label: "nav.agency.inbox", icon: Inbox },
+    { href: "/agency/artists", label: "nav.agency.artists", icon: Users },
+    { href: "/agency/settlement", label: "nav.agency.settlement", icon: Banknote },
   ],
   artist: [
-    { href: "/me", label: "내 일정", icon: CalendarDays },
-    { href: "/me/leave", label: "휴가 신청", icon: Palmtree },
-    { href: "/me/earnings", label: "내 정산", icon: Banknote },
+    { href: "/me", label: "nav.artist.schedule", icon: CalendarDays },
+    { href: "/me/leave", label: "nav.artist.leave", icon: Palmtree },
+    { href: "/me/earnings", label: "nav.artist.earnings", icon: Banknote },
   ],
 };
 
@@ -72,14 +72,14 @@ const ACCOUNT: Record<
   agency: {
     initial: "스",
     name: "스타원엔터테인먼트",
-    label: "소속사 계정",
+    label: "shell.agencyLabel",
     home: "/agency",
     settings: "/agency/account",
   },
   artist: {
     initial: "정",
     name: "정하늘",
-    label: "아티스트 계정",
+    label: "shell.artistLabel",
     home: "/me",
     settings: "/me",
   },
@@ -311,7 +311,7 @@ export function AppShell({
             {isAdmin && (
               <Link
                 href="/admin"
-                aria-label="관리자"
+                aria-label={t("shell.admin")}
                 className={cn(
                   "flex h-9 items-center gap-1.5 rounded-full px-3 text-xs font-bold transition-colors",
                   dark
@@ -320,7 +320,7 @@ export function AppShell({
                 )}
               >
                 <ShieldAlert className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">관리자</span>
+                <span className="hidden sm:inline">{t("shell.admin")}</span>
               </Link>
             )}
             <NotificationsPanel dark={dark} />

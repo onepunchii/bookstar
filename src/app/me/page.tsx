@@ -4,11 +4,13 @@ import { getPublicArtistById, getPublicArtistBySlug } from "@/lib/data/artists";
 import { getSessionArtistId, getSessionUser } from "@/lib/data/session";
 import { getDaySchedulesByArtist } from "@/lib/data/day-schedules";
 import { getLeaves } from "@/lib/data/leaves";
+import { getT } from "@/lib/i18n/server";
 import { LogOut } from "lucide-react";
 import { MySchedule } from "./my-schedule";
 
 // 데모 아티스트(정하늘=haneul) 기준. 실 인증 연동 시 세션 아티스트로 교체.
 export default async function MePage() {
+  const { t } = await getT();
   const [sessionArtistId, user] = await Promise.all([
     getSessionArtistId(),
     getSessionUser(),
@@ -43,7 +45,7 @@ export default async function MePage() {
               type="submit"
               className="flex w-full items-center justify-center gap-2 rounded-full bg-neutral-100 px-6 py-3 text-sm font-semibold text-neutral-500 transition-colors hover:text-neutral-900"
             >
-              <LogOut className="h-4 w-4" /> 로그아웃
+              <LogOut className="h-4 w-4" /> {t("common.logout")}
             </button>
           </form>
           <DeleteAccountButton />

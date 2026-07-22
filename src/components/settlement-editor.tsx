@@ -6,6 +6,7 @@ import { Input, Label, Select } from "@/components/ui/input";
 import type { Artist, Settlement } from "@/lib/types";
 import { settlementBreakdown } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import { X } from "lucide-react";
 
 interface Props {
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function SettlementEditor({ artists, onCreated, onClose }: Props) {
+  const t = useT();
   const findArtist = (id: string) => artists.find((a) => a.id === id);
   const [artistId, setArtistId] = useState(artists[0]?.id ?? "");
   const [eventTitle, setEventTitle] = useState("");
@@ -48,7 +50,7 @@ export function SettlementEditor({ artists, onCreated, onClose }: Props) {
     id: "preview",
     artistId,
     artistName,
-    eventTitle: eventTitle || "미입력",
+    eventTitle: eventTitle || t("settlementEditor.untitled"),
     date,
     gross: grossN,
     agencyRate: rate,
@@ -91,7 +93,7 @@ export function SettlementEditor({ artists, onCreated, onClose }: Props) {
       });
       onClose();
     } catch {
-      setError("등록에 실패했어요. 다시 시도해주세요.");
+      setError(t("settlementEditor.saveError"));
     } finally {
       setSaving(false);
     }
@@ -108,14 +110,14 @@ export function SettlementEditor({ artists, onCreated, onClose }: Props) {
       >
         <div className="flex items-start justify-between gap-4 border-b border-neutral-100 p-6">
           <div>
-            <h2 className="text-lg font-black">새 정산 등록</h2>
+            <h2 className="text-lg font-black">{t("settlementEditor.title")}</h2>
             <p className="mt-0.5 text-sm text-neutral-500">
-              분배율은 아티스트 기본값이 자동으로 채워져요
+              {t("settlementEditor.subtitle")}
             </p>
           </div>
           <button
             onClick={onClose}
-            aria-label="닫기"
+            aria-label={t("common.close")}
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-neutral-400 hover:bg-neutral-100"
           >
             <X className="h-4 w-4" />
@@ -125,7 +127,7 @@ export function SettlementEditor({ artists, onCreated, onClose }: Props) {
         <div className="flex-1 space-y-5 overflow-y-auto p-6">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <Label htmlFor="s-artist">아티스트</Label>
+              <Label htmlFor="s-artist">{t("settlementEditor.artist")}</Label>
               <Select
                 id="s-artist"
                 value={artistId}
@@ -139,7 +141,7 @@ export function SettlementEditor({ artists, onCreated, onClose }: Props) {
               </Select>
             </div>
             <div>
-              <Label htmlFor="s-date">이벤트 일자</Label>
+              <Label htmlFor="s-date">{t("settlementEditor.eventDate")}</Label>
               <Input
                 id="s-date"
                 type="date"
@@ -150,29 +152,29 @@ export function SettlementEditor({ artists, onCreated, onClose }: Props) {
           </div>
 
           <div>
-            <Label htmlFor="s-title">이벤트명</Label>
+            <Label htmlFor="s-title">{t("settlementEditor.eventName")}</Label>
             <Input
               id="s-title"
               value={eventTitle}
               onChange={(e) => setEventTitle(e.target.value)}
-              placeholder="예: 여름 뮤직페스티벌 부산"
+              placeholder={t("settlementEditor.eventNamePlaceholder")}
             />
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <Label htmlFor="s-gross">총 출연료 (만원)</Label>
+              <Label htmlFor="s-gross">{t("settlementEditor.grossFee")}</Label>
               <Input
                 id="s-gross"
                 type="number"
                 min={0}
                 value={gross}
                 onChange={(e) => setGross(e.target.value)}
-                placeholder="예: 3000"
+                placeholder={t("settlementEditor.grossFeePlaceholder")}
               />
             </div>
             <div>
-              <Label htmlFor="s-rate">소속사 분배율 (%)</Label>
+              <Label htmlFor="s-rate">{t("settlementEditor.agencyRate")}</Label>
               <Input
                 id="s-rate"
                 type="number"
@@ -182,9 +184,11 @@ export function SettlementEditor({ artists, onCreated, onClose }: Props) {
                 onChange={(e) => setRateBp(e.target.value)}
               />
               <p className="mt-1 text-xs text-neutral-400">
-                아티스트 기본값:{" "}
-                {Math.round((findArtist(artistId)?.defaultAgencyRate ?? 0.3) * 100)}
-                %
+                {t("settlementEditor.artistDefault", {
+                  pct: Math.round(
+                    (findArtist(artistId)?.defaultAgencyRate ?? 0.3) * 100
+                  ),
+                })}
               </p>
             </div>
           </div>
@@ -196,7 +200,7 @@ export function SettlementEditor({ artists, onCreated, onClose }: Props) {
               onChange={(e) => setTaxInvoice(e.target.checked)}
               className="h-4 w-4 accent-brand-500"
             />
-            세금계산서 발행
+            {t("settlementEditor.taxInvoice")}
           </label>
 
           {/* 계산 미리보기 */}
@@ -209,31 +213,55 @@ export function SettlementEditor({ artists, onCreated, onClose }: Props) {
             )}
           >
             <p className="text-xs font-bold text-neutral-500">
-              계산 미리보기
+              {t("settlementEditor.previewLabel")}
             </p>
             <dl className="mt-3 space-y-1.5">
               <div className="flex justify-between text-neutral-500">
-                <dt>총 출연료</dt>
+                <dt>{t("settlementEditor.grossFeeShort")}</dt>
                 <dd className="font-semibold text-neutral-900">
-                  {grossN.toLocaleString()}만원
+                  {t("settlementEditor.manwon", {
+                    amount: grossN.toLocaleString(),
+                  })}
                 </dd>
               </div>
               <div className="flex justify-between text-neutral-500">
-                <dt>소속사 몫 ({Math.round(rate * 100)}%)</dt>
-                <dd>{b.agencyShare.toLocaleString()}만원</dd>
+                <dt>
+                  {t("settlementEditor.agencyShare", {
+                    pct: Math.round(rate * 100),
+                  })}
+                </dt>
+                <dd>
+                  {t("settlementEditor.manwon", {
+                    amount: b.agencyShare.toLocaleString(),
+                  })}
+                </dd>
               </div>
               <div className="flex justify-between text-neutral-500">
-                <dt>아티스트 몫 ({Math.round((1 - rate) * 100)}%)</dt>
-                <dd>{b.artistGross.toLocaleString()}만원</dd>
+                <dt>
+                  {t("settlementEditor.artistShare", {
+                    pct: Math.round((1 - rate) * 100),
+                  })}
+                </dt>
+                <dd>
+                  {t("settlementEditor.manwon", {
+                    amount: b.artistGross.toLocaleString(),
+                  })}
+                </dd>
               </div>
               <div className="flex justify-between text-neutral-500">
-                <dt>원천징수 3.3%</dt>
-                <dd>-{b.withholding.toLocaleString()}만원</dd>
+                <dt>{t("settlementEditor.withholding")}</dt>
+                <dd>
+                  {t("settlementEditor.manwonNegative", {
+                    amount: b.withholding.toLocaleString(),
+                  })}
+                </dd>
               </div>
               <div className="flex justify-between border-t border-neutral-200 pt-2 font-bold">
-                <dt>아티스트 실지급</dt>
+                <dt>{t("settlementEditor.artistNet")}</dt>
                 <dd className="text-brand-600">
-                  {b.artistNet.toLocaleString()}만원
+                  {t("settlementEditor.manwon", {
+                    amount: b.artistNet.toLocaleString(),
+                  })}
                 </dd>
               </div>
             </dl>
@@ -247,10 +275,10 @@ export function SettlementEditor({ artists, onCreated, onClose }: Props) {
             </span>
           )}
           <Button variant="ghost" size="md" onClick={onClose}>
-            취소
+            {t("common.cancel")}
           </Button>
           <Button size="md" disabled={!canSave || saving} onClick={save}>
-            {saving ? "등록 중…" : "정산 등록"}
+            {saving ? t("settlementEditor.saving") : t("settlementEditor.saveCta")}
           </Button>
         </div>
       </div>

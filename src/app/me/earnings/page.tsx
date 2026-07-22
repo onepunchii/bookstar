@@ -2,17 +2,18 @@ import { Card } from "@/components/ui/card";
 import { getPublicArtistById, getPublicArtistBySlug } from "@/lib/data/artists";
 import { getSessionArtistId } from "@/lib/data/session";
 import { getSettlements } from "@/lib/data/settlements";
+import { getT } from "@/lib/i18n/server";
 import { formatBudget, settlementBreakdown } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-const STATUS_LABEL = {
-  paid: "지급 완료",
-  pending: "지급 예정",
-  overdue: "지연",
-} as const;
-
 // 데모 아티스트(정하늘) 기준 — DB 정산에서 본인 건만.
 export default async function MyEarningsPage() {
+  const { t } = await getT();
+  const STATUS_LABEL = {
+    paid: t("me.earnings.statusPaid"),
+    pending: t("me.earnings.statusPending"),
+    overdue: t("me.earnings.statusOverdue"),
+  } as const;
   const sessionArtistId = await getSessionArtistId();
   const artist = sessionArtistId
     ? await getPublicArtistById(sessionArtistId)
@@ -29,22 +30,28 @@ export default async function MyEarningsPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-      <h1 className="text-2xl font-black tracking-tight">내 정산</h1>
+      <h1 className="text-2xl font-black tracking-tight">
+        {t("me.earnings.title")}
+      </h1>
       <p className="mt-1 text-sm text-neutral-500">
-        건별 출연료와 분배 내역을 투명하게 확인하세요
+        {t("me.earnings.subtitle")}
       </p>
 
       <div className="mt-6 grid grid-cols-2 gap-4">
         <Card className="p-5">
-          <p className="text-sm font-bold text-neutral-500">올해 실수령</p>
+          <p className="text-sm font-bold text-neutral-500">
+            {t("me.earnings.netThisYear")}
+          </p>
           <p className="mt-1 text-2xl font-black text-brand-600">
-            {totalNet.toLocaleString()}만원
+            {t("me.earnings.manwon", { v: totalNet.toLocaleString() })}
           </p>
         </Card>
         <Card className="p-5">
-          <p className="text-sm font-bold text-neutral-500">지급 완료</p>
+          <p className="text-sm font-bold text-neutral-500">
+            {t("me.earnings.statusPaid")}
+          </p>
           <p className="mt-1 text-2xl font-black">
-            {paidNet.toLocaleString()}만원
+            {t("me.earnings.manwon", { v: paidNet.toLocaleString() })}
           </p>
         </Card>
       </div>
@@ -74,23 +81,29 @@ export default async function MyEarningsPage() {
               </div>
               <div className="mt-4 space-y-1.5 rounded-xl bg-neutral-50 p-4 text-sm">
                 <div className="flex justify-between text-neutral-500">
-                  <span>총 출연료</span>
+                  <span>{t("me.earnings.gross")}</span>
                   <span className="font-semibold text-neutral-900">
                     {formatBudget(s.gross)}
                   </span>
                 </div>
                 <div className="flex justify-between text-neutral-500">
-                  <span>소속사 분배 ({Math.round(s.agencyRate * 100)}%)</span>
+                  <span>
+                    {t("me.earnings.agencyShare", {
+                      rate: Math.round(s.agencyRate * 100),
+                    })}
+                  </span>
                   <span>-{formatBudget(b.agencyShare)}</span>
                 </div>
                 <div className="flex justify-between text-neutral-500">
-                  <span>원천징수 (3.3%)</span>
-                  <span>-{b.withholding.toLocaleString()}만원</span>
+                  <span>{t("me.earnings.withholding")}</span>
+                  <span>
+                    -{t("me.earnings.manwon", { v: b.withholding.toLocaleString() })}
+                  </span>
                 </div>
                 <div className="flex justify-between border-t border-neutral-200 pt-2 font-bold">
-                  <span>실수령액</span>
+                  <span>{t("me.earnings.net")}</span>
                   <span className="text-brand-600">
-                    {b.artistNet.toLocaleString()}만원
+                    {t("me.earnings.manwon", { v: b.artistNet.toLocaleString() })}
                   </span>
                 </div>
               </div>

@@ -3,6 +3,7 @@
 import { useForecast } from "@/lib/use-forecast";
 import type { WeatherCondition } from "@/lib/weather";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 import {
   Cloud,
   CloudRain,
@@ -32,6 +33,7 @@ export function WeatherBadge({
   compact = false,
   className,
 }: WeatherBadgeProps) {
+  const t = useT();
   // mock 즉시 표시(폴백) → 근접일이면 실 기상청 데이터로 업그레이드
   const f = useForecast(date, location);
   if (!f) return null;
@@ -42,7 +44,12 @@ export function WeatherBadge({
   if (compact) {
     return (
       <span
-        title={`${f.tierLabel} · ${f.tempHigh}° / ${f.tempLow}° · 강수확률 ${f.rainProb}%`}
+        title={t("weather.compactTitle", {
+          tier: f.tierLabel,
+          high: f.tempHigh,
+          low: f.tempLow,
+          prob: f.rainProb,
+        })}
         className={cn(
           "inline-flex items-center gap-0.5 rounded-md px-1 py-0.5 text-[10px] font-semibold",
           risky
@@ -69,7 +76,7 @@ export function WeatherBadge({
       )}
     >
       <Icon className="h-3 w-3" />
-      {f.tempHigh}°/{f.tempLow}° · 비 {f.rainProb}%
+      {f.tempHigh}°/{f.tempLow}° · {t("weather.rain", { prob: f.rainProb })}
       <span className="rounded px-1 text-[9px] font-bold text-neutral-500">
         {f.tierLabel}
       </span>
