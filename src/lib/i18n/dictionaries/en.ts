@@ -432,6 +432,7 @@ const en: Record<string, string> = {
   "common.loadingPage": "Loading page",
   "guide.indexIntro": "For anyone handling celebrity and influencer bookings for the first time — pricing, process, and the hidden markups buried in quotes. Compiled from industry research.",
   "guide.readMore": "Read more →",
+  "guide.aboutLink": "What is XONG? — About, comparison & FAQ",
   "guide.categoryHeading": "Booking guides by category",
   "guide.navGuide": "Guides",
   "guide.footerFreeStart": "Start free",

@@ -432,6 +432,7 @@ const ar: Record<string, string> = {
   "common.loadingPage": "جارٍ تحميل الصفحة",
   "guide.indexIntro": "لكل مسؤول يتولّى حجز المشاهير والمؤثرين لأول مرة — من الأسعار السائدة إلى الإجراءات، وصولاً إلى بنية المبالغ المتضخّمة الخفيّة في عروض الأسعار. أعددناه استناداً إلى أبحاث القطاع.",
   "guide.readMore": "اقرأ المزيد ←",
+  "guide.aboutLink": "ما هو XONG؟ — نبذة · مقارنة · الأسئلة الشائعة",
   "guide.categoryHeading": "دليل الحجز حسب الفئة",
   "guide.navGuide": "الدليل",
   "guide.footerFreeStart": "ابدأ مجاناً",

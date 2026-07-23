@@ -432,6 +432,7 @@ const id: Record<string, string> = {
   "common.loadingPage": "Memuat halaman",
   "guide.indexIntro": "Untuk penanggung jawab yang baru pertama kali menangani pemesanan selebritas dan influencer — mulai dari kisaran harga, prosedur, hingga struktur biaya tersembunyi di balik penawaran. Dirangkum berdasarkan riset industri.",
   "guide.readMore": "Baca selengkapnya →",
+  "guide.aboutLink": "Apa itu XONG? — Tentang, perbandingan & FAQ",
   "guide.categoryHeading": "Panduan pemesanan per kategori",
   "guide.navGuide": "Panduan",
   "guide.footerFreeStart": "Mulai gratis",

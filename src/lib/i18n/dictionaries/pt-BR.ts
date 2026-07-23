@@ -432,6 +432,7 @@ const ptBR: Record<string, string> = {
   "common.loadingPage": "Carregando a página",
   "guide.indexIntro": "Para quem cuida de contratações de celebridades e influenciadores pela primeira vez — preços de mercado, processos e até as margens ocultas nos orçamentos. Organizado com base em pesquisa de mercado.",
   "guide.readMore": "Ler mais →",
+  "guide.aboutLink": "O que é XONG? — Sobre, comparação e FAQ",
   "guide.categoryHeading": "Contratação por categoria",
   "guide.navGuide": "Guia",
   "guide.footerFreeStart": "Comece grátis",

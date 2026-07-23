@@ -432,6 +432,7 @@ const zhTW: Record<string, string> = {
   "common.loadingPage": "正在載入頁面",
   "guide.indexIntro": "為初次負責藝人與網紅邀約的人整理 — 從行情、流程，到報價單裡隱藏的浮報結構。以業界研究為基礎彙整而成。",
   "guide.readMore": "閱讀 →",
+  "guide.aboutLink": "什麼是 XONG？ — 服務介紹・比較・常見問題",
   "guide.categoryHeading": "各類別邀約指南",
   "guide.navGuide": "指南",
   "guide.footerFreeStart": "免費開始",

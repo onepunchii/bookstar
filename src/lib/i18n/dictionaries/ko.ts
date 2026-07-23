@@ -496,6 +496,7 @@ const ko = {
   // guide
   "guide.indexIntro": "연예인·인플루언서 섭외를 처음 맡은 담당자를 위해 — 시세, 절차, 그리고 견적서에 숨은 거품 구조까지. 업계 리서치를 바탕으로 정리했습니다.",
   "guide.readMore": "읽어보기 →",
+  "guide.aboutLink": "XONG이란? — 서비스 소개·비교·FAQ",
   "guide.categoryHeading": "카테고리별 섭외 안내",
   "guide.navGuide": "가이드",
   "guide.footerFreeStart": "무료 시작",

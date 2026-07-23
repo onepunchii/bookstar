@@ -432,6 +432,7 @@ const es: Record<string, string> = {
   "common.loadingPage": "Cargando la página",
   "guide.indexIntro": "Para quienes asumen por primera vez la contratación de celebridades e influencers — tarifas, procesos y hasta la estructura de sobrecostos oculta en las cotizaciones. Recopilado a partir de investigación de la industria.",
   "guide.readMore": "Leer más →",
+  "guide.aboutLink": "¿Qué es XONG? — Introducción, comparación y preguntas frecuentes",
   "guide.categoryHeading": "Guía de contratación por categoría",
   "guide.navGuide": "Guía",
   "guide.footerFreeStart": "Empieza gratis",

@@ -28,7 +28,7 @@ export default async function GuideIndexPage() {
         href="/about"
         className="mt-4 inline-block text-sm font-semibold text-brand-400 hover:text-brand-300"
       >
-        XONG이란? — 서비스 소개·비교·FAQ →
+        {t("guide.aboutLink")} →
       </Link>
 
       <div className="mt-10 space-y-4">

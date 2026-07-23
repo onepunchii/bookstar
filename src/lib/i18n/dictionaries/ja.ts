@@ -432,6 +432,7 @@ const ja: Record<string, string> = {
   "common.loadingPage": "ページを読み込んでいます",
   "guide.indexIntro": "芸能人・インフルエンサーのオファーを初めて担当する方へ — 相場、手順、そして見積書に潜む中間マージンの構造まで。業界リサーチをもとに整理しました。",
   "guide.readMore": "読んでみる →",
+  "guide.aboutLink": "XONGとは？ — サービス紹介・比較・FAQ",
   "guide.categoryHeading": "カテゴリー別オファー案内",
   "guide.navGuide": "ガイド",
   "guide.footerFreeStart": "無料で始める",

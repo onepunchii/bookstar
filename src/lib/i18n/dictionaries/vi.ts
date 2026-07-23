@@ -432,6 +432,7 @@ const vi: Record<string, string> = {
   "common.loadingPage": "Đang tải trang",
   "guide.indexIntro": "Dành cho người lần đầu phụ trách đặt lịch nghệ sĩ · người ảnh hưởng — từ giá thị trường, quy trình, đến cả cấu trúc chi phí ẩn trong báo giá. Được tổng hợp dựa trên nghiên cứu ngành.",
   "guide.readMore": "Đọc thêm →",
+  "guide.aboutLink": "XONG là gì? — Giới thiệu, so sánh & FAQ",
   "guide.categoryHeading": "Hướng dẫn đặt lịch theo danh mục",
   "guide.navGuide": "Hướng dẫn",
   "guide.footerFreeStart": "Bắt đầu miễn phí",
