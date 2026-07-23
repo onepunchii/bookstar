@@ -82,6 +82,23 @@ export default async function GuidePage({
         { "@type": "ListItem", position: 3, name: guide.title, item: url },
       ],
     },
+    // 절차형 가이드("섭외 방법")는 HowTo(HowToStep)까지 방출 — AI 개요·리치결과 단계 인용 타깃
+    ...(guide.howtoSteps?.length
+      ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            name: guide.title,
+            description: guide.description,
+            inLanguage: "ko",
+            step: guide.howtoSteps.map((s, i) => ({
+              "@type": "HowToStep",
+              position: i + 1,
+              name: s,
+            })),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -114,6 +131,25 @@ export default async function GuidePage({
           </p>
         ))}
       </div>
+
+      {/* 단계 요약 — HowTo 스키마와 일치하는 눈에 보이는 순서 목록 (절차형 가이드) */}
+      {guide.howtoSteps?.length ? (
+        <ol className="mt-8 space-y-3 rounded-2xl bg-white/[0.03] p-6 ring-1 ring-white/10">
+          {guide.howtoSteps.map((step, i) => (
+            <li key={i} className="flex gap-3.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-500/20 text-xs font-bold text-brand-300">
+                {i + 1}
+              </span>
+              <span
+                className="text-[15px] leading-[1.7] text-white/80"
+                style={{ wordBreak: "keep-all" }}
+              >
+                {step}
+              </span>
+            </li>
+          ))}
+        </ol>
+      ) : null}
 
       {/* 본문 섹션 */}
       {guide.sections.map((s, i) => (

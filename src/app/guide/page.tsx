@@ -24,6 +24,12 @@ export default async function GuideIndexPage() {
       <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-white/55">
         {t("guide.indexIntro")}
       </p>
+      <Link
+        href="/about"
+        className="mt-4 inline-block text-sm font-semibold text-brand-400 hover:text-brand-300"
+      >
+        XONG이란? — 서비스 소개·비교·FAQ →
+      </Link>
 
       <div className="mt-10 space-y-4">
         {GUIDES.map((g) => (
