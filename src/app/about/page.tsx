@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { PremiumCTA } from "@/components/premium/premium-cta";
 import { SITE, absoluteUrl } from "@/lib/site";
-import { getT, getLocale } from "@/lib/i18n/server";
+import { getT } from "@/lib/i18n/server";
 import {
   ArrowUpRight,
   BadgeCheck,
@@ -20,7 +20,8 @@ import {
 const UPDATED = "2026-07-21";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getT();
+  // 봇(크롤러)은 canonical 언어 ko로 고정 → 한국어 AEO 안정. 사람은 쿠키/브라우저 언어대로.
+  const { t } = await getT({ botDefault: "ko" });
   return {
     title: t("about.metaTitle"),
     description: t("about.metaDesc"),
@@ -35,8 +36,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const { t } = await getT();
-  const locale = await getLocale();
+  // 봇은 ko 고정(AEO), 사람은 쿠키/브라우저 언어 — locale은 JSON-LD inLanguage에도 사용.
+  const { t, locale } = await getT({ botDefault: "ko" });
 
   const FAQ = [
     { q: t("about.faq1Q"), a: t("about.faq1A") },
