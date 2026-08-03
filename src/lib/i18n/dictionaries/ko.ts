@@ -1281,6 +1281,27 @@ const ko = {
   "install.title": "XONG 앱으로 더 빠르게",
   "install.subtitle": "알림 받고 섭외 진행 상황을 놓치지 마세요",
   "install.cta": "앱 받기",
+
+  // 패밀리 서비스 카드 — 형제 서비스 상호 홍보(src/components/family-services.tsx).
+  //   기기 판별은 레지스트리(src/lib/familyServices.ts)가 하고, 여기엔 문구만 둔다.
+  "family.title": "패밀리 서비스",
+  "family.getApp": "앱 설치",
+  "family.openWeb": "웹에서 보기",
+  "family.mapix.chip": "동네 지도 · 기록",
+  "family.mapix.title": "우리 동네, 나만 아는 그 장소",
+  "family.mapix.desc": "지도에 핀 꽂고 사진·이야기로 남기기",
+  "family.rankue.chip": "당구 점수판 · 랭킹",
+  "family.rankue.title": "당구 점수, 아직 종이에 적어?",
+  "family.rankue.desc": "터치로 기록하고 전적·랭킹까지",
+  "family.onp.chip": "농사 정보 · 시세",
+  "family.onp.title": "올해 그 작물, 지금 심어도 될까?",
+  "family.onp.desc": "작물별 시세와 농사 정보 한눈에",
+  "family.tohk.chip": "손편지 · 기념일",
+  "family.tohk.title": "말로는 못 했던 그 마음, 편지로",
+  "family.tohk.desc": "손편지 쓰고 기념일까지 챙기기",
+  "family.mudangk.chip": "사주 · 궁합",
+  "family.mudangk.title": "내 사주, 올해 운은 어떻게 흐를까?",
+  "family.mudangk.desc": "생년월일로 보는 사주 풀이",
 } as const;
 
 export default ko as Record<string, string>;

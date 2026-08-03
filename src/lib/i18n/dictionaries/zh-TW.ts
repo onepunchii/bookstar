@@ -1139,6 +1139,27 @@ const zhTW: Record<string, string> = {
   "install.title": "用 XONG App 更快一步",
   "install.subtitle": "開啟通知，不錯過任何邀約進度",
   "install.cta": "取得App",
+
+  // 패밀리 서비스 카드 — 형제 서비스 상호 홍보(src/components/family-services.tsx).
+  //   기기 판별은 레지스트리(src/lib/familyServices.ts)가 하고, 여기엔 문구만 둔다.
+  "family.title": "家族服務",
+  "family.getApp": "安裝App",
+  "family.openWeb": "在網頁開啟",
+  "family.mapix.chip": "在地地圖 · 紀錄",
+  "family.mapix.title": "只有你知道的那個地方",
+  "family.mapix.desc": "在地圖標記，用照片和故事留下來",
+  "family.rankue.chip": "撞球計分板 · 排行",
+  "family.rankue.title": "撞球分數還在用紙筆記嗎？",
+  "family.rankue.desc": "一觸即記，戰績與排行一次掌握",
+  "family.onp.chip": "農業資訊 · 行情",
+  "family.onp.title": "現在種還來得及嗎？",
+  "family.onp.desc": "各作物行情與農事資訊一目了然",
+  "family.tohk.chip": "手寫信 · 紀念日",
+  "family.tohk.title": "說不出口的心意，寫成信",
+  "family.tohk.desc": "寫手寫信，紀念日也不忘",
+  "family.mudangk.chip": "四柱 · 合盤",
+  "family.mudangk.title": "今年的運勢會怎麼走？",
+  "family.mudangk.desc": "用生日看的四柱命盤解析",
 };
 
 export default zhTW;

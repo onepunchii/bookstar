@@ -1,6 +1,7 @@
 import { signOut } from "@/auth";
 import { AccountLoginButton } from "@/components/account-login-button";
 import { DeleteAccountButton } from "@/components/delete-account-button";
+import { FamilyServices } from "@/components/family-services";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { Reveal } from "@/components/premium/reveal";
@@ -61,6 +62,12 @@ export default async function MyAccountPage() {
       {/* 언어 선택 — 로그인 여부와 무관하게 항상 노출(둘러보는 해외 사용자도 전환 가능) */}
       <Reveal delay={120} className="mt-4">
         <LocaleSwitcher dark />
+      </Reveal>
+
+      {/* 패밀리 서비스 — 형제 서비스 상호 홍보. 섭외 흐름(홈·아티스트·섭외 관리)을 가리지 않는
+          부가 화면이고, 이미 외부로 나가는 섹션(언어 선택) 바로 아래라 자리가 맞다. */}
+      <Reveal delay={160} className="mt-4">
+        <FamilyServices dark />
       </Reveal>
     </div>
   );

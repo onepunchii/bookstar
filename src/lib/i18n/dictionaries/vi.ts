@@ -1139,6 +1139,27 @@ const vi: Record<string, string> = {
   "install.title": "Nhanh hơn với ứng dụng XONG",
   "install.subtitle": "Bật thông báo, không bỏ lỡ tiến trình đặt lịch",
   "install.cta": "Tải ứng dụng",
+
+  // 패밀리 서비스 카드 — 형제 서비스 상호 홍보(src/components/family-services.tsx).
+  //   기기 판별은 레지스트리(src/lib/familyServices.ts)가 하고, 여기엔 문구만 둔다.
+  "family.title": "Dịch vụ liên kết",
+  "family.getApp": "Tải ứng dụng",
+  "family.openWeb": "Mở trên web",
+  "family.mapix.chip": "Bản đồ khu phố · Ghi chú",
+  "family.mapix.title": "Chỗ đó chỉ mình bạn biết",
+  "family.mapix.desc": "Ghim lên bản đồ, lưu bằng ảnh và câu chuyện",
+  "family.rankue.chip": "Bảng điểm bi-a · Xếp hạng",
+  "family.rankue.title": "Điểm bi-a vẫn còn ghi ra giấy?",
+  "family.rankue.desc": "Chạm để ghi điểm, có cả thành tích và xếp hạng",
+  "family.onp.chip": "Thông tin nông nghiệp · Giá cả",
+  "family.onp.title": "Giờ trồng còn kịp không?",
+  "family.onp.desc": "Giá từng loại cây và thông tin canh tác trong một chỗ",
+  "family.tohk.chip": "Thư tay · Ngày đặc biệt",
+  "family.tohk.title": "Điều chưa nói được, hãy viết ra",
+  "family.tohk.desc": "Viết thư tay và nhớ mọi ngày quan trọng",
+  "family.mudangk.chip": "Saju · Hợp mệnh",
+  "family.mudangk.title": "Vận năm nay sẽ đi theo hướng nào?",
+  "family.mudangk.desc": "Luận saju theo ngày tháng năm sinh",
 };
 
 export default vi;

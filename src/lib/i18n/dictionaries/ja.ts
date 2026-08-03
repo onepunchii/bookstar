@@ -1139,6 +1139,27 @@ const ja: Record<string, string> = {
   "install.title": "XONGアプリでもっと速く",
   "install.subtitle": "通知を受け取り、進行状況を逃さない",
   "install.cta": "アプリを入手",
+
+  // 패밀리 서비스 카드 — 형제 서비스 상호 홍보(src/components/family-services.tsx).
+  //   기기 판별은 레지스트리(src/lib/familyServices.ts)가 하고, 여기엔 문구만 둔다.
+  "family.title": "ファミリーサービス",
+  "family.getApp": "アプリを入れる",
+  "family.openWeb": "ウェブで見る",
+  "family.mapix.chip": "街の地図・記録",
+  "family.mapix.title": "自分だけが知っている、あの場所",
+  "family.mapix.desc": "地図にピンを立てて写真と物語で残す",
+  "family.rankue.chip": "ビリヤード得点板・ランキング",
+  "family.rankue.title": "ビリヤードの点数、まだ紙に書いてる？",
+  "family.rankue.desc": "タップで記録、戦績もランキングも",
+  "family.onp.chip": "農業情報・相場",
+  "family.onp.title": "今から植えても間に合う？",
+  "family.onp.desc": "作物別の相場と栽培情報をひと目で",
+  "family.tohk.chip": "手書きの手紙・記念日",
+  "family.tohk.title": "言えなかったあの気持ちを、手紙で",
+  "family.tohk.desc": "手紙を書いて記念日も忘れない",
+  "family.mudangk.chip": "四柱推命・相性",
+  "family.mudangk.title": "今年の運勢はどう流れる？",
+  "family.mudangk.desc": "生年月日でみる四柱推命",
 };
 
 export default ja;

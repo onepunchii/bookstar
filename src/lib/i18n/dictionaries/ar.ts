@@ -1139,6 +1139,27 @@ const ar: Record<string, string> = {
   "install.title": "XONG أسرع عبر التطبيق",
   "install.subtitle": "فعّل التنبيهات ولا تفوّت أي مستجد",
   "install.cta": "احصل على التطبيق",
+
+  // 패밀리 서비스 카드 — 형제 서비스 상호 홍보(src/components/family-services.tsx).
+  //   기기 판별은 레지스트리(src/lib/familyServices.ts)가 하고, 여기엔 문구만 둔다.
+  "family.title": "خدمات العائلة",
+  "family.getApp": "تثبيت التطبيق",
+  "family.openWeb": "الفتح على الويب",
+  "family.mapix.chip": "خريطة الحيّ · تدوين",
+  "family.mapix.title": "ذلك المكان الذي لا يعرفه غيرك",
+  "family.mapix.desc": "ثبّت دبّوسًا واحفظه بالصور والحكايات",
+  "family.rankue.chip": "لوحة نتائج البلياردو · التصنيف",
+  "family.rankue.title": "أما زلت تسجّل نتائج البلياردو على الورق؟",
+  "family.rankue.desc": "سجّل بلمسة واحدة، مع السجلّ والتصنيف",
+  "family.onp.chip": "معلومات زراعية · أسعار",
+  "family.onp.title": "هل ما زال الوقت مناسبًا للزراعة؟",
+  "family.onp.desc": "أسعار كل محصول ومعلومات الزراعة في مكان واحد",
+  "family.tohk.chip": "رسائل بخطّ اليد · المناسبات",
+  "family.tohk.title": "ما لم تستطع قوله، اكتبه رسالة",
+  "family.tohk.desc": "اكتب رسالة ولا تفوّت المناسبات",
+  "family.mudangk.chip": "ساجو · التوافق",
+  "family.mudangk.title": "كيف سيسير عامك؟",
+  "family.mudangk.desc": "قراءة ساجو الكورية من تاريخ ميلادك",
 };
 
 export default ar;

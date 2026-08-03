@@ -1139,6 +1139,27 @@ const es: Record<string, string> = {
   "install.title": "XONG es más rápido en la app",
   "install.subtitle": "Activa las alertas y no te pierdas ninguna novedad",
   "install.cta": "Obtener app",
+
+  // 패밀리 서비스 카드 — 형제 서비스 상호 홍보(src/components/family-services.tsx).
+  //   기기 판별은 레지스트리(src/lib/familyServices.ts)가 하고, 여기엔 문구만 둔다.
+  "family.title": "Servicios asociados",
+  "family.getApp": "Obtener la app",
+  "family.openWeb": "Abrir en web",
+  "family.mapix.chip": "Mapa del barrio · Notas",
+  "family.mapix.title": "Ese rincón que solo tú conoces",
+  "family.mapix.desc": "Ponle un pin con fotos e historias",
+  "family.rankue.chip": "Marcador de billar · Ranking",
+  "family.rankue.title": "¿Sigues apuntando el billar en papel?",
+  "family.rankue.desc": "Anota con un toque: historial y ranking",
+  "family.onp.chip": "Info agrícola · Precios",
+  "family.onp.title": "¿Aún es buen momento para sembrar?",
+  "family.onp.desc": "Precios por cultivo y consejos de campo de un vistazo",
+  "family.tohk.chip": "Cartas a mano · Aniversarios",
+  "family.tohk.title": "Lo que no pudiste decir, escríbelo",
+  "family.tohk.desc": "Escribe una carta y no olvides las fechas",
+  "family.mudangk.chip": "Saju · Compatibilidad",
+  "family.mudangk.title": "¿Cómo será tu año?",
+  "family.mudangk.desc": "Lectura de saju a partir de tu fecha de nacimiento",
 };
 
 export default es;

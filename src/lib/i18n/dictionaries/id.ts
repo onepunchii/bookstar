@@ -1139,6 +1139,27 @@ const id: Record<string, string> = {
   "install.title": "Lebih cepat dengan aplikasi XONG",
   "install.subtitle": "Aktifkan notifikasi, jangan lewatkan kabar booking",
   "install.cta": "Ambil aplikasi",
+
+  // 패밀리 서비스 카드 — 형제 서비스 상호 홍보(src/components/family-services.tsx).
+  //   기기 판별은 레지스트리(src/lib/familyServices.ts)가 하고, 여기엔 문구만 둔다.
+  "family.title": "Layanan keluarga",
+  "family.getApp": "Pasang aplikasi",
+  "family.openWeb": "Buka di web",
+  "family.mapix.chip": "Peta lingkungan · Catatan",
+  "family.mapix.title": "Tempat yang hanya kamu tahu",
+  "family.mapix.desc": "Tandai di peta, simpan dengan foto dan cerita",
+  "family.rankue.chip": "Papan skor biliar · Peringkat",
+  "family.rankue.title": "Skor biliar masih dicatat di kertas?",
+  "family.rankue.desc": "Catat sekali sentuh, lengkap rekor dan peringkat",
+  "family.onp.chip": "Info tani · Harga pasar",
+  "family.onp.title": "Masih sempat tanam sekarang?",
+  "family.onp.desc": "Harga per komoditas dan info tani sekaligus",
+  "family.tohk.chip": "Surat tulisan tangan · Hari istimewa",
+  "family.tohk.title": "Yang tak terucap, tuliskan jadi surat",
+  "family.tohk.desc": "Tulis surat dan jangan lewatkan tanggal penting",
+  "family.mudangk.chip": "Saju · Kecocokan",
+  "family.mudangk.title": "Bagaimana peruntungan tahun ini?",
+  "family.mudangk.desc": "Bacaan saju Korea dari tanggal lahir",
 };
 
 export default id;

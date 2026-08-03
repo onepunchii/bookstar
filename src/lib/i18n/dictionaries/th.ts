@@ -1139,6 +1139,27 @@ const th: Record<string, string> = {
   "install.title": "ใช้แอป XONG ให้เร็วขึ้น",
   "install.subtitle": "เปิดการแจ้งเตือน ไม่พลาดความคืบหน้า",
   "install.cta": "รับแอป",
+
+  // 패밀리 서비스 카드 — 형제 서비스 상호 홍보(src/components/family-services.tsx).
+  //   기기 판별은 레지스트리(src/lib/familyServices.ts)가 하고, 여기엔 문구만 둔다.
+  "family.title": "บริการในเครือ",
+  "family.getApp": "ติดตั้งแอป",
+  "family.openWeb": "เปิดบนเว็บ",
+  "family.mapix.chip": "แผนที่ย่าน · บันทึก",
+  "family.mapix.title": "ที่ลับในย่านที่มีแต่คุณรู้",
+  "family.mapix.desc": "ปักหมุดบนแผนที่ เก็บด้วยรูปและเรื่องเล่า",
+  "family.rankue.chip": "กระดานคะแนนบิลเลียด · อันดับ",
+  "family.rankue.title": "คะแนนบิลเลียดยังจดในกระดาษอยู่ไหม?",
+  "family.rankue.desc": "แตะเพื่อบันทึก พร้อมสถิติและอันดับ",
+  "family.onp.chip": "ข้อมูลเกษตร · ราคาตลาด",
+  "family.onp.title": "ตอนนี้ยังทันปลูกไหม?",
+  "family.onp.desc": "ราคาตลาดรายพืชและข้อมูลเกษตรในที่เดียว",
+  "family.tohk.chip": "จดหมายลายมือ · วันสำคัญ",
+  "family.tohk.title": "คำที่พูดไม่ออก เขียนเป็นจดหมาย",
+  "family.tohk.desc": "เขียนจดหมายและไม่พลาดวันสำคัญ",
+  "family.mudangk.chip": "ซาจู · ดูดวงคู่",
+  "family.mudangk.title": "ดวงปีนี้จะเป็นอย่างไร?",
+  "family.mudangk.desc": "อ่านดวงซาจูจากวันเกิด",
 };
 
 export default th;
