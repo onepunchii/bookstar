@@ -1136,6 +1136,9 @@ const ja: Record<string, string> = {
   "about.serviceType": "タレント・インフルエンサーのキャスティング仲介プラットフォーム",
   "about.serviceDesc": "認証済みの事務所と直接、キャスティング料金公開・マッチング手数料0%で歌手・アイドル・俳優・MC・モデル・インフルエンサーをキャスティングできるB2Bブッキングプラットフォーム。",
   "about.offerDesc": "マッチング手数料0%",
+  "install.title": "XONGアプリでもっと速く",
+  "install.subtitle": "通知を受け取り、進行状況を逃さない",
+  "install.cta": "アプリを入手",
 };
 
 export default ja;

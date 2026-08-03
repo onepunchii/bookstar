@@ -1136,6 +1136,9 @@ const vi: Record<string, string> = {
   "about.serviceType": "Nền tảng trung gian mời nghệ sĩ & influencer",
   "about.serviceDesc": "Nền tảng đặt lịch B2B để mời ca sĩ, thần tượng, diễn viên, MC, người mẫu và influencer trực tiếp qua công ty quản lý đã xác minh, với giá mời công khai và phí kết nối 0%.",
   "about.offerDesc": "Phí kết nối 0%",
+  "install.title": "Nhanh hơn với ứng dụng XONG",
+  "install.subtitle": "Bật thông báo, không bỏ lỡ tiến trình đặt lịch",
+  "install.cta": "Tải ứng dụng",
 };
 
 export default vi;

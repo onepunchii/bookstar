@@ -3,6 +3,7 @@ import "./globals.css";
 import { AppShell } from "@/components/app-shell";
 import { ErrorReporter } from "@/components/error-reporter";
 import NativeBridge from "@/components/native-bridge";
+import AppInstallBanner from "@/components/app-install-banner";
 import { auth } from "@/auth";
 import { getAgencyCapability, getViewer } from "@/lib/data/session";
 import { SITE } from "@/lib/site";
@@ -146,6 +147,9 @@ export default async function RootLayout({
           >
             {children}
           </AppShell>
+          {/* 앱 설치 유도 — I18nProvider 안에 두어야 useT() 가 동작한다.
+              네이티브 앱·PWA·데스크톱에서는 컴포넌트가 스스로 숨는다. */}
+          <AppInstallBanner />
         </I18nProvider>
         <ErrorReporter />
         <NativeBridge />

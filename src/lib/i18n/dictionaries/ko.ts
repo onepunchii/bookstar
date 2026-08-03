@@ -1278,6 +1278,9 @@ const ko = {
   "about.serviceType": "연예인·인플루언서 섭외 중개 플랫폼",
   "about.serviceDesc": "검증된 소속사와 직접, 섭외가 공개·매칭 수수료 0%로 가수·아이돌·배우·MC·모델·인플루언서를 섭외하는 B2B 부킹 플랫폼.",
   "about.offerDesc": "매칭 수수료 0%",
+  "install.title": "XONG 앱으로 더 빠르게",
+  "install.subtitle": "알림 받고 섭외 진행 상황을 놓치지 마세요",
+  "install.cta": "앱 받기",
 } as const;
 
 export default ko as Record<string, string>;

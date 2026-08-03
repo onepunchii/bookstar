@@ -1136,6 +1136,9 @@ const ptBR: Record<string, string> = {
   "about.serviceType": "Plataforma de intermediação de contratação de artistas e influenciadores",
   "about.serviceDesc": "Plataforma de booking B2B para contratar cantores, ídolos, atores, apresentadores, modelos e influenciadores direto com agências verificadas, com preço de contratação transparente e taxa de intermediação de 0%.",
   "about.offerDesc": "Taxa de intermediação de 0%",
+  "install.title": "Mais rápido no app XONG",
+  "install.subtitle": "Ative os alertas e não perca nenhuma novidade",
+  "install.cta": "Obter app",
 };
 
 export default ptBR;

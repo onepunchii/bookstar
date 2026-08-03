@@ -1136,6 +1136,9 @@ const en: Record<string, string> = {
   "about.serviceType": "Celebrity and influencer booking platform",
   "about.serviceDesc": "A B2B booking platform for casting singers, idols, actors, MCs, models, and influencers directly with verified agencies — transparent booking rates and a 0% matching fee.",
   "about.offerDesc": "0% matching fee",
+  "install.title": "Get XONG on your phone",
+  "install.subtitle": "Turn on alerts and never miss a booking update",
+  "install.cta": "Get app",
 };
 
 export default en;

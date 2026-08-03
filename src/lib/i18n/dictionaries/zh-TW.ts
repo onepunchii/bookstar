@@ -1136,6 +1136,9 @@ const zhTW: Record<string, string> = {
   "about.serviceType": "藝人與網紅邀約媒合平台",
   "about.serviceDesc": "與通過驗證的經紀公司直接對接，公開預約報價、媒合手續費 0%，用來邀約歌手、偶像、演員、主持人、模特兒與網紅的 B2B 預約平台。",
   "about.offerDesc": "媒合手續費 0%",
+  "install.title": "用 XONG App 更快一步",
+  "install.subtitle": "開啟通知，不錯過任何邀約進度",
+  "install.cta": "取得App",
 };
 
 export default zhTW;

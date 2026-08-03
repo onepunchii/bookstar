@@ -1136,6 +1136,9 @@ const es: Record<string, string> = {
   "about.serviceType": "Plataforma de intermediación para contratar celebridades e influencers",
   "about.serviceDesc": "Plataforma de booking B2B para contratar a cantantes, ídolos, actores, presentadores, modelos e influencers directamente con agencias verificadas, con tarifas de contratación públicas y 0% de comisión por conexión.",
   "about.offerDesc": "0% de comisión por conexión",
+  "install.title": "XONG es más rápido en la app",
+  "install.subtitle": "Activa las alertas y no te pierdas ninguna novedad",
+  "install.cta": "Obtener app",
 };
 
 export default es;

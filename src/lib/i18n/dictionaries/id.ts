@@ -1136,6 +1136,9 @@ const id: Record<string, string> = {
   "about.serviceType": "Platform perantara booking selebriti & influencer",
   "about.serviceDesc": "Platform booking B2B untuk mem-booking penyanyi, idol, aktor, MC, model, dan influencer langsung dengan agensi terverifikasi — tarif booking terbuka & biaya matching 0%.",
   "about.offerDesc": "Biaya matching 0%",
+  "install.title": "Lebih cepat dengan aplikasi XONG",
+  "install.subtitle": "Aktifkan notifikasi, jangan lewatkan kabar booking",
+  "install.cta": "Ambil aplikasi",
 };
 
 export default id;
