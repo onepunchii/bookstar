@@ -11,16 +11,18 @@ import { isNativeApp } from "@/lib/native";
 //
 // 2026-08-03 현재:
 //   iOS      → App Store 출시됨(id6790474855)
-//   안드로이드 → Play **심사 중**. 지금 링크를 걸면 404 페이지로 보내게 된다.
-//              심사 통과하면 아래 상수만 채우면 켜진다:
-//              "https://play.google.com/store/apps/details?id=kr.co.xong.app&referrer=utm_source%3Dweb%26utm_medium%3Dinstall_banner"
+//   안드로이드 → Play 심사 중이라 스토어 페이지가 아직 404 다(실측). 곧 승인 예정이라
+//              형 판단으로 링크를 미리 넣어둔다 — 승인 전까지 짧은 404 구간이 있다.
+//              ★ 승인이 예상보다 늦어지거나 반려되면 이 값을 null 로 되돌릴 것.
+//                null 이면 안드로이드에서는 배너를 아예 띄우지 않는다.
 //
-// PWA 폴백을 두지 않은 이유: xong 은 manifest 는 있으나 **서비스워커가 없어서**
-// Chrome 의 beforeinstallprompt 가 발생하지 않는다. 즉 안드로이드에 제시할 수 있는
-// 설치 경로가 현재 존재하지 않는다. 없는 걸 있는 척 띄우느니 안 띄우는 게 낫다.
+// PWA 폴백은 두지 않았다: xong 은 manifest 는 있으나 **서비스워커가 없어서**
+// Chrome 의 beforeinstallprompt 가 발생하지 않는다. 안드로이드에 제시할 수 있는
+// 설치 경로가 스토어뿐이다.
 const IOS_APP_STORE_URL: string | null =
   "https://apps.apple.com/app/id6790474855?ct=web_install_banner";
-const ANDROID_PLAY_URL: string | null = null;
+const ANDROID_PLAY_URL: string | null =
+  "https://play.google.com/store/apps/details?id=kr.co.xong.app&referrer=utm_source%3Dweb%26utm_medium%3Dinstall_banner";
 
 const DISMISS_LS = "xong-install-dismissed";
 const COOLDOWN_MS = 7 * 24 * 3600 * 1000;
