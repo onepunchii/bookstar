@@ -208,14 +208,22 @@ export default async function ArtistPublicPage({ params }: PageProps) {
   // 목차 앵커 — 네이버가 페이지 안의 앵커 구조에서 "본문 바로가기" 칩을 자동 생성한다.
   // 첫 앵커는 반드시 키워드(인물명)를 포함(faqHeading = "{name} 섭외 안내" 재사용).
   // 라벨은 페이지가 이미 렌더하는 문구만 재사용 — 새 카피 없음.
+  // 섹션 라벨 단일 출처 — 같은 문자열을 <h2>와 목차 칩이 공유해 서로 어긋나지 않게 한다.
+  // 이 페이지가 이미 쓰는 영문 마이크로 라벨 그대로(새 카피·새 i18n 키를 만들지 않는다).
+  const SECTION = {
+    work: "Recent Work",
+    photos: "Photos",
+    youtube: "YouTube",
+    availability: "Availability",
+  } as const;
+  const galleryPhotos = (artist.galleryUrls ?? []).filter(Boolean);
+  const hasGallery = galleryPhotos.length > 0;
   const tocItems = [
     { id: "faq", label: t("profile.faqHeading", { name: artist.name }) },
-    { id: "work", label: "Recent Work" },
-    ...(artist.galleryUrls && artist.galleryUrls.some(Boolean)
-      ? [{ id: "photos", label: "Photos" }]
-      : []),
-    ...(artist.youtube ? [{ id: "youtube", label: "YouTube" }] : []),
-    { id: "availability", label: "Availability" },
+    { id: "work", label: SECTION.work },
+    ...(hasGallery ? [{ id: "photos", label: SECTION.photos }] : []),
+    ...(artist.youtube ? [{ id: "youtube", label: SECTION.youtube }] : []),
+    { id: "availability", label: SECTION.availability },
     { id: "booking", label: t("profile.bookingCta") },
   ];
 
@@ -382,7 +390,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           {/* 최근 활동 */}
           <section id="work" className="scroll-mt-24">
             <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
-              Recent Work
+              {SECTION.work}
             </h2>
             <ul className="space-y-2.5">
               {artist.recentWork.map((work) => (
@@ -400,13 +408,13 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           </section>
 
           {/* 갤러리 */}
-          {artist.galleryUrls && artist.galleryUrls.some(Boolean) && (
+          {hasGallery && (
             <section id="photos" className="scroll-mt-24">
               <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
-                Photos
+                {SECTION.photos}
               </h2>
               <div className="grid grid-cols-3 gap-2">
-                {artist.galleryUrls.filter(Boolean).map((url) => (
+                {galleryPhotos.map((url) => (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     key={url}
@@ -423,7 +431,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           {artist.youtube && (
             <section id="youtube" className="scroll-mt-24">
               <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
-                YouTube
+                {SECTION.youtube}
               </h2>
               <YoutubeVideos channel={artist.youtube} dark />
             </section>
@@ -432,7 +440,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           {/* 가능 일정 */}
           <section id="availability" className="scroll-mt-24">
             <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
-              Availability
+              {SECTION.availability}
             </h2>
             <div className="rounded-2xl bg-white/[0.04] p-6 ring-1 ring-white/10">
               <MonthAvailability schedule={schedule} dark />

@@ -12,7 +12,9 @@ export default function robots(): MetadataRoute.Robots {
           "/agency",
           "/me",
           "/requests",
-          "/booking",
+          // 슬래시 필수 — robots는 접두사 매칭이라 "/booking"은 공개 SEO 랜딩인
+          // /booking-topic/*(=/섭외/*의 리라이트 대상)까지 함께 막아버린다.
+          "/booking/",
           "/recommend",
           "/d/", // 데일리 시트 공유 링크
           "/api/",
