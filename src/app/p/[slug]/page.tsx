@@ -6,6 +6,7 @@ import { Wordmark } from "@/components/wordmark";
 import {
   getArtistOwnerUserId,
   getPublicArtistBySlug,
+  getPublicArtists,
   getPublicSchedule,
 } from "@/lib/data/artists";
 import { getSessionUser } from "@/lib/data/session";
@@ -123,7 +124,9 @@ export async function generateMetadata({
 }
 
 export default async function ArtistPublicPage({ params }: PageProps) {
-  const { t, locale } = await getT();
+  // 봇은 ko 고정 — 네이버가 앵커 텍스트를 "본문 바로가기" 칩 문구로 그대로 쓰므로
+  // 크롤러에게 canonical 언어(한국어) 앵커를 안정적으로 보여준다. 사람은 영향 없음.
+  const { t, locale } = await getT({ botDefault: "ko" });
   const { slug } = await params;
   const artist = await getPublicArtistBySlug(slug);
   if (!artist) notFound();
@@ -131,10 +134,18 @@ export default async function ArtistPublicPage({ params }: PageProps) {
   const schedule = await getPublicSchedule(artist.id);
   const rating = getRatingSummaryBySlug(slug);
   // 신고·차단(App Store 1.2) — 뷰어 로그인 여부 + 프로필 운영 유저
-  const [viewer, ownerUserId] = await Promise.all([
+  // + 관련 문서(같은 공개 프로필 템플릿) 내부링크용 전체 목록
+  const [viewer, ownerUserId, allArtists] = await Promise.all([
     getSessionUser(),
     getArtistOwnerUserId(artist.id),
+    getPublicArtists(),
   ]);
+  // 관련 아티스트 — 같은 카테고리 우선, 부족하면 나머지로 채워 4~6개
+  const others = allArtists.filter((a) => a.slug && a.slug !== slug);
+  const relatedArtists = [
+    ...others.filter((a) => a.categories.includes(artist.category)),
+    ...others.filter((a) => !a.categories.includes(artist.category)),
+  ].slice(0, 6);
   // 유튜브 채널이 있으면 실 구독자 수, 없으면 저장된 팔로워
   const ytSubs = artist.youtube
     ? await fetchYoutubeSubscribers(artist.youtube)
@@ -193,6 +204,20 @@ export default async function ArtistPublicPage({ params }: PageProps) {
       acceptedAnswer: { "@type": "Answer", text: f.a },
     })),
   };
+
+  // 목차 앵커 — 네이버가 페이지 안의 앵커 구조에서 "본문 바로가기" 칩을 자동 생성한다.
+  // 첫 앵커는 반드시 키워드(인물명)를 포함(faqHeading = "{name} 섭외 안내" 재사용).
+  // 라벨은 페이지가 이미 렌더하는 문구만 재사용 — 새 카피 없음.
+  const tocItems = [
+    { id: "faq", label: t("profile.faqHeading", { name: artist.name }) },
+    { id: "work", label: "Recent Work" },
+    ...(artist.galleryUrls && artist.galleryUrls.some(Boolean)
+      ? [{ id: "photos", label: "Photos" }]
+      : []),
+    ...(artist.youtube ? [{ id: "youtube", label: "YouTube" }] : []),
+    { id: "availability", label: "Availability" },
+    { id: "booking", label: t("profile.bookingCta") },
+  ];
 
   return (
     <div className="min-h-dvh overflow-x-clip bg-[#0a0a0b] text-white">
@@ -282,8 +307,24 @@ export default async function ArtistPublicPage({ params }: PageProps) {
         </div>
       </section>
 
+      {/* 목차 앵커 — 히어로 바로 아래. RTL 대응: gap 기반 랩, 물리 마진 없음 */}
+      <nav className="mx-auto mt-5 max-w-4xl px-4 sm:px-6">
+        <ul className="flex flex-wrap gap-1.5">
+          {tocItems.map((item) => (
+            <li key={item.id}>
+              <a
+                href={`#${item.id}`}
+                className="premium-ease inline-flex items-center rounded-full bg-white/8 px-3.5 py-1.5 text-xs font-semibold text-white/70 ring-1 ring-white/10 hover:text-white hover:ring-white/35"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
       {/* 통계 스트립 — 글래스 카드 */}
-      <div className="mx-auto max-w-4xl px-4 sm:px-6">
+      <div className="mx-auto mt-5 max-w-4xl px-4 sm:px-6">
         <div className="grid grid-cols-3 divide-x divide-white/8 rounded-2xl bg-white/[0.04] py-5 ring-1 ring-white/10 backdrop-blur">
           <div className="px-4 text-center sm:px-6">
             <p className="flex items-center justify-center gap-1.5 text-xs text-white/40">
@@ -339,7 +380,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           )}
 
           {/* 최근 활동 */}
-          <section>
+          <section id="work" className="scroll-mt-24">
             <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
               Recent Work
             </h2>
@@ -360,7 +401,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
 
           {/* 갤러리 */}
           {artist.galleryUrls && artist.galleryUrls.some(Boolean) && (
-            <section>
+            <section id="photos" className="scroll-mt-24">
               <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
                 Photos
               </h2>
@@ -380,7 +421,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
 
           {/* 유튜브 최근 영상 — 채널 연동 시 카드 가로 스크롤 */}
           {artist.youtube && (
-            <section>
+            <section id="youtube" className="scroll-mt-24">
               <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
                 YouTube
               </h2>
@@ -389,7 +430,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           )}
 
           {/* 가능 일정 */}
-          <section>
+          <section id="availability" className="scroll-mt-24">
             <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
               Availability
             </h2>
@@ -400,7 +441,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
         </div>
 
         {/* 우측 CTA (모바일에선 위로) */}
-        <aside className="order-first lg:order-last">
+        <aside id="booking" className="order-first scroll-mt-24 lg:order-last">
           <div className="sticky top-6 space-y-3 rounded-2xl bg-white/[0.05] p-6 ring-1 ring-white/10 backdrop-blur">
             <p className="text-xs font-bold uppercase tracking-wider text-white/40">
               Booking
@@ -459,7 +500,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
       </div>
 
       {/* 섭외 안내 FAQ — "{이름} 섭외" 검색 인텐트 대응 (스키마와 동일 내용) */}
-      <section className="mx-auto max-w-4xl px-4 pb-14 sm:px-6">
+      <section id="faq" className="mx-auto max-w-4xl scroll-mt-24 px-4 pb-14 sm:px-6">
         <h2 className="display-kr text-lg font-bold text-white sm:text-xl">
           {t("profile.faqHeading", { name: artist.name })}
         </h2>
@@ -483,6 +524,34 @@ export default async function ArtistPublicPage({ params }: PageProps) {
           ))}
         </div>
       </section>
+
+      {/* 관련 문서 — 같은 공개 프로필 템플릿끼리 내부링크 클러스터(네이버 관련문서·크롤 경로) */}
+      {relatedArtists.length > 0 && (
+        <section className="mx-auto max-w-4xl px-4 pb-16 sm:px-6">
+          <h2 className="display-kr text-lg font-bold text-white sm:text-xl">
+            {t("booking.viewOtherArtists")}
+          </h2>
+          <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+            {relatedArtists.map((a) => (
+              <Link
+                key={a.id}
+                href={`/@${a.slug}`}
+                className="premium-ease group rounded-2xl bg-white/[0.04] p-4 ring-1 ring-white/10 hover:bg-white/[0.07] hover:ring-white/25"
+              >
+                <p className="text-[11px] font-semibold text-white/40">
+                  {CATEGORY_LABELS[a.category]}
+                </p>
+                <p className="mt-1 truncate text-[15px] font-bold text-white/90 group-hover:text-white">
+                  {a.name}
+                </p>
+                <p className="mt-0.5 truncate text-xs text-white/45">
+                  {a.tagline}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 푸터 */}
       <footer className="border-t border-white/8">
