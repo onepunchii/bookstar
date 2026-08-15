@@ -82,7 +82,10 @@ export default async function RootLayout({
     ? await getAgencyCapability()
     : "none";
   const viewer = await getViewer();
-  const locale = await getLocale();
+  // 크롤러는 ko 고정 — 이 레이아웃이 내보내는 title·description·OG가 언어와 무관하게
+  // 한국어이고 sitemap도 ko 단일 URL이라, 봇에 lang="en"이 나가면 본문·메타와 어긋난다.
+  // (SEO 페이지 /about·/p/[slug]도 같은 botDefault를 쓴다. 사람 사용자는 영향 없음.)
+  const locale = await getLocale({ botDefault: "ko" });
   const dir = dirOf(locale);
   const dict = dictFor(locale);
   return (
