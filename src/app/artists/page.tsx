@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { PremiumArtistCard } from "@/components/premium/premium-artist-card";
 import { Reveal } from "@/components/premium/reveal";
+import { SiteFooter } from "@/components/site-footer";
 import { SLACounter } from "@/components/sla-counter";
 import { getPublicArtists, getPublicScheduleMap } from "@/lib/data/artists";
 import { getT } from "@/lib/i18n/server";
@@ -139,6 +140,7 @@ export default async function ArtistsPage({
   };
 
   return (
+    <>
     <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-16">
       <Reveal>
         <Eyebrow>Discover</Eyebrow>
@@ -241,5 +243,8 @@ export default async function ArtistsPage({
         </div>
       )}
     </div>
+    {/* 푸터 — 스토어 실링크(크롤러가 보는 <a href>)·내부 링크 */}
+    <SiteFooter />
+    </>
   );
 }

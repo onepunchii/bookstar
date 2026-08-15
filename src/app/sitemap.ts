@@ -34,6 +34,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.9,
     },
+    // 앱 랜딩 — App Store·Play 실링크가 있는 다운로드 페이지
+    {
+      url: absoluteUrl("/app"),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
     {
       url: absoluteUrl("/join/creator"),
       lastModified: now,

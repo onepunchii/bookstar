@@ -1310,6 +1310,41 @@ const ko = {
   "family.mudangk.chip": "사주 · 궁합",
   "family.mudangk.title": "내 사주, 올해 운은 어떻게 흐를까?",
   "family.mudangk.desc": "생년월일로 보는 사주 풀이",
+
+  // 사이트 푸터 (src/components/site-footer.tsx)
+  "footer.appPage": "앱 소개 보기",
+
+  // 앱 랜딩 (/app · src/app/app/page.tsx)
+  //   ★ 코드로 확인된 기능만 적는다. 과장·보장·순위 주장 금지.
+  "appPage.metaTitle": "XONG 앱 다운로드 — 연예인·인플루언서 섭외 앱 | iOS·Android",
+  "appPage.metaDesc":
+    "XONG 앱으로 가수·아이돌·배우·MC·모델·인플루언서를 카테고리별로 찾고, 예상 견적·응답률을 확인해 검증된 소속사에 바로 섭외를 요청하세요. App Store·Google Play에서 무료로 받을 수 있습니다.",
+  "appPage.crumb": "앱 다운로드",
+  "appPage.h1": "XONG 앱 다운로드",
+  "appPage.intro":
+    "XONG 앱은 연예인·인플루언서 섭외를 진행하는 B2B 부킹 앱입니다. iOS·Android에서 받을 수 있고, 웹(www.xong.co.kr)과 같은 계정·같은 데이터를 씁니다. 로그인 없이 '둘러보기'로 화면을 먼저 볼 수 있습니다.",
+  "appPage.featuresHeading": "앱에서 할 수 있는 것",
+  "appPage.feat1Title": "카테고리로 아티스트 찾기",
+  "appPage.feat1Desc":
+    "가수·아이돌·배우·MC·모델·인플루언서를 카테고리와 예산대로 검색",
+  "appPage.feat2Title": "예상 견적·응답률 확인",
+  "appPage.feat2Desc": "공개 프로필에서 예상 예산대·응답률·응답시간·가능 일정 확인",
+  "appPage.feat3Title": "섭외 요청과 견적 회신",
+  "appPage.feat3Desc": "표준 브리프로 요청하면 담당 소속사가 견적으로 회신",
+  "appPage.feat4Title": "진행 상황 알림",
+  "appPage.feat4Desc": "견적 회신·메시지를 푸시 알림으로 받기",
+  "appPage.shot1Alt": "XONG 앱 홈 화면 — 진행 중인 섭외와 평균 응답 시간",
+  "appPage.shot2Alt": "XONG 앱 아티스트 찾기 화면 — 카테고리·예산 필터",
+  "appPage.shot3Alt": "XONG 앱 AI 캐스팅 화면 — 예산·카테고리 입력",
+  "appPage.faq1Q": "앱 이용료가 있나요?",
+  "appPage.faq1A":
+    "다운로드와 이용은 무료입니다. 광고주와 아티스트를 잇는 매칭 수수료는 0%이고, 다수 아티스트를 관리하는 소속사는 선택형 SaaS 요금제를 씁니다.",
+  "appPage.faq2Q": "로그인 없이 써볼 수 있나요?",
+  "appPage.faq2A":
+    "'둘러보기'로 광고주·소속사·아티스트 화면을 로그인 없이 볼 수 있습니다. 실제 섭외 요청과 견적 회신은 로그인이 필요합니다.",
+  "appPage.faq3Q": "웹과 앱이 다른가요?",
+  "appPage.faq3A":
+    "같은 서비스이고 같은 계정으로 이어집니다. 앱은 푸시 알림으로 견적 회신·메시지를 바로 받을 수 있습니다.",
 } as const;
 
 export default ko as Record<string, string>;

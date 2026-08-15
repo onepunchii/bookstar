@@ -1163,6 +1163,42 @@ const id: Record<string, string> = {
   "family.mudangk.chip": "Saju · Kecocokan",
   "family.mudangk.title": "Bagaimana peruntungan tahun ini?",
   "family.mudangk.desc": "Bacaan saju Korea dari tanggal lahir",
+
+  // Footer situs
+  "footer.appPage": "Tentang aplikasi",
+
+  // Halaman aplikasi (/app)
+  "appPage.metaTitle": "Unduh aplikasi XONG — aplikasi booking selebritas dan influencer | iOS · Android",
+  "appPage.metaDesc":
+    "Pakai aplikasi XONG untuk mencari penyanyi, idol, aktor, MC, model, dan influencer per kategori, melihat perkiraan penawaran dan tingkat respons, lalu mengirim permintaan booking langsung ke agensi terverifikasi. Gratis di App Store dan Google Play.",
+  "appPage.crumb": "Unduh aplikasi",
+  "appPage.h1": "Unduh aplikasi XONG",
+  "appPage.intro":
+    "XONG adalah aplikasi booking B2B untuk menggandeng selebritas dan influencer. Tersedia di iOS dan Android, memakai akun dan data yang sama dengan versi web (www.xong.co.kr). Anda juga bisa melihat-lihat dulu tanpa masuk akun.",
+  "appPage.featuresHeading": "Yang bisa dilakukan di aplikasi",
+  "appPage.feat1Title": "Cari artis per kategori",
+  "appPage.feat1Desc":
+    "Telusuri penyanyi, idol, aktor, MC, model, dan influencer berdasarkan kategori dan anggaran",
+  "appPage.feat2Title": "Lihat perkiraan penawaran dan tingkat respons",
+  "appPage.feat2Desc":
+    "Profil publik menampilkan rentang anggaran, tingkat respons, waktu respons, dan tanggal tersedia",
+  "appPage.feat3Title": "Kirim permintaan, terima penawaran",
+  "appPage.feat3Desc":
+    "Kirim brief standar dan agensi artis menjawab dengan penawaran",
+  "appPage.feat4Title": "Notifikasi perkembangan",
+  "appPage.feat4Desc": "Terima penawaran dan pesan lewat notifikasi push",
+  "appPage.shot1Alt": "Layar utama aplikasi XONG — booking yang sedang berjalan dan waktu respons rata-rata",
+  "appPage.shot2Alt": "Layar pencarian artis aplikasi XONG — filter kategori dan anggaran",
+  "appPage.shot3Alt": "Layar AI casting aplikasi XONG — input anggaran dan kategori",
+  "appPage.faq1Q": "Apakah aplikasinya berbayar?",
+  "appPage.faq1A":
+    "Mengunduh dan memakainya gratis. Biaya pencocokan antara pengiklan dan artis adalah 0%. Agensi yang mengelola banyak artis dapat memilih paket SaaS opsional.",
+  "appPage.faq2Q": "Bisa dicoba tanpa masuk akun?",
+  "appPage.faq2A":
+    "Bisa — mode 'Lihat-lihat' menampilkan layar pengiklan, agensi, dan artis tanpa akun. Mengirim permintaan booking sungguhan dan menerima penawaran memerlukan login.",
+  "appPage.faq3Q": "Apakah aplikasi berbeda dari situs web?",
+  "appPage.faq3A":
+    "Layanannya sama dan akunnya sama. Aplikasi menambahkan notifikasi push, sehingga penawaran dan pesan langsung sampai.",
 };
 
 export default id;

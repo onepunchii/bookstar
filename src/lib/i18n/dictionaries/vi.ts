@@ -1163,6 +1163,42 @@ const vi: Record<string, string> = {
   "family.mudangk.chip": "Saju · Hợp mệnh",
   "family.mudangk.title": "Vận năm nay sẽ đi theo hướng nào?",
   "family.mudangk.desc": "Luận saju theo ngày tháng năm sinh",
+
+  // Chân trang
+  "footer.appPage": "Giới thiệu ứng dụng",
+
+  // Trang ứng dụng (/app)
+  "appPage.metaTitle": "Tải ứng dụng XONG — ứng dụng mời nghệ sĩ và influencer | iOS · Android",
+  "appPage.metaDesc":
+    "Dùng ứng dụng XONG để tìm ca sĩ, idol, diễn viên, MC, người mẫu và influencer theo hạng mục, xem mức báo giá dự kiến và tỷ lệ phản hồi, rồi gửi yêu cầu mời trực tiếp đến công ty quản lý đã xác thực. Miễn phí trên App Store và Google Play.",
+  "appPage.crumb": "Tải ứng dụng",
+  "appPage.h1": "Tải ứng dụng XONG",
+  "appPage.intro":
+    "XONG là ứng dụng booking B2B để mời nghệ sĩ và influencer. Ứng dụng có trên iOS và Android, dùng chung tài khoản và dữ liệu với web (www.xong.co.kr). Bạn cũng có thể xem trước các màn hình mà không cần đăng nhập.",
+  "appPage.featuresHeading": "Bạn làm được gì trong ứng dụng",
+  "appPage.feat1Title": "Tìm nghệ sĩ theo hạng mục",
+  "appPage.feat1Desc":
+    "Tìm ca sĩ, idol, diễn viên, MC, người mẫu và influencer theo hạng mục và ngân sách",
+  "appPage.feat2Title": "Xem báo giá dự kiến và tỷ lệ phản hồi",
+  "appPage.feat2Desc":
+    "Trang công khai hiển thị khoảng ngân sách, tỷ lệ phản hồi, thời gian phản hồi và ngày trống",
+  "appPage.feat3Title": "Gửi yêu cầu, nhận báo giá",
+  "appPage.feat3Desc":
+    "Gửi brief theo mẫu chuẩn, công ty quản lý sẽ phản hồi kèm báo giá",
+  "appPage.feat4Title": "Thông báo tiến độ",
+  "appPage.feat4Desc": "Nhận báo giá và tin nhắn qua thông báo đẩy",
+  "appPage.shot1Alt": "Màn hình chính ứng dụng XONG — các yêu cầu đang xử lý và thời gian phản hồi trung bình",
+  "appPage.shot2Alt": "Màn hình tìm nghệ sĩ của ứng dụng XONG — lọc theo hạng mục và ngân sách",
+  "appPage.shot3Alt": "Màn hình AI casting của ứng dụng XONG — nhập ngân sách và hạng mục",
+  "appPage.faq1Q": "Dùng ứng dụng có mất phí không?",
+  "appPage.faq1A":
+    "Tải và sử dụng đều miễn phí. Phí kết nối giữa nhà quảng cáo và nghệ sĩ là 0%. Công ty quản lý nhiều nghệ sĩ có thể chọn gói SaaS tùy chọn.",
+  "appPage.faq2Q": "Có thể dùng thử mà không đăng nhập không?",
+  "appPage.faq2A":
+    "Được — chế độ 'Xem thử' cho bạn xem màn hình của nhà quảng cáo, công ty quản lý và nghệ sĩ mà không cần tài khoản. Gửi yêu cầu mời thật và nhận báo giá thì cần đăng nhập.",
+  "appPage.faq3Q": "Ứng dụng có khác website không?",
+  "appPage.faq3A":
+    "Cùng một dịch vụ và cùng tài khoản. Ứng dụng có thêm thông báo đẩy nên báo giá và tin nhắn đến ngay.",
 };
 
 export default vi;

@@ -43,6 +43,10 @@ export default async function GuideLayout({
             <Link href="/join" className="hover:text-white/70">
               {t("guide.footerFreeStart")}
             </Link>
+            {/* 앱 랜딩(/app)으로 — 스토어 실링크가 모여 있는 페이지 */}
+            <Link href="/app" className="hover:text-white/70">
+              {t("footer.appPage")}
+            </Link>
           </span>
         </div>
       </footer>

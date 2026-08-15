@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Eyebrow } from "@/components/premium/eyebrow";
 import { PremiumCTA } from "@/components/premium/premium-cta";
+import { SiteFooter } from "@/components/site-footer";
 import { SITE, absoluteUrl } from "@/lib/site";
 import { getT } from "@/lib/i18n/server";
 import {
@@ -260,6 +261,8 @@ export default async function AboutPage() {
           {t("about.updatedPrefix")}: {UPDATED} · XONG · www.xong.co.kr
         </p>
       </main>
+      {/* 푸터 — 스토어 실링크(크롤러가 보는 <a href>)·내부 링크 */}
+      <SiteFooter />
     </div>
   );
 }

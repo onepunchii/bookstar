@@ -1163,6 +1163,42 @@ const en: Record<string, string> = {
   "family.mudangk.chip": "Saju · Compatibility",
   "family.mudangk.title": "How will your year unfold?",
   "family.mudangk.desc": "Korean saju reading from your birth date",
+
+  // Site footer
+  "footer.appPage": "About the app",
+
+  // App landing (/app)
+  "appPage.metaTitle": "Download the XONG app — book celebrities and influencers | iOS · Android",
+  "appPage.metaDesc":
+    "Use the XONG app to browse singers, idols, actors, MCs, models and influencers by category, check estimated quotes and response rates, and send booking requests straight to verified agencies. Free on the App Store and Google Play.",
+  "appPage.crumb": "Download the app",
+  "appPage.h1": "Download the XONG app",
+  "appPage.intro":
+    "XONG is a B2B booking app for hiring celebrities and influencers. It's available on iOS and Android and uses the same account and the same data as the web (www.xong.co.kr). You can look around without signing in first.",
+  "appPage.featuresHeading": "What you can do in the app",
+  "appPage.feat1Title": "Find artists by category",
+  "appPage.feat1Desc":
+    "Search singers, idols, actors, MCs, models and influencers by category and budget",
+  "appPage.feat2Title": "See estimated quotes and response rates",
+  "appPage.feat2Desc":
+    "Public profiles show the budget band, response rate, response time and open dates",
+  "appPage.feat3Title": "Send a request, get a quote back",
+  "appPage.feat3Desc":
+    "Send a standard brief and the artist's agency replies with a quote",
+  "appPage.feat4Title": "Progress notifications",
+  "appPage.feat4Desc": "Get quotes and messages as push notifications",
+  "appPage.shot1Alt": "XONG app home screen — bookings in progress and average response time",
+  "appPage.shot2Alt": "XONG app artist search screen — category and budget filters",
+  "appPage.shot3Alt": "XONG app AI casting screen — budget and category input",
+  "appPage.faq1Q": "Does the app cost anything?",
+  "appPage.faq1A":
+    "Downloading and using it is free. The matching fee between advertisers and artists is 0%. Agencies managing many artists can choose an optional SaaS plan.",
+  "appPage.faq2Q": "Can I try it without signing in?",
+  "appPage.faq2A":
+    "Yes — 'Look around' lets you see the advertiser, agency and artist screens without an account. Sending a real booking request and receiving quotes requires signing in.",
+  "appPage.faq3Q": "Is the app different from the website?",
+  "appPage.faq3A":
+    "It's the same service on the same account. The app adds push notifications, so quotes and messages reach you right away.",
 };
 
 export default en;

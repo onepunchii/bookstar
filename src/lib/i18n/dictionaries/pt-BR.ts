@@ -1163,6 +1163,42 @@ const ptBR: Record<string, string> = {
   "family.mudangk.chip": "Saju · Compatibilidade",
   "family.mudangk.title": "Como vai ser o seu ano?",
   "family.mudangk.desc": "Leitura de saju pela data de nascimento",
+
+  // Rodapé do site
+  "footer.appPage": "Sobre o app",
+
+  // Página do app (/app)
+  "appPage.metaTitle": "Baixe o app XONG — app para contratar celebridades e influenciadores | iOS · Android",
+  "appPage.metaDesc":
+    "Com o app XONG você encontra cantores, idols, atores, apresentadores, modelos e influenciadores por categoria, vê o orçamento estimado e a taxa de resposta e envia pedidos direto para agências verificadas. Grátis na App Store e no Google Play.",
+  "appPage.crumb": "Baixar o app",
+  "appPage.h1": "Baixe o app XONG",
+  "appPage.intro":
+    "O XONG é um app de booking B2B para contratar celebridades e influenciadores. Está disponível em iOS e Android e usa a mesma conta e os mesmos dados da web (www.xong.co.kr). Você também pode dar uma olhada antes de entrar na conta.",
+  "appPage.featuresHeading": "O que você faz no app",
+  "appPage.feat1Title": "Encontrar artistas por categoria",
+  "appPage.feat1Desc":
+    "Busque cantores, idols, atores, apresentadores, modelos e influenciadores por categoria e orçamento",
+  "appPage.feat2Title": "Ver orçamento estimado e taxa de resposta",
+  "appPage.feat2Desc":
+    "Os perfis públicos mostram a faixa de orçamento, a taxa e o tempo de resposta e as datas livres",
+  "appPage.feat3Title": "Enviar o pedido e receber o orçamento",
+  "appPage.feat3Desc":
+    "Envie um briefing padrão e a agência do artista responde com um orçamento",
+  "appPage.feat4Title": "Avisos de andamento",
+  "appPage.feat4Desc": "Receba orçamentos e mensagens por notificação push",
+  "appPage.shot1Alt": "Tela inicial do app XONG — contratações em andamento e tempo médio de resposta",
+  "appPage.shot2Alt": "Tela de busca de artistas do app XONG — filtros de categoria e orçamento",
+  "appPage.shot3Alt": "Tela de casting com IA do app XONG — inserir orçamento e categoria",
+  "appPage.faq1Q": "O app tem algum custo?",
+  "appPage.faq1A":
+    "Baixar e usar é gratuito. A taxa de intermediação entre anunciantes e artistas é 0%. Agências que gerenciam muitos artistas podem escolher um plano SaaS opcional.",
+  "appPage.faq2Q": "Posso testar sem entrar na conta?",
+  "appPage.faq2A":
+    "Sim — o modo 'Dar uma olhada' mostra as telas de anunciante, agência e artista sem conta. Para enviar um pedido real e receber orçamentos é preciso entrar.",
+  "appPage.faq3Q": "O app é diferente do site?",
+  "appPage.faq3A":
+    "É o mesmo serviço com a mesma conta. O app acrescenta notificações push, então orçamentos e mensagens chegam na hora.",
 };
 
 export default ptBR;

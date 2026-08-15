@@ -1163,6 +1163,41 @@ const ja: Record<string, string> = {
   "family.mudangk.chip": "四柱推命・相性",
   "family.mudangk.title": "今年の運勢はどう流れる？",
   "family.mudangk.desc": "生年月日でみる四柱推命",
+
+  // サイトフッター
+  "footer.appPage": "アプリの紹介",
+
+  // アプリランディング (/app)
+  "appPage.metaTitle": "XONGアプリのダウンロード — 芸能人・インフルエンサー起用アプリ | iOS・Android",
+  "appPage.metaDesc":
+    "XONGアプリで歌手・アイドル・俳優・MC・モデル・インフルエンサーをカテゴリ別に探し、想定見積もりと返信率を確認して、認証済み事務所に直接オファーを送れます。App Store・Google Playで無料。",
+  "appPage.crumb": "アプリのダウンロード",
+  "appPage.h1": "XONGアプリのダウンロード",
+  "appPage.intro":
+    "XONGアプリは芸能人・インフルエンサーの起用を進めるB2Bブッキングアプリです。iOS・Androidで利用でき、ウェブ（www.xong.co.kr）と同じアカウント・同じデータを使います。ログインなしで「のぞいてみる」から画面を先に確認できます。",
+  "appPage.featuresHeading": "アプリでできること",
+  "appPage.feat1Title": "カテゴリからアーティストを探す",
+  "appPage.feat1Desc":
+    "歌手・アイドル・俳優・MC・モデル・インフルエンサーをカテゴリと予算で検索",
+  "appPage.feat2Title": "想定見積もりと返信率を確認",
+  "appPage.feat2Desc":
+    "公開プロフィールで予算帯・返信率・返信時間・空き日程を確認",
+  "appPage.feat3Title": "オファー送信と見積もり返信",
+  "appPage.feat3Desc": "標準ブリーフで依頼すると担当事務所が見積もりで返信",
+  "appPage.feat4Title": "進行状況の通知",
+  "appPage.feat4Desc": "見積もりの返信やメッセージをプッシュ通知で受け取る",
+  "appPage.shot1Alt": "XONGアプリのホーム画面 — 進行中のオファーと平均返信時間",
+  "appPage.shot2Alt": "XONGアプリのアーティスト検索画面 — カテゴリ・予算フィルター",
+  "appPage.shot3Alt": "XONGアプリのAIキャスティング画面 — 予算・カテゴリの入力",
+  "appPage.faq1Q": "アプリの利用料はかかりますか？",
+  "appPage.faq1A":
+    "ダウンロードと利用は無料です。広告主とアーティストをつなぐマッチング手数料は0%で、多数のアーティストを管理する事務所は任意のSaaSプランを利用します。",
+  "appPage.faq2Q": "ログインなしで試せますか？",
+  "appPage.faq2A":
+    "「のぞいてみる」で広告主・事務所・アーティストの画面をログインなしで確認できます。実際のオファー送信と見積もり返信にはログインが必要です。",
+  "appPage.faq3Q": "ウェブとアプリは違いますか？",
+  "appPage.faq3A":
+    "同じサービスで、同じアカウントでつながります。アプリはプッシュ通知で見積もりの返信やメッセージをすぐ受け取れます。",
 };
 
 export default ja;

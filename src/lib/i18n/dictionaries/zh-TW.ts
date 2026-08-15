@@ -1163,6 +1163,39 @@ const zhTW: Record<string, string> = {
   "family.mudangk.chip": "四柱 · 合盤",
   "family.mudangk.title": "今年的運勢會怎麼走？",
   "family.mudangk.desc": "用生日看的四柱命盤解析",
+
+  // 網站頁尾
+  "footer.appPage": "應用程式介紹",
+
+  // 應用程式登陸頁 (/app)
+  "appPage.metaTitle": "下載 XONG App — 藝人與網紅邀約 App | iOS・Android",
+  "appPage.metaDesc":
+    "用 XONG App 依類別尋找歌手、偶像、演員、主持人、模特與網紅，查看預估報價與回覆率，直接向已驗證的經紀公司送出邀約。App Store 與 Google Play 免費下載。",
+  "appPage.crumb": "下載 App",
+  "appPage.h1": "下載 XONG App",
+  "appPage.intro":
+    "XONG App 是進行藝人與網紅邀約的 B2B 預訂 App。支援 iOS 與 Android，與網頁版（www.xong.co.kr）使用同一組帳號與同一份資料。不必登入也能先用「先看看」瀏覽畫面。",
+  "appPage.featuresHeading": "App 能做什麼",
+  "appPage.feat1Title": "依類別尋找藝人",
+  "appPage.feat1Desc": "依類別與預算搜尋歌手、偶像、演員、主持人、模特與網紅",
+  "appPage.feat2Title": "查看預估報價與回覆率",
+  "appPage.feat2Desc": "公開檔案顯示預算級距、回覆率、回覆時間與可接檔期",
+  "appPage.feat3Title": "送出邀約並收到報價",
+  "appPage.feat3Desc": "以標準需求表送出邀約，經紀公司會以報價回覆",
+  "appPage.feat4Title": "進度通知",
+  "appPage.feat4Desc": "以推播通知接收報價與訊息",
+  "appPage.shot1Alt": "XONG App 首頁 — 進行中的邀約與平均回覆時間",
+  "appPage.shot2Alt": "XONG App 藝人搜尋畫面 — 類別與預算篩選",
+  "appPage.shot3Alt": "XONG App AI 選角畫面 — 輸入預算與類別",
+  "appPage.faq1Q": "使用 App 需要付費嗎？",
+  "appPage.faq1A":
+    "下載與使用都免費。廣告主與藝人之間的媒合手續費為 0%，管理多位藝人的經紀公司可選用 SaaS 方案。",
+  "appPage.faq2Q": "可以不登入先試用嗎？",
+  "appPage.faq2A":
+    "可以。「先看看」讓你不用帳號就能瀏覽廣告主、經紀公司與藝人的畫面。實際送出邀約與接收報價需要登入。",
+  "appPage.faq3Q": "App 和網頁版有不同嗎？",
+  "appPage.faq3A":
+    "同一個服務、同一組帳號。App 多了推播通知，報價與訊息會立即送達。",
 };
 
 export default zhTW;

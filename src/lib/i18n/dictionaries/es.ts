@@ -1163,6 +1163,42 @@ const es: Record<string, string> = {
   "family.mudangk.chip": "Saju · Compatibilidad",
   "family.mudangk.title": "¿Cómo será tu año?",
   "family.mudangk.desc": "Lectura de saju a partir de tu fecha de nacimiento",
+
+  // Pie de página
+  "footer.appPage": "Sobre la app",
+
+  // Página de la app (/app)
+  "appPage.metaTitle": "Descarga la app de XONG — app para contratar celebridades e influencers | iOS · Android",
+  "appPage.metaDesc":
+    "Con la app de XONG puedes buscar cantantes, ídolos, actores, presentadores, modelos e influencers por categoría, ver el presupuesto estimado y la tasa de respuesta, y enviar solicitudes directamente a agencias verificadas. Gratis en App Store y Google Play.",
+  "appPage.crumb": "Descargar la app",
+  "appPage.h1": "Descarga la app de XONG",
+  "appPage.intro":
+    "XONG es una app de booking B2B para contratar celebridades e influencers. Está disponible en iOS y Android y usa la misma cuenta y los mismos datos que la web (www.xong.co.kr). También puedes echar un vistazo sin iniciar sesión.",
+  "appPage.featuresHeading": "Qué puedes hacer en la app",
+  "appPage.feat1Title": "Buscar artistas por categoría",
+  "appPage.feat1Desc":
+    "Busca cantantes, ídolos, actores, presentadores, modelos e influencers por categoría y presupuesto",
+  "appPage.feat2Title": "Ver presupuesto estimado y tasa de respuesta",
+  "appPage.feat2Desc":
+    "Los perfiles públicos muestran la franja de presupuesto, la tasa y el tiempo de respuesta y las fechas libres",
+  "appPage.feat3Title": "Enviar la solicitud y recibir el presupuesto",
+  "appPage.feat3Desc":
+    "Envía un brief estándar y la agencia del artista responde con un presupuesto",
+  "appPage.feat4Title": "Avisos de seguimiento",
+  "appPage.feat4Desc": "Recibe presupuestos y mensajes por notificación push",
+  "appPage.shot1Alt": "Pantalla de inicio de la app XONG — contrataciones en curso y tiempo medio de respuesta",
+  "appPage.shot2Alt": "Pantalla de búsqueda de artistas de la app XONG — filtros de categoría y presupuesto",
+  "appPage.shot3Alt": "Pantalla de casting con IA de la app XONG — introducir presupuesto y categoría",
+  "appPage.faq1Q": "¿La app tiene algún coste?",
+  "appPage.faq1A":
+    "Descargarla y usarla es gratis. La comisión de emparejamiento entre anunciantes y artistas es del 0%. Las agencias que gestionan muchos artistas pueden elegir un plan SaaS opcional.",
+  "appPage.faq2Q": "¿Puedo probarla sin iniciar sesión?",
+  "appPage.faq2A":
+    "Sí: el modo 'Echar un vistazo' muestra las pantallas de anunciante, agencia y artista sin cuenta. Para enviar una solicitud real y recibir presupuestos hay que iniciar sesión.",
+  "appPage.faq3Q": "¿La app es distinta de la web?",
+  "appPage.faq3A":
+    "Es el mismo servicio con la misma cuenta. La app añade notificaciones push, así los presupuestos y mensajes llegan al instante.",
 };
 
 export default es;

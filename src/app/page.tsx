@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { FeedbackBox } from "@/components/feedback-box";
 import { HomeSearch } from "@/components/home-search";
+import { SiteFooter } from "@/components/site-footer";
 import { LineupBundleCard } from "@/components/lineup-bundle";
 import { LiveSignal } from "@/components/live-signal";
 import { Eyebrow } from "@/components/premium/eyebrow";
@@ -298,6 +299,9 @@ export default async function HomePage() {
           </Reveal>
         </section>
       </div>
+
+      {/* ── 푸터 — 스토어 실링크(크롤러가 보는 <a href>)·내부 링크 ── */}
+      <SiteFooter />
     </div>
   );
 }
