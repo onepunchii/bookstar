@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { desc, sql } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
+import { visitCounts } from "@/lib/visits";
 
 // 슈퍼관리자 요약 — 외부 통합 대시보드용 스냅샷.
 // 세션 대신 Bearer 시크릿(SUPER_ADMIN_SECRET)으로만 인증. 캐시 금지.
@@ -55,6 +56,10 @@ export async function GET(req: Request) {
   const db = getDb();
   // ?detail=1 — 통합 대시보드에서 건의·에러 목록까지 볼 때만 추가 조회
   const detail = new URL(req.url).searchParams.get("detail") === "1";
+
+  // 접속자는 가입자와 다른 질문에 답한다 — "얼마나 남았나" vs "얼마나 오나".
+  // visitCounts() 가 null 이면 집계가 아직 준비되지 않은 것이다(0명과 구분해야 한다).
+  const vcP = visitCounts();
 
   const [
     usersTotal,
@@ -128,10 +133,14 @@ export async function GET(req: Request) {
     ),
   ]);
 
+  const vc = await vcP;
+
   const body: Record<string, unknown> = {
     ts: new Date().toISOString(),
     members: { total: usersTotal, today: usersToday },
     metrics: [
+      { label: "접속자(오늘)", value: vc ? vc.today : "미설정" },
+      { label: "접속자(어제)", value: vc ? vc.yesterday : "미설정" },
       { label: "아티스트", value: artistsTotal },
       { label: "소속사", value: agenciesTotal },
       { label: "광고주", value: advertisersTotal },

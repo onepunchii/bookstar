@@ -9,6 +9,7 @@ import {
   uuid,
   jsonb,
   uniqueIndex,
+  index,
   serial,
   primaryKey,
 } from "drizzle-orm/pg-core";
@@ -521,4 +522,26 @@ export const errorLogs = pgTable(
     lastSeen: timestamp("last_seen").notNull().defaultNow(),
   },
   (t) => [uniqueIndex("error_logs_fingerprint_unique").on(t.fingerprint)]
+);
+
+// ---------- 일별 유니크 접속자 (슈퍼관리자 "접속자" 지표) ----------
+// 가입자 수만으로는 서비스가 살아 있는지 알 수 없다 — 로그인하지 않은 방문자까지 센다.
+//  · (day, visitor) PK — 하루 한 사람이 한 행 → count(*) 가 곧 유니크 방문자수.
+//  · visitor 는 클라이언트가 만든 난수 ID. IP 도 계정도 저장하지 않는다.
+//  · 날짜는 KST 기준(서버 UTC 자정에 날짜가 바뀌면 한국 사용자에게 어긋난다).
+// DB 에는 마이그레이션 SQL 로 직접 생성했다(create table if not exists) — 스키마 정의는
+// drizzle push 가 이 테이블을 모르는 테이블로 취급하지 않도록 실제 DDL 과 맞춰 둔다.
+export const dailyVisits = pgTable(
+  "daily_visits",
+  {
+    day: date("day").notNull(),
+    visitor: text("visitor").notNull(),
+    firstSeen: timestamp("first_seen", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.day, t.visitor] }),
+    index("daily_visits_day_idx").on(t.day),
+  ]
 );

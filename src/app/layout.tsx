@@ -3,6 +3,7 @@ import "./globals.css";
 import { AppShell } from "@/components/app-shell";
 import { ErrorReporter } from "@/components/error-reporter";
 import NativeBridge from "@/components/native-bridge";
+import VisitBeacon from "@/components/visit-beacon";
 import AppInstallBanner from "@/components/app-install-banner";
 import { auth } from "@/auth";
 import { getAgencyCapability, getViewer } from "@/lib/data/session";
@@ -153,6 +154,8 @@ export default async function RootLayout({
         </I18nProvider>
         <ErrorReporter />
         <NativeBridge />
+        {/* 일별 유니크 접속자 비콘 — localStorage 게이트로 하루 1회만 전송 */}
+        <VisitBeacon />
       </body>
     </html>
   );
