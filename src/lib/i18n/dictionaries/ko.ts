@@ -1071,6 +1071,14 @@ const ko = {
   "profile.publicBadge": "공개 프로필",
   // profile.responseRate
   "profile.responseRate": "응답률",
+  // 공개 프로필 섹션 제목 — <h2>와 목차 칩(네이버 "본문 바로가기")이 함께 쓴다.
+  // YouTube 섹션은 고유 브랜드명이라 키 없이 페이지에서 그대로 렌더한다.
+  // profile.sectionAvailability
+  "profile.sectionAvailability": "섭외 가능 일정",
+  // profile.sectionPhotos
+  "profile.sectionPhotos": "사진",
+  // profile.sectionWork
+  "profile.sectionWork": "최근 활동",
   // profile.share
   "profile.share": "공유",
   // profile.subscribers

@@ -207,14 +207,14 @@ export default async function ArtistPublicPage({ params }: PageProps) {
 
   // 목차 앵커 — 네이버가 페이지 안의 앵커 구조에서 "본문 바로가기" 칩을 자동 생성한다.
   // 첫 앵커는 반드시 키워드(인물명)를 포함(faqHeading = "{name} 섭외 안내" 재사용).
-  // 라벨은 페이지가 이미 렌더하는 문구만 재사용 — 새 카피 없음.
   // 섹션 라벨 단일 출처 — 같은 문자열을 <h2>와 목차 칩이 공유해 서로 어긋나지 않게 한다.
-  // 이 페이지가 이미 쓰는 영문 마이크로 라벨 그대로(새 카피·새 i18n 키를 만들지 않는다).
+  // 이 문구가 네이버 검색결과 칩에 그대로 노출되므로 로케일 문구를 쓴다(영문 하드코딩 금지).
   const SECTION = {
-    work: "Recent Work",
-    photos: "Photos",
+    work: t("profile.sectionWork"),
+    photos: t("profile.sectionPhotos"),
+    // 고유 브랜드명 — 어떤 언어에서도 번역·음차하지 않으므로 사전 키를 두지 않는다.
     youtube: "YouTube",
-    availability: "Availability",
+    availability: t("profile.sectionAvailability"),
   } as const;
   const galleryPhotos = (artist.galleryUrls ?? []).filter(Boolean);
   const hasGallery = galleryPhotos.length > 0;
