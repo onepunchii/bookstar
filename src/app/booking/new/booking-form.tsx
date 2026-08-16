@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuthUi } from "@/lib/auth-ui-store";
 import { useNotificationsStore } from "@/lib/notifications-store";
@@ -62,25 +62,38 @@ export function BookingForm({
   const pushNotif = useNotificationsStore((s) => s.push);
   const { isLoggedIn, openLogin } = useAuthUi();
 
-  const formRef = useRef<HTMLFormElement>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
   const restored = useRef(false);
   const draftKey = `${DRAFT_PREFIX}${artist.slug}`;
 
-  // 마운트 시 복원. 복원 전에는 저장하지 않는다(빈 폼이 초안을 덮어쓰는 것 방지).
-  useEffect(() => {
-    const form = formRef.current;
-    if (!form) return;
-    let raw: string | null = null;
-    try {
-      raw = sessionStorage.getItem(draftKey);
-    } catch {
-      // 스토리지 차단 환경(시크릿 모드 등) — 초안 없이 진행
-    }
-    if (raw) {
+  /**
+   * 복원은 **폼이 실제로 붙는 순간** 한다 (ref 콜백).
+   *
+   * 처음에는 useEffect + formRef 로 했는데, 프로덕션에서 초안이 한 번도 저장되지
+   * 않았다(2026-08-17 실측: sessionStorage 키 0개). 마운트 시점에 formRef.current 가
+   * 아직 null 이어서 effect 가 `if (!form) return` 으로 빠졌고, 그러면
+   * restored 플래그가 켜지지 않아 saveDraft 가 영구히 조기 반환했다. deps 가
+   * [draftKey] 라 effect 가 다시 돌 일도 없어서 되살아나지 못했다.
+   *
+   * ref 콜백은 노드가 붙는 그 순간 호출되므로 null 을 만날 일이 없다.
+   */
+  const attachForm = useCallback(
+    (node: HTMLFormElement | null) => {
+      formRef.current = node;
+      if (!node || restored.current) return;
+      restored.current = true; // 폼이 붙은 뒤부터 저장을 허용한다(빈 폼이 초안을 덮어쓰는 것 방지)
+
+      let raw: string | null = null;
+      try {
+        raw = sessionStorage.getItem(draftKey);
+      } catch {
+        // 스토리지 차단 환경(시크릿 모드 등) — 초안 없이 진행
+      }
+      if (!raw) return;
       try {
         const draft = JSON.parse(raw) as BookingDraft;
         for (const [name, value] of Object.entries(draft.fields ?? {})) {
-          const el = form.elements.namedItem(name);
+          const el = node.elements.namedItem(name);
           if (el instanceof HTMLInputElement) el.value = value;
           else if (el instanceof HTMLTextAreaElement) el.value = value;
           // select 의 option value 는 번역된 라벨이라, 저장 후 언어가 바뀌면
@@ -97,9 +110,9 @@ export function BookingForm({
       } catch {
         // 손상된 초안 무시
       }
-    }
-    restored.current = true;
-  }, [draftKey]);
+    },
+    [draftKey]
+  );
 
   const saveDraft = useCallback(
     (type: EventType) => {
@@ -165,7 +178,7 @@ export function BookingForm({
 
   return (
     <form
-      ref={formRef}
+      ref={attachForm}
       className="mt-8 space-y-6"
       onChange={() => saveDraft(eventType)}
       onSubmit={async (e) => {
