@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuthUi } from "@/lib/auth-ui-store";
 import { useNotificationsStore } from "@/lib/notifications-store";
@@ -30,6 +30,15 @@ const EVENT_TYPE_KEY: Record<EventType, string> = {
   강연: "booking.typeLecture",
 };
 
+// 초안 보관 — 카카오 로그인은 전체 페이지 리다이렉트라 폼이 언마운트된다.
+// 브리프에 개인정보가 담기므로 sessionStorage(탭 닫으면 소멸)만 쓰고, 제출 성공 시 지운다.
+const DRAFT_PREFIX = "xong-booking-draft:";
+
+interface BookingDraft {
+  fields?: Record<string, string>;
+  eventType?: string;
+}
+
 const LABEL = "mb-1.5 block text-sm font-medium text-white/70";
 const FIELD =
   "adv-glass h-11 w-full rounded-xl px-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-brand-500/50";
@@ -52,6 +61,73 @@ export function BookingForm({
   const [eventType, setEventType] = useState<EventType>("행사");
   const pushNotif = useNotificationsStore((s) => s.push);
   const { isLoggedIn, openLogin } = useAuthUi();
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const restored = useRef(false);
+  const draftKey = `${DRAFT_PREFIX}${artist.slug}`;
+
+  // 마운트 시 복원. 복원 전에는 저장하지 않는다(빈 폼이 초안을 덮어쓰는 것 방지).
+  useEffect(() => {
+    const form = formRef.current;
+    if (!form) return;
+    let raw: string | null = null;
+    try {
+      raw = sessionStorage.getItem(draftKey);
+    } catch {
+      // 스토리지 차단 환경(시크릿 모드 등) — 초안 없이 진행
+    }
+    if (raw) {
+      try {
+        const draft = JSON.parse(raw) as BookingDraft;
+        for (const [name, value] of Object.entries(draft.fields ?? {})) {
+          const el = form.elements.namedItem(name);
+          if (el instanceof HTMLInputElement) el.value = value;
+          else if (el instanceof HTMLTextAreaElement) el.value = value;
+          // select 의 option value 는 번역된 라벨이라, 저장 후 언어가 바뀌면
+          // 일치하는 항목이 없다. 그때 대입하면 선택이 비어버리므로 건너뛴다.
+          else if (
+            el instanceof HTMLSelectElement &&
+            Array.from(el.options).some((o) => o.value === value)
+          )
+            el.value = value;
+        }
+        if (EVENT_TYPES.includes(draft.eventType as EventType)) {
+          setEventType(draft.eventType as EventType);
+        }
+      } catch {
+        // 손상된 초안 무시
+      }
+    }
+    restored.current = true;
+  }, [draftKey]);
+
+  const saveDraft = useCallback(
+    (type: EventType) => {
+      const form = formRef.current;
+      if (!form || !restored.current) return;
+      const fields: Record<string, string> = {};
+      for (const [name, value] of new FormData(form).entries()) {
+        if (typeof value === "string") fields[name] = value;
+      }
+      try {
+        sessionStorage.setItem(
+          draftKey,
+          JSON.stringify({ fields, eventType: type } satisfies BookingDraft)
+        );
+      } catch {
+        // 스토리지 차단·용량 초과 — 초안 없이 계속 진행
+      }
+    },
+    [draftKey]
+  );
+
+  const clearDraft = useCallback(() => {
+    try {
+      sessionStorage.removeItem(draftKey);
+    } catch {
+      // 무시
+    }
+  }, [draftKey]);
 
   if (submitted) {
     return (
@@ -89,7 +165,9 @@ export function BookingForm({
 
   return (
     <form
+      ref={formRef}
       className="mt-8 space-y-6"
+      onChange={() => saveDraft(eventType)}
       onSubmit={async (e) => {
         e.preventDefault();
         // 로그인 게이트 — 비로그인 시 모달로 카카오 간편가입 유도(요청이 데모로 새는 것 방지)
@@ -136,6 +214,7 @@ export function BookingForm({
             body: t("booking.notifCompanyBody", { name: artist.name }),
             link: `/requests/${id}`,
           });
+          clearDraft();
           setSubmitted(true);
         } catch {
           alert(t("booking.submitError"));
@@ -178,7 +257,10 @@ export function BookingForm({
             <button
               key={opt}
               type="button"
-              onClick={() => setEventType(opt)}
+              onClick={() => {
+                setEventType(opt);
+                saveDraft(opt);
+              }}
               className={cn(
                 "premium-ease rounded-full px-4 py-2 text-sm font-medium",
                 eventType === opt
@@ -242,6 +324,7 @@ export function BookingForm({
           </label>
           <select
             id="duration"
+            name="duration"
             defaultValue={t("booking.duration2to4")}
             className={FIELD}
           >
