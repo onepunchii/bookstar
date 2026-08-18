@@ -1212,6 +1212,8 @@ const ja: Record<string, string> = {
   "meta.joinAgency.desc": "所属タレントを登録し、出演依頼を一箇所でまとめて管理。登録後すぐに公開プロフィールが検索に表示されます。キャスティング手数料0%。",
   "meta.guide.title": "芸能人・インフルエンサー起用ガイド — 費用・依頼方法・流れ",
   "meta.guide.desc": "キャスティング費用の相場、学園祭のタレント起用方法、インフルエンサー起用の流れ — イベント担当者のための実践ガイド。仲介マージンなしで依頼するコツ。",
+  "meta.artistProfile.title": "{name}の起用・{cat}",
+  "meta.artistProfile.desc": "{name}の起用はXONGで — 検証済み事務所の公式窓口と直接、キャスティング手数料0%。想定の起用料と空き日程を確認してそのまま依頼できます。",
 };
 
 export default ja;

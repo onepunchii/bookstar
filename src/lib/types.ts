@@ -36,6 +36,7 @@ export interface Artist {
   id: string;
   slug: string; // 공개 페이지 URL (`/@슬러그`)
   name: string;
+  nameLocalized?: Record<string, string> | null; // 소속사 입력 로케일별 표기명. 없으면 name 폴백
   groupName?: string;
   agencyName: string;
   category: ArtistCategory;

@@ -1,5 +1,20 @@
 import type { Artist } from "./types";
 
+// 라틴 문자 로케일 — 로케일별 표기명이 없으면 로마자(en) 표기로 폴백(한국어 이름은 못 읽으므로).
+const LATIN_LOCALES = new Set(["en", "id", "vi", "es", "pt-BR"]);
+
+// 활성 로케일에 맞는 아티스트 표기명 — 소속사 입력값 > (라틴권) 로마자 > 한국어 원본.
+// 크롤러는 ko(getT botDefault:"ko")로 들어오므로 항상 한국어 이름을 색인(한국어 검색 최적화 유지).
+export function resolveArtistName(
+  artist: Pick<Artist, "name" | "nameLocalized">,
+  locale: string
+): string {
+  const m = artist.nameLocalized;
+  if (m?.[locale]) return m[locale];
+  if (LATIN_LOCALES.has(locale) && m?.en) return m.en;
+  return artist.name;
+}
+
 export interface CompletenessItem {
   label: string;
   done: boolean;

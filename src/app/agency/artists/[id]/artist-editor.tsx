@@ -138,6 +138,19 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
       defaultAgencyRateBp: rate === undefined ? undefined : Math.round(rate * 100),
       instagram: str("instagram") || null,
       youtube: str("youtube") || null,
+      nameLocalized: (() => {
+        const m: Record<string, string> = {};
+        for (const [loc, field] of [
+          ["en", "nl_en"],
+          ["ja", "nl_ja"],
+          ["zh-TW", "nl_zhTW"],
+          ["th", "nl_th"],
+        ] as const) {
+          const v = str(field);
+          if (v) m[loc] = v;
+        }
+        return m; // 빈 객체면 서버가 null로 저장(초기화)
+      })(),
     };
     setSaving(true);
     setSaveError(null);
@@ -306,6 +319,38 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
               <p className="mt-1 text-xs text-neutral-400">
                 {t("agency.artistEditor.taglineHint")}
               </p>
+            </div>
+            <div>
+              <Label>{t("agency.artistEditor.localizedNames")}</Label>
+              <p className="mb-2 mt-1 text-xs text-neutral-400">
+                {t("agency.artistEditor.localizedNamesHint")}
+              </p>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {(
+                  [
+                    ["nl_en", "English", "Rescene"],
+                    ["nl_ja", "日本語", "リセンヌ"],
+                    ["nl_zhTW", "繁體中文", "麗聲"],
+                    ["nl_th", "ไทย", "รีเซเนอ"],
+                  ] as const
+                ).map(([field, langLabel, ph]) => (
+                  <div key={field}>
+                    <Label htmlFor={field} className="text-xs text-neutral-400">
+                      {langLabel}
+                    </Label>
+                    <Input
+                      id={field}
+                      name={field}
+                      placeholder={ph}
+                      defaultValue={
+                        artist.nameLocalized?.[
+                          field === "nl_zhTW" ? "zh-TW" : field.slice(3)
+                        ] ?? ""
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
             <div>
               <Label>{t("agency.artistEditor.categoryLabel")}</Label>

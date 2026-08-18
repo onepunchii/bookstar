@@ -1210,6 +1210,8 @@ const zhTW: Record<string, string> = {
   "meta.joinAgency.desc": "登錄旗下藝人，一站管理所有邀約需求。登錄後公開檔案即刻曝光於搜尋結果。媒合費 0%。",
   "meta.guide.title": "藝人・網紅邀約指南 — 費用・方法・流程",
   "meta.guide.desc": "通告費行情、校園活動邀約方法、網紅業配合作流程 — 專為活動承辦人打造的實戰指南，教你跳過報價灌水完成邀約。",
+  "meta.artistProfile.title": "{name}邀約・{cat}",
+  "meta.artistProfile.desc": "{name}邀約就在 XONG — 直接對接認證經紀公司官方窗口，媒合費 0%。查看預估通告價與可接檔期，立即洽詢。",
 };
 
 export default zhTW;

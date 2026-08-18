@@ -1213,6 +1213,8 @@ const id: Record<string, string> = {
   "meta.joinAgency.desc": "Daftarkan artis naunganmu dan kelola semua permintaan booking di satu tempat. Profil publik langsung tampil di pencarian. Komisi matching 0%.",
   "meta.guide.title": "Panduan Booking Artis & Influencer — Biaya, Cara & Prosedur",
   "meta.guide.desc": "Kisaran biaya booking, cara booking artis untuk acara kampus, dan prosedur kerja sama influencer — panduan praktis untuk panitia acara tanpa markup calo.",
+  "meta.artistProfile.title": "Booking {name} · {cat}",
+  "meta.artistProfile.desc": "Booking {name} di XONG — langsung dengan agensi resmi terverifikasi, komisi 0%. Cek estimasi tarif dan jadwal, lalu kirim permintaan.",
 };
 
 export default id;

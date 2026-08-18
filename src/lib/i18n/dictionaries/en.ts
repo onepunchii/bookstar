@@ -1213,6 +1213,8 @@ const en: Record<string, string> = {
   "meta.joinAgency.desc": "Register your artists and manage all booking requests in one place. Your public profiles show up in search the moment you sign up. 0% matching fee.",
   "meta.guide.title": "Celebrity & Influencer Booking Guide — Costs, How-To & Process",
   "meta.guide.desc": "Talent booking rates, how to book acts for college festivals, and influencer collaboration steps — a practical guide for event planners. Book without inflated quotes.",
+  "meta.artistProfile.title": "Book {name} · {cat}",
+  "meta.artistProfile.desc": "Book {name} on XONG — directly with the verified official agency, 0% matching fee. Check estimated rates and availability, then send your request.",
 };
 
 export default en;

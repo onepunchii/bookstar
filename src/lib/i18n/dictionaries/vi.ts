@@ -1213,6 +1213,8 @@ const vi: Record<string, string> = {
   "meta.joinAgency.desc": "Đăng ký nghệ sĩ trực thuộc và quản lý mọi yêu cầu booking tại một nơi. Hồ sơ công khai hiển thị trên kết quả tìm kiếm ngay sau khi đăng ký. 0% phí môi giới.",
   "meta.guide.title": "Cẩm nang booking nghệ sĩ, influencer — chi phí, cách thức, quy trình",
   "meta.guide.desc": "Bảng giá booking, cách mời nghệ sĩ cho lễ hội đại học, quy trình hợp tác với influencer — cẩm nang thực chiến cho người tổ chức sự kiện, mời nghệ sĩ không lo báo giá đội lên.",
+  "meta.artistProfile.title": "Mời {name} · {cat}",
+  "meta.artistProfile.desc": "Mời {name} trên XONG — trực tiếp với agency chính thức đã xác minh, phí 0%. Xem báo giá dự kiến và lịch trống rồi gửi yêu cầu.",
 };
 
 export default vi;

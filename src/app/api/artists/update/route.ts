@@ -24,6 +24,21 @@ interface Payload {
   defaultAgencyRateBp?: number;
   instagram?: string | null;
   youtube?: string | null;
+  nameLocalized?: Record<string, string> | null;
+}
+
+// 지원 로케일 키만, 문자열·트림·길이제한. 유효값 없으면 null(=초기화).
+const NAME_LOCALES = ["en", "ja", "zh-TW", "th"] as const;
+function sanitizeNameLocalized(
+  input: Record<string, string> | null | undefined
+): Record<string, string> | null {
+  if (!input || typeof input !== "object") return null;
+  const out: Record<string, string> = {};
+  for (const loc of NAME_LOCALES) {
+    const v = input[loc];
+    if (typeof v === "string" && v.trim()) out[loc] = v.trim().slice(0, 80);
+  }
+  return Object.keys(out).length ? out : null;
 }
 
 export async function POST(req: Request) {
@@ -62,6 +77,8 @@ export async function POST(req: Request) {
       patch.defaultAgencyRateBp = body.defaultAgencyRateBp;
     if (body.instagram !== undefined) patch.instagram = body.instagram;
     if (body.youtube !== undefined) patch.youtube = body.youtube;
+    if (body.nameLocalized !== undefined)
+      patch.nameLocalized = sanitizeNameLocalized(body.nameLocalized);
 
     if (Object.keys(patch).length === 0) {
       return NextResponse.json({ error: "변경 필드 없음" }, { status: 400 });

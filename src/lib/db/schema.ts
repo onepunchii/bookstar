@@ -98,6 +98,8 @@ export const artists = pgTable("artists", {
   // 공개 프로필 URL(`/@슬러그`)·사이트맵 키 — 소속사 등록 시 자동 노출의 앵커
   slug: text("slug").notNull().unique(),
   name: text("name").notNull(),
+  // 소속사가 입력하는 로케일별 표기명(예: {"en":"Rescene","ja":"リセンヌ"}). 없으면 name(한국어) 폴백.
+  nameLocalized: jsonb("name_localized").$type<Record<string, string>>(),
   // 표시용 소속사명(비정규화) — 다중 소속사 정식 모델링 전까지 원본 유지
   agencyName: text("agency_name"),
   groupName: text("group_name"),

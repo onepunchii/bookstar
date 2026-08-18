@@ -1213,6 +1213,8 @@ const ptBR: Record<string, string> = {
   "meta.joinAgency.desc": "Cadastre seus artistas e gerencie todas as propostas de contratação num só lugar. Seu perfil público aparece nas buscas assim que você se cadastra. 0% de comissão.",
   "meta.guide.title": "Guia para Contratar Artistas e Influenciadores — Custos, Como Fazer e Passo a Passo",
   "meta.guide.desc": "Valores de cachê, como contratar atrações para festas universitárias e o passo a passo de parcerias com influenciadores — guia prático para organizadores de eventos, sem inflar orçamento.",
+  "meta.artistProfile.title": "Contratar {name} · {cat}",
+  "meta.artistProfile.desc": "Contrate {name} na XONG — direto com a agência oficial verificada, 0% de comissão. Veja valores estimados e disponibilidade e envie sua solicitação.",
 };
 
 export default ptBR;

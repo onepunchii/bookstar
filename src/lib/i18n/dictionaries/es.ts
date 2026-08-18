@@ -1213,6 +1213,8 @@ const es: Record<string, string> = {
   "meta.joinAgency.desc": "Registra a tus artistas y gestiona todas las solicitudes de contratación en un solo lugar. Tu perfil público aparece en búsquedas al instante. 0% de comisión.",
   "meta.guide.title": "Guía para contratar famosos e influencers — costos, métodos y pasos",
   "meta.guide.desc": "Tarifas de contratación, cómo contratar artistas para festivales y el proceso de colaboración con influencers. Guía práctica para organizadores de eventos, sin sobrecostos.",
+  "meta.artistProfile.title": "Contratar a {name} · {cat}",
+  "meta.artistProfile.desc": "Contrata a {name} en XONG — directo con la agencia oficial verificada, 0% de comisión. Consulta tarifas estimadas y disponibilidad y envía tu solicitud.",
 };
 
 export default es;

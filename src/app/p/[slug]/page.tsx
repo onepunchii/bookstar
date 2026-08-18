@@ -15,6 +15,7 @@ import { YoutubeVideos } from "@/components/youtube-videos";
 import { fetchYoutubeSubscribers } from "@/lib/youtube";
 import { absoluteUrl, artistPublicUrl, SITE } from "@/lib/site";
 import { getT } from "@/lib/i18n/server";
+import { resolveArtistName } from "@/lib/profile";
 import { ShareButton } from "./share-button";
 
 // SNS 입력(@핸들 또는 URL) → 실제 링크
@@ -91,20 +92,24 @@ export async function generateMetadata({
   const artist = await getPublicArtistBySlug(slug);
   if (!artist) return { title: "아티스트를 찾을 수 없어요" };
 
-  const cat = CATEGORY_LABELS[artist.category];
-  const title = `${artist.name} 섭외 · ${cat}`;
-  const description = `${artist.tagline} · ${artist.agencyName} 소속. ${artist.name} 섭외 문의는 xong에서 — 매칭 수수료 0%, 평균 ${artist.responseHours}시간 내 응답.`;
+  // 크롤러=ko(canonical, 한국어 색인 유지), 사람=활성 로케일. 이름은 소속사 입력 표기명 우선.
+  const { t, locale } = await getT({ botDefault: "ko" });
+  const name = resolveArtistName(artist, locale);
+  const cat = t(`category.${artist.category}`);
+  const title = t("meta.artistProfile.title", { name, cat });
+  const description = t("meta.artistProfile.desc", { name });
   const url = artistPublicUrl(slug);
 
   return {
-    title,
+    title: { absolute: title },
     description,
+    // 키워드는 한국어 검색어 유지(크롤러=ko) — keywords 메타는 사람 노출에 영향 없음
     keywords: [
       `${artist.name} 섭외`,
       `${artist.name} 섭외 문의`,
       `${artist.name} 섭외 견적`,
-      `${cat} 섭외`,
-      ...artist.tags.map((t) => `${t} 섭외`),
+      `${CATEGORY_LABELS[artist.category]} 섭외`,
+      ...artist.tags.map((tag) => `${tag} 섭외`),
     ],
     alternates: { canonical: url },
     openGraph: {
@@ -112,12 +117,12 @@ export async function generateMetadata({
       url,
       siteName: SITE.name,
       locale: SITE.locale,
-      title: `${artist.name} 섭외 문의 · xong`,
+      title,
       description,
     },
     twitter: {
       card: "summary_large_image",
-      title: `${artist.name} 섭외 문의 · xong`,
+      title,
       description,
     },
   };
@@ -302,7 +307,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
               )}
             </div>
             <h1 className="display-kr mt-4 text-5xl font-black tracking-tight sm:text-7xl">
-              {artist.name}
+              {resolveArtistName(artist, locale)}
             </h1>
             <p className="mt-3 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
               {artist.tagline}

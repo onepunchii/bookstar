@@ -21,6 +21,7 @@ function rowToArtist(row: ArtistRow): Artist {
     id: row.id,
     slug: row.slug,
     name: row.name,
+    nameLocalized: (row.nameLocalized as Record<string, string> | null) ?? null,
     groupName: row.groupName ?? undefined,
     agencyName: row.agencyName ?? "",
     category: categories[0] ?? "idol",

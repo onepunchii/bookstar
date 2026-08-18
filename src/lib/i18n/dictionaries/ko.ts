@@ -1359,6 +1359,10 @@ const ko = {
   "meta.joinAgency.desc": "소속 아티스트를 등록하고 섭외 요청을 한 곳에서 관리하세요. 등록 즉시 공개 프로필이 검색에 노출됩니다. 매칭 수수료 0%.",
   "meta.guide.title": "연예인·인플루언서 섭외 가이드 — 비용·방법·절차",
   "meta.guide.desc": "섭외 비용 시세, 대학축제 섭외 방법, 인플루언서 협업 절차 — 행사 담당자를 위한 실전 가이드. 견적 거품 없이 섭외하는 법.",
+  "agency.artistEditor.localizedNames": "다국어 표기명 (선택)",
+  "agency.artistEditor.localizedNamesHint": "해외 사용자에게 보일 이름입니다. 비우면 한국어 이름으로 표시됩니다. (검색·색인은 한국어 유지)",
+  "meta.artistProfile.title": "{name} 섭외 · {cat}",
+  "meta.artistProfile.desc": "{name} 섭외는 XONG에서 — 검증된 소속사 공식 창구와 직접, 매칭 수수료 0%. 예상 섭외가와 가능 일정을 확인하고 바로 문의하세요.",
 } as const;
 
 export default ko as Record<string, string>;
