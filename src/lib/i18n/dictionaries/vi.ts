@@ -1199,6 +1199,20 @@ const vi: Record<string, string> = {
   "appPage.faq3Q": "Ứng dụng có khác website không?",
   "appPage.faq3A":
     "Cùng một dịch vụ và cùng tài khoản. Ứng dụng có thêm thông báo đẩy nên báo giá và tin nhắn đến ngay.",
+  "meta.home.title": "Mời nghệ sĩ, booking ca sĩ · thuê influencer — XONG | 0% phí môi giới",
+  "meta.home.desc": "Nền tảng B2B kết nối nhanh nhất để mời nghệ sĩ, booking ca sĩ và thuê influencer. Làm việc trực tiếp với công ty quản lý đã xác minh, không qua trung gian, 0% phí môi giới.",
+  "meta.artists.title": "Tìm nghệ sĩ — booking ca sĩ, idol, diễn viên, influencer | XONG",
+  "meta.artists.desc": "Khám phá nghệ sĩ, ca sĩ và influencer theo danh mục, xem giá booking dự kiến cùng tỉ lệ phản hồi, rồi gửi yêu cầu trực tiếp tới công ty quản lý đã xác minh. 0% phí môi giới.",
+  "meta.artistsCat.title": "Booking {label} — báo giá, hồ sơ, liên hệ trực tiếp | XONG",
+  "meta.artistsCat.desc": "Booking {label} — làm việc trực tiếp với công ty quản lý đã xác minh, 0% phí môi giới. Xem giá booking dự kiến và lịch trống ngay trên hồ sơ nghệ sĩ.",
+  "meta.join.title": "Tham gia XONG — kênh booking cho creator, influencer, công ty quản lý",
+  "meta.join.desc": "Để thương hiệu chủ động tìm đến bạn. Kênh booking nhanh nhất dành cho creator, influencer và công ty quản lý. 0% phí môi giới.",
+  "meta.joinCreator.title": "Đăng ký creator, influencer — tạo link booking riêng | XONG",
+  "meta.joinCreator.desc": "Influencer, YouTuber và creator tự đăng ký. Đăng hồ sơ để thương hiệu gửi lời mời hợp tác trực tiếp đến bạn. 0% phí môi giới.",
+  "meta.joinAgency.title": "Đăng ký công ty quản lý, MCN — quản lý yêu cầu booking một nơi | XONG",
+  "meta.joinAgency.desc": "Đăng ký nghệ sĩ trực thuộc và quản lý mọi yêu cầu booking tại một nơi. Hồ sơ công khai hiển thị trên kết quả tìm kiếm ngay sau khi đăng ký. 0% phí môi giới.",
+  "meta.guide.title": "Cẩm nang booking nghệ sĩ, influencer — chi phí, cách thức, quy trình",
+  "meta.guide.desc": "Bảng giá booking, cách mời nghệ sĩ cho lễ hội đại học, quy trình hợp tác với influencer — cẩm nang thực chiến cho người tổ chức sự kiện, mời nghệ sĩ không lo báo giá đội lên.",
 };
 
 export default vi;

@@ -1,14 +1,21 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Wordmark } from "@/components/wordmark";
 import { getT } from "@/lib/i18n/server";
 import { Building2, Mail, Phone, Sparkles } from "lucide-react";
 
-export const metadata = {
-  title: "소속사 등록 · xong",
-  description:
-    "소속 아티스트를 등록하고 섭외 요청을 한 곳에서 관리하세요. 등록 즉시 공개 프로필이 검색에 노출됩니다. 매칭 수수료 0%.",
-  alternates: { canonical: "/join/agency" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT({ botDefault: "ko" });
+  return {
+    title: { absolute: t("meta.joinAgency.title") },
+    description: t("meta.joinAgency.desc"),
+    alternates: { canonical: "/join/agency" },
+    openGraph: {
+      title: t("meta.joinAgency.title"),
+      description: t("meta.joinAgency.desc"),
+    },
+  };
+}
 
 export default async function AgencyJoinPage() {
   const { t } = await getT();

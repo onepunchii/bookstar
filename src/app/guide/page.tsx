@@ -6,12 +6,15 @@ import { BOOKING_TOPICS } from "@/lib/booking-topics";
 import { absoluteUrl } from "@/lib/site";
 import { getT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "연예인·인플루언서 섭외 가이드",
-  description:
-    "섭외 비용 시세, 대학축제 섭외 방법, 인플루언서 협업 절차 — 행사 담당자를 위한 실전 가이드 모음. 견적 거품 없이 섭외하는 법을 정리했습니다.",
-  alternates: { canonical: "/guide" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT({ botDefault: "ko" });
+  return {
+    title: { absolute: t("meta.guide.title") },
+    description: t("meta.guide.desc"),
+    alternates: { canonical: "/guide" },
+    openGraph: { title: t("meta.guide.title"), description: t("meta.guide.desc") },
+  };
+}
 
 export default async function GuideIndexPage() {
   const { t } = await getT();

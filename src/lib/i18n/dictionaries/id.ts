@@ -1199,6 +1199,20 @@ const id: Record<string, string> = {
   "appPage.faq3Q": "Apakah aplikasi berbeda dari situs web?",
   "appPage.faq3A":
     "Layanannya sama dan akunnya sama. Aplikasi menambahkan notifikasi push, sehingga penawaran dan pesan langsung sampai.",
+  "meta.home.title": "Booking Artis & Endorse Influencer — XONG | Tarif Terbuka, Komisi 0%",
+  "meta.home.desc": "Platform booking B2B tercepat untuk booking artis, selebriti, dan endorse influencer. Langsung ke agensi terverifikasi tanpa markup calo, dengan komisi matching 0%.",
+  "meta.artists.title": "Cari Talent — Booking Penyanyi, Idol, Aktor & Influencer | XONG",
+  "meta.artists.desc": "Telusuri artis dan influencer per kategori, cek estimasi tarif booking serta tingkat respons, lalu ajukan langsung ke agensi terverifikasi. Komisi matching 0%.",
+  "meta.artistsCat.title": "Booking {label} — Tarif, Profil & Kontak Langsung | XONG",
+  "meta.artistsCat.desc": "Booking {label} langsung ke agensi terverifikasi dengan komisi matching 0%. Cek estimasi tarif dan jadwal yang tersedia langsung dari profil.",
+  "meta.join.title": "Gabung XONG — Kanal Booking untuk Kreator, Influencer & Agensi",
+  "meta.join.desc": "Biarkan brand menemukan dan menghubungimu langsung. Kanal booking tercepat untuk kreator, influencer, dan agensi. Komisi matching 0%.",
+  "meta.joinCreator.title": "Daftar Kreator & Influencer — Link Booking Sendiri | XONG",
+  "meta.joinCreator.desc": "Pendaftaran mandiri untuk influencer, YouTuber, dan kreator. Unggah profilmu dan brand akan mengirim tawaran endorse langsung. Komisi matching 0%.",
+  "meta.joinAgency.title": "Daftar Agensi & MCN — Kelola Permintaan Booking | XONG",
+  "meta.joinAgency.desc": "Daftarkan artis naunganmu dan kelola semua permintaan booking di satu tempat. Profil publik langsung tampil di pencarian. Komisi matching 0%.",
+  "meta.guide.title": "Panduan Booking Artis & Influencer — Biaya, Cara & Prosedur",
+  "meta.guide.desc": "Kisaran biaya booking, cara booking artis untuk acara kampus, dan prosedur kerja sama influencer — panduan praktis untuk panitia acara tanpa markup calo.",
 };
 
 export default id;

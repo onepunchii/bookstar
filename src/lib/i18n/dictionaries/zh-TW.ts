@@ -1196,6 +1196,20 @@ const zhTW: Record<string, string> = {
   "appPage.faq3Q": "App 和網頁版有不同嗎？",
   "appPage.faq3A":
     "同一個服務、同一組帳號。App 多了推播通知，報價與訊息會立即送達。",
+  "meta.home.title": "藝人邀約・網紅邀約 — XONG｜通告價公開・媒合費 0%",
+  "meta.home.desc": "最快速媒合藝人與網紅的 B2B 邀約平台。跳過中間代理商，直接對接認證經紀公司，以 0% 媒合費完成藝人與網紅邀約。",
+  "meta.artists.title": "尋找藝人 — 歌手・偶像・演員・網紅邀約｜XONG",
+  "meta.artists.desc": "依分類瀏覽藝人與網紅，查看預估通告價與回覆率，直接向認證經紀公司送出邀約。媒合費 0%，沒有中間代理商抽成。",
+  "meta.artistsCat.title": "{label}邀約 — 行情・檔案・直接洽詢｜XONG",
+  "meta.artistsCat.desc": "{label}邀約 — 直接對接認證經紀公司，以 0% 媒合費完成邀約。在個人檔案查看預估通告價與可接檔期。",
+  "meta.join.title": "加入 XONG — 創作者・網紅・經紀公司的邀約管道",
+  "meta.join.desc": "讓品牌主動找上你。專為創作者・網紅・經紀公司打造的最快邀約管道，接住每一筆業配與通告。媒合費 0%。",
+  "meta.joinCreator.title": "創作者・網紅登錄 — 打造專屬邀約連結｜XONG",
+  "meta.joinCreator.desc": "網紅・YouTuber・創作者自助登錄。上傳個人檔案，品牌主動送上業配與邀約提案。媒合費 0%。",
+  "meta.joinAgency.title": "經紀公司・MCN 登錄 — 邀約需求一站管理｜XONG",
+  "meta.joinAgency.desc": "登錄旗下藝人，一站管理所有邀約需求。登錄後公開檔案即刻曝光於搜尋結果。媒合費 0%。",
+  "meta.guide.title": "藝人・網紅邀約指南 — 費用・方法・流程",
+  "meta.guide.desc": "通告費行情、校園活動邀約方法、網紅業配合作流程 — 專為活動承辦人打造的實戰指南，教你跳過報價灌水完成邀約。",
 };
 
 export default zhTW;

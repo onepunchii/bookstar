@@ -21,18 +21,34 @@ export async function generateMetadata({
   searchParams: Promise<{ category?: string }>;
 }): Promise<Metadata> {
   const { category } = await searchParams;
-  const label =
+  const { t } = await getT({ botDefault: "ko" });
+  const isValid =
     category && (CATEGORY_LABELS as Record<string, string>)[category];
-  if (label) {
+  // 무효 category 파라미터 → 색인 방지(soft-404 방지). 페이지는 전체 목록으로 폴백.
+  if (category && !isValid) {
     return {
-      title: `${label} 섭외`,
-      description: `${label} 섭외 — 검증된 소속사와 직접, 매칭 수수료 0%로 섭외하세요.`,
+      title: { absolute: t("meta.artists.title") },
+      description: t("meta.artists.desc"),
+      alternates: { canonical: "/artists" },
+      robots: { index: false, follow: true },
+    };
+  }
+  if (isValid) {
+    const label = t(`category.${category}`); // 로케일별 카테고리명(아이돌→アイドル 등)
+    const title = t("meta.artistsCat.title", { label });
+    const description = t("meta.artistsCat.desc", { label });
+    return {
+      title: { absolute: title },
+      description,
       alternates: { canonical: `/artists?category=${category}` },
+      openGraph: { title, description },
     };
   }
   return {
-    title: "아티스트 찾기",
+    title: { absolute: t("meta.artists.title") },
+    description: t("meta.artists.desc"),
     alternates: { canonical: "/artists" },
+    openGraph: { title: t("meta.artists.title"), description: t("meta.artists.desc") },
   };
 }
 

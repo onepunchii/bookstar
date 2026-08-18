@@ -1345,6 +1345,20 @@ const ko = {
   "appPage.faq3Q": "웹과 앱이 다른가요?",
   "appPage.faq3A":
     "같은 서비스이고 같은 계정으로 이어집니다. 앱은 푸시 알림으로 견적 회신·메시지를 바로 받을 수 있습니다.",
+  "meta.home.title": "연예인 섭외·인플루언서 섭외 — XONG | 섭외가 공개 · 매칭 수수료 0%",
+  "meta.home.desc": "연예인·인플루언서 섭외를 가장 빠르게 연결하는 B2B 부킹 플랫폼. 대행사 거품 없이 검증된 소속사와 직접, 매칭 수수료 0%로 섭외하세요.",
+  "meta.artists.title": "아티스트 찾기 — 가수·아이돌·배우·인플루언서 섭외 | XONG",
+  "meta.artists.desc": "카테고리별로 연예인·인플루언서를 탐색하고 예상 섭외가·응답률을 확인해 검증된 소속사에 직접 섭외 요청하세요. 매칭 수수료 0%.",
+  "meta.artistsCat.title": "{label} 섭외 — 시세·프로필·직접 문의 | XONG",
+  "meta.artistsCat.desc": "{label} 섭외 — 검증된 소속사와 직접, 매칭 수수료 0%로 섭외하세요. 예상 섭외가와 가능 일정을 프로필에서 확인하세요.",
+  "meta.join.title": "XONG 가입 — 크리에이터·인플루언서·소속사 섭외 채널",
+  "meta.join.desc": "브랜드가 당신을 직접 찾아오게 하세요. 크리에이터·인플루언서·소속사를 위한 가장 빠른 부킹 채널. 매칭 수수료 0%.",
+  "meta.joinCreator.title": "크리에이터·인플루언서 등록 — 나만의 섭외 링크 | XONG",
+  "meta.joinCreator.desc": "인플루언서·유튜버·크리에이터 셀프 등록. 프로필을 올리면 브랜드가 직접 섭외 제안을 보냅니다. 매칭 수수료 0%.",
+  "meta.joinAgency.title": "소속사·MCN 등록 — 섭외 요청 한곳에서 관리 | XONG",
+  "meta.joinAgency.desc": "소속 아티스트를 등록하고 섭외 요청을 한 곳에서 관리하세요. 등록 즉시 공개 프로필이 검색에 노출됩니다. 매칭 수수료 0%.",
+  "meta.guide.title": "연예인·인플루언서 섭외 가이드 — 비용·방법·절차",
+  "meta.guide.desc": "섭외 비용 시세, 대학축제 섭외 방법, 인플루언서 협업 절차 — 행사 담당자를 위한 실전 가이드. 견적 거품 없이 섭외하는 법.",
 } as const;
 
 export default ko as Record<string, string>;

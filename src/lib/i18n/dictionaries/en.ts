@@ -1199,6 +1199,20 @@ const en: Record<string, string> = {
   "appPage.faq3Q": "Is the app different from the website?",
   "appPage.faq3A":
     "It's the same service on the same account. The app adds push notifications, so quotes and messages reach you right away.",
+  "meta.home.title": "Book Celebrities & Influencers — XONG | 0% Booking Fee",
+  "meta.home.desc": "The B2B booking platform to hire celebrities and influencers fast. Work directly with verified agencies, skip the middleman markup, and book with 0% matching fees.",
+  "meta.artists.title": "Find Talent — Book Singers, Idols, Actors & Influencers | XONG",
+  "meta.artists.desc": "Browse celebrities and influencers by category, check estimated booking rates and response times, then send booking requests straight to verified agencies. 0% matching fee.",
+  "meta.artistsCat.title": "Book {label} — Rates, Profiles & Direct Inquiry | XONG",
+  "meta.artistsCat.desc": "Book {label} directly with verified agencies at a 0% matching fee. See estimated booking rates and open availability right on each profile.",
+  "meta.join.title": "Join XONG — Booking Channel for Creators, Influencers & Agencies",
+  "meta.join.desc": "Let brands come to you. The fastest booking channel for creators, influencers, and agencies to land casting offers. 0% matching fee.",
+  "meta.joinCreator.title": "Creator & Influencer Sign-Up — Your Own Booking Link | XONG",
+  "meta.joinCreator.desc": "Self sign-up for influencers, YouTubers, and creators. Post your profile and let brands send booking offers directly. 0% matching fee.",
+  "meta.joinAgency.title": "Agency & MCN Sign-Up — Manage Booking Requests in One Place | XONG",
+  "meta.joinAgency.desc": "Register your artists and manage all booking requests in one place. Your public profiles show up in search the moment you sign up. 0% matching fee.",
+  "meta.guide.title": "Celebrity & Influencer Booking Guide — Costs, How-To & Process",
+  "meta.guide.desc": "Talent booking rates, how to book acts for college festivals, and influencer collaboration steps — a practical guide for event planners. Book without inflated quotes.",
 };
 
 export default en;

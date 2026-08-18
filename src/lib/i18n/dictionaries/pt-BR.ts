@@ -1199,6 +1199,20 @@ const ptBR: Record<string, string> = {
   "appPage.faq3Q": "O app é diferente do site?",
   "appPage.faq3A":
     "É o mesmo serviço com a mesma conta. O app acrescenta notificações push, então orçamentos e mensagens chegam na hora.",
+  "meta.home.title": "Contratar Celebridades e Influenciadores — XONG | Cachê Transparente, 0% de Comissão",
+  "meta.home.desc": "A plataforma B2B mais rápida para contratar artistas e influenciadores. Fale direto com agências verificadas, sem intermediários, e com 0% de comissão sobre a contratação.",
+  "meta.artists.title": "Encontrar Artistas — Contratar Cantores, Atores e Influenciadores | XONG",
+  "meta.artists.desc": "Explore celebridades e influenciadores por categoria, veja o cachê estimado e a taxa de resposta e envie sua proposta direto às agências verificadas. 0% de comissão.",
+  "meta.artistsCat.title": "Contratar {label} — Cachê, Perfil e Contato Direto | XONG",
+  "meta.artistsCat.desc": "Contratar {label} direto com agências verificadas e 0% de comissão. Veja o cachê estimado e as datas disponíveis no perfil de cada artista.",
+  "meta.join.title": "Cadastre-se na XONG — Canal de Contratação para Criadores e Agências",
+  "meta.join.desc": "Deixe as marcas encontrarem você. O canal mais rápido para criadores, influenciadores e agências fecharem contratações. 0% de comissão.",
+  "meta.joinCreator.title": "Cadastro de Criadores e Influenciadores — Seu Link de Contratação | XONG",
+  "meta.joinCreator.desc": "Cadastro grátis para influenciadores, youtubers e criadores. Publique seu perfil e receba propostas de contratação direto das marcas. 0% de comissão.",
+  "meta.joinAgency.title": "Cadastro de Agências e MCNs — Gerencie Propostas num Só Lugar | XONG",
+  "meta.joinAgency.desc": "Cadastre seus artistas e gerencie todas as propostas de contratação num só lugar. Seu perfil público aparece nas buscas assim que você se cadastra. 0% de comissão.",
+  "meta.guide.title": "Guia para Contratar Artistas e Influenciadores — Custos, Como Fazer e Passo a Passo",
+  "meta.guide.desc": "Valores de cachê, como contratar atrações para festas universitárias e o passo a passo de parcerias com influenciadores — guia prático para organizadores de eventos, sem inflar orçamento.",
 };
 
 export default ptBR;

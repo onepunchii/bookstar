@@ -1199,6 +1199,20 @@ const es: Record<string, string> = {
   "appPage.faq3Q": "¿La app es distinta de la web?",
   "appPage.faq3A":
     "Es el mismo servicio con la misma cuenta. La app añade notificaciones push, así los presupuestos y mensajes llegan al instante.",
+  "meta.home.title": "Contratar famosos e influencers — XONG | Tarifas públicas · 0% de comisión",
+  "meta.home.desc": "Plataforma B2B para contratar famosos e influencers al instante. Conecta directo con agencias verificadas, sin sobrecostos de intermediarios y con 0% de comisión.",
+  "meta.artists.title": "Contratar artistas — cantantes, actores e influencers | XONG",
+  "meta.artists.desc": "Explora famosos e influencers por categoría, consulta tarifas estimadas y tasa de respuesta, y contrata directo con agencias verificadas. 0% de comisión.",
+  "meta.artistsCat.title": "Contratar {label} — tarifas, perfiles y contacto directo | XONG",
+  "meta.artistsCat.desc": "Contrata {label} directo con agencias verificadas y 0% de comisión. Consulta tarifas estimadas y disponibilidad en cada perfil.",
+  "meta.join.title": "Únete a XONG — canal de contrataciones para creadores y agencias",
+  "meta.join.desc": "Deja que las marcas te contraten directamente. El canal de contrataciones más rápido para creadores, influencers y agencias. 0% de comisión.",
+  "meta.joinCreator.title": "Regístrate como creador o influencer — tu link de contratación | XONG",
+  "meta.joinCreator.desc": "Registro para influencers, youtubers y creadores. Publica tu perfil y recibe propuestas de contratación de las marcas directamente. 0% de comisión.",
+  "meta.joinAgency.title": "Agencias y MCN — gestiona las contrataciones en un solo lugar | XONG",
+  "meta.joinAgency.desc": "Registra a tus artistas y gestiona todas las solicitudes de contratación en un solo lugar. Tu perfil público aparece en búsquedas al instante. 0% de comisión.",
+  "meta.guide.title": "Guía para contratar famosos e influencers — costos, métodos y pasos",
+  "meta.guide.desc": "Tarifas de contratación, cómo contratar artistas para festivales y el proceso de colaboración con influencers. Guía práctica para organizadores de eventos, sin sobrecostos.",
 };
 
 export default es;

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -27,9 +28,16 @@ import {
 } from "lucide-react";
 
 // 홈 self-canonical (루트 canonical 제거에 따라 명시)
-export const metadata = {
-  alternates: { canonical: "/" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  // 크롤러는 canonical 언어 ko(한국어 색인 유지), 사람은 쿠키/브라우저 언어로 네이티브 제목.
+  const { t } = await getT({ botDefault: "ko" });
+  return {
+    title: { absolute: t("meta.home.title") },
+    description: t("meta.home.desc"),
+    alternates: { canonical: "/" },
+    openGraph: { title: t("meta.home.title"), description: t("meta.home.desc") },
+  };
+}
 
 export default async function HomePage() {
   const { t } = await getT();
