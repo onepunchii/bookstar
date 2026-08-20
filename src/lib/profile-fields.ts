@@ -109,6 +109,22 @@ export function usesWeight(categories: ArtistCategory[]): boolean {
   return categories.some((c) => WEIGHT_CATEGORIES.includes(c));
 }
 
+// ── 채널 실적 ──
+export const CHANNEL_PLATFORMS = [
+  { value: "instagram", label: "Instagram" },
+  { value: "youtube", label: "YouTube" },
+  { value: "tiktok", label: "TikTok" },
+  { value: "naverBlog", label: "네이버 블로그" },
+  { value: "x", label: "X" },
+  { value: "threads", label: "Threads" },
+] as const;
+
+/** 채널 실적을 입력받는 카테고리 — 인플루언서·아이돌에게만 의미가 있다 */
+const CHANNEL_CATEGORIES: ArtistCategory[] = ["influencer", "idol"];
+export function usesChannels(categories: ArtistCategory[]): boolean {
+  return categories.some((c) => CHANNEL_CATEGORIES.includes(c));
+}
+
 // ── 카테고리별 전문 스펙 ──
 // 컬럼을 늘리지 않고 profileExtras.spec.{key}에 담는다.
 // 검색·필터에 연결되는 축만 나중에 정규 컬럼으로 승격한다.

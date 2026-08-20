@@ -26,6 +26,7 @@ import {
 import { SpecList } from "./spec-list";
 import { CreditsTimeline } from "./credits-timeline";
 import { VideoGrid } from "./video-grid";
+import { ChannelStrip } from "./channel-strip";
 import { ShareButton } from "./share-button";
 
 // SNS 입력(@핸들 또는 URL) → 실제 링크
@@ -274,6 +275,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
   const hasWork =
     (artist.credits?.length ?? 0) > 0 || artist.recentWork.length > 0;
   const hasVideos = (artist.videos?.length ?? 0) > 0;
+  const hasChannels = (artist.channels?.length ?? 0) > 0;
 
   // 목차 칩 — 네이버가 "본문 바로가기" 칩으로 그대로 노출하는 SEO 자산이다.
   // 렌더되지 않는 섹션을 넣으면 빈 곳으로 이동시키므로, 섹션 조건과 반드시 같은 값을 쓴다.
@@ -281,6 +283,9 @@ export default async function ArtistPublicPage({ params }: PageProps) {
   const tocItems = [
     { id: "faq", label: t("profile.faqHeading", { name: artist.name }) },
     ...(hasSpec ? [{ id: "spec", label: t("profile.spec.heading") }] : []),
+    ...(hasChannels
+      ? [{ id: "channels", label: t("profile.channels.heading") }]
+      : []),
     ...(hasWork ? [{ id: "work", label: SECTION.work }] : []),
     ...(hasVideos ? [{ id: "video", label: t("profile.videos.heading") }] : []),
     ...(hasGallery ? [{ id: "photos", label: SECTION.photos }] : []),
@@ -471,6 +476,24 @@ export default async function ArtistPublicPage({ params }: PageProps) {
               >
                 {artist.bio}
               </p>
+            </section>
+          )}
+
+          {/* 채널 실적 — 인플루언서·아이돌. 팔로워보다 참여율이 먼저다 */}
+          {hasChannels && (
+            <section id="channels" className="scroll-mt-24">
+              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
+                {t("profile.channels.heading")}
+              </h2>
+              <ChannelStrip
+                channels={artist.channels!}
+                locale={locale}
+                labels={{
+                  followers: t("profile.channels.followers"),
+                  engagement: t("profile.channels.engagement"),
+                  selfReported: t("profile.channels.selfReported"),
+                }}
+              />
             </section>
           )}
 

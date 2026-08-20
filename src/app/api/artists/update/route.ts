@@ -6,6 +6,7 @@ import { getSessionAgency } from "@/lib/data/session";
 import { agencyArtistIdBySlug } from "@/lib/data/ownership";
 import type {
   ArtistCategory,
+  ArtistChannel,
   ArtistCredit,
   ArtistLanguage,
   ArtistLink,
@@ -46,6 +47,7 @@ interface Payload {
   videos?: ArtistVideo[] | null;
   links?: ArtistLink[] | null;
   languages?: ArtistLanguage[] | null;
+  channels?: ArtistChannel[] | null;
   acceptedEventTypes?: string[] | null;
   minLeadDays?: number | null;
   fieldVisibility?: Record<string, string> | null;
@@ -140,6 +142,7 @@ export async function POST(req: Request) {
     if (body.links !== undefined) patch.links = emptyToNull(body.links);
     if (body.languages !== undefined)
       patch.languages = emptyToNull(body.languages);
+    if (body.channels !== undefined) patch.channels = emptyToNull(body.channels);
     if (body.acceptedEventTypes !== undefined)
       patch.acceptedEventTypes = emptyToNull(body.acceptedEventTypes);
     if (body.minLeadDays !== undefined)

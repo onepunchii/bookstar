@@ -22,7 +22,9 @@ import {
   REGIONS,
   SKILL_LEVELS,
   SKILL_SUGGESTIONS,
+  CHANNEL_PLATFORMS,
   specFieldsFor,
+  usesChannels,
   usesHeight,
   usesWeight,
 } from "@/lib/profile-fields";
@@ -30,6 +32,7 @@ import {
   CATEGORY_LABELS,
   type Artist,
   type ArtistCategory,
+  type ArtistChannel,
   type ArtistCredit,
   type ArtistLanguage,
   type ArtistLink,
@@ -77,6 +80,7 @@ type Draft = {
   activeRegions: string[];
   minLeadDays?: number;
   languages: ArtistLanguage[];
+  channels: ArtistChannel[];
   careerStartYear?: number;
   credits: ArtistCredit[];
   bio: string;
@@ -114,6 +118,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
     activeRegions: artist.activeRegions ?? [],
     minLeadDays: artist.minLeadDays,
     languages: artist.languages ?? [],
+    channels: artist.channels ?? [],
     careerStartYear: artist.careerStartYear,
     credits: artist.credits ?? [],
     bio: artist.bio ?? "",
@@ -210,6 +215,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
   const creditTypes = useMemo(() => creditTypesFor(cats), [cats]);
   const showHeight = usesHeight(cats);
   const showWeight = usesWeight(cats);
+  const showChannels = usesChannels(cats);
   const specGroups = useMemo(() => specFieldsFor(cats), [cats]);
   const setSpec = (key: string, v: unknown) =>
     setDraft((d) => ({ ...d, spec: { ...d.spec, [key]: v } }));
@@ -271,6 +277,9 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
           activeRegions: draft.activeRegions,
           minLeadDays: draft.minLeadDays ?? null,
           languages: draft.languages.filter((l) => l.lang.trim()),
+          channels: showChannels
+            ? draft.channels.filter((c) => c.platform)
+            : null,
           careerStartYear: draft.careerStartYear ?? null,
           credits: draft.credits.filter((c) => c.title.trim()),
           bio: draft.bio,
@@ -949,6 +958,82 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                   />
                 </div>
               </div>
+              {showChannels && (
+                <div>
+                  <Label>{t("profile.channels.heading")}</Label>
+                  <p className="mb-2 text-xs text-neutral-400">
+                    {t("agency.artistEditor.channelsHint")}
+                  </p>
+                  <RepeatRows<ArtistChannel>
+                    value={draft.channels}
+                    onChange={(v) => set("channels", v)}
+                    blank={() => ({ platform: "instagram", source: "self" })}
+                    max={6}
+                    addLabel={t("agency.artistEditor.addRow")}
+                    renderRow={(row, update) => (
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <select
+                            value={row.platform}
+                            onChange={(e) => update({ platform: e.target.value })}
+                            className="h-10 w-32 shrink-0 rounded-lg border border-neutral-300 bg-white px-2 text-sm"
+                          >
+                            {CHANNEL_PLATFORMS.map((pl) => (
+                              <option key={pl.value} value={pl.value}>
+                                {pl.label}
+                              </option>
+                            ))}
+                          </select>
+                          <Input
+                            value={row.handle ?? ""}
+                            onChange={(e) => update({ handle: e.target.value })}
+                            placeholder="@handle"
+                          />
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <Input
+                            inputMode="numeric"
+                            value={row.followers ?? ""}
+                            onChange={(e) =>
+                              update({
+                                followers:
+                                  Number(e.target.value.replace(/[^0-9]/g, "")) ||
+                                  undefined,
+                              })
+                            }
+                            placeholder={t("profile.channels.followers")}
+                          />
+                          <Input
+                            inputMode="numeric"
+                            value={row.avgViews ?? ""}
+                            onChange={(e) =>
+                              update({
+                                avgViews:
+                                  Number(e.target.value.replace(/[^0-9]/g, "")) ||
+                                  undefined,
+                              })
+                            }
+                            placeholder={t("agency.artistEditor.avgViews")}
+                          />
+                          <Input
+                            inputMode="decimal"
+                            value={row.engagementRate ?? ""}
+                            onChange={(e) =>
+                              update({
+                                engagementRate:
+                                  Number(e.target.value.replace(/[^0-9.]/g, "")) ||
+                                  undefined,
+                              })
+                            }
+                            placeholder={t("profile.channels.engagement")}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  />
+                </div>
+              )}
+
               <div>
                 <Label>{t("agency.artistEditor.externalLinks")}</Label>
                 <RepeatRows<ArtistLink>

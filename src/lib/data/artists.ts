@@ -35,6 +35,7 @@ function rowToArtist(row: ArtistRow): Artist {
     videos: row.videos ?? undefined,
     links: row.links ?? undefined,
     languages: row.languages ?? undefined,
+    channels: row.channels ?? undefined,
     acceptedEventTypes: row.acceptedEventTypes ?? undefined,
     minLeadDays: row.minLeadDays ?? undefined,
     fieldVisibility:

@@ -61,6 +61,20 @@ export interface ArtistLanguage {
   lang: string;
   level?: "native" | "business" | "conversational";
 }
+/**
+ * 채널별 실적 — 인플루언서·아이돌.
+ * 브랜드가 미디어킷을 읽는 순서는 참여율 → 오디언스 → 과거 성과 → 팔로워(5번째)다.
+ * followers 단일 숫자만으로는 광고주가 판단할 수 없어서 플랫폼별로 나눠 받는다.
+ */
+export interface ArtistChannel {
+  platform: string; // instagram·youtube·tiktok·naverBlog 등
+  handle?: string;
+  followers?: number;
+  avgViews?: number;
+  engagementRate?: number; // %
+  /** 값의 출처 — 검증 배지와 '자가 신고' 라벨을 가른다 */
+  source?: "oauth" | "self";
+}
 /** 항목별 공개 범위 — 민감 필드를 "넣되 강제하지 않기" 위한 장치 */
 export type FieldVisibility = "public" | "members" | "private";
 
@@ -102,6 +116,7 @@ export interface Artist {
   videos?: ArtistVideo[];
   links?: ArtistLink[];
   languages?: ArtistLanguage[];
+  channels?: ArtistChannel[];
   acceptedEventTypes?: string[];
   minLeadDays?: number;
   fieldVisibility?: Record<string, FieldVisibility>;

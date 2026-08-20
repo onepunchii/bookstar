@@ -14,6 +14,7 @@ import {
   primaryKey,
 } from "drizzle-orm/pg-core";
 import type {
+  ArtistChannel,
   ArtistCredit,
   ArtistLanguage,
   ArtistLink,
@@ -147,6 +148,7 @@ export const artists = pgTable("artists", {
   videos: jsonb("videos").$type<ArtistVideo[]>(),
   links: jsonb("links").$type<ArtistLink[]>(),
   languages: jsonb("languages").$type<ArtistLanguage[]>(),
+  channels: jsonb("channels").$type<ArtistChannel[]>(),
   acceptedEventTypes: jsonb("accepted_event_types").$type<string[]>(),
   minLeadDays: integer("min_lead_days"),
   fieldVisibility: jsonb("field_visibility").$type<Record<string, string>>(),
