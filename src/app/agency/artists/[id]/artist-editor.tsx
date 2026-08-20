@@ -215,18 +215,27 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
     private: t("agency.visibility.private"),
   };
 
+  // 함수형 업데이트 — 렌더 클로저의 cats를 읽으면 같은 틱의 두 번째 토글이
+  // 첫 번째를 덮어쓴다(칩을 빠르게 연달아 누르면 변경이 사라짐).
   const toggleCategory = (c: ArtistCategory) =>
-    set(
-      "categories",
-      cats.includes(c) ? cats.filter((x) => x !== c) : [...cats, c]
-    );
+    setDraft((d) => ({
+      ...d,
+      categories: d.categories.includes(c)
+        ? d.categories.filter((x) => x !== c)
+        : [...d.categories, c],
+    }));
   /** 대표 카테고리 — categories[0]이 JSON-LD·메타데이터·관련 아티스트를 결정한다 */
   const makePrimary = (c: ArtistCategory) =>
-    set("categories", [c, ...cats.filter((x) => x !== c)]);
+    setDraft((d) => ({
+      ...d,
+      categories: [c, ...d.categories.filter((x) => x !== c)],
+    }));
 
   const addTag = () => {
     const v = tagInput.trim();
-    if (v && !draft.tags.includes(v)) set("tags", [...draft.tags, v]);
+    setDraft((d) =>
+      v && !d.tags.includes(v) ? { ...d, tags: [...d.tags, v] } : d
+    );
     setTagInput("");
   };
 
@@ -565,7 +574,9 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                     {tag}
                     <button
                       type="button"
-                      onClick={() => set("tags", draft.tags.filter((x) => x !== tag))}
+                      onClick={() =>
+                        setDraft((d) => ({ ...d, tags: d.tags.filter((x) => x !== tag) }))
+                      }
                       className="text-neutral-400 hover:text-neutral-900"
                     >
                       <X className="h-3 w-3" />
@@ -597,7 +608,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                     <button
                       key={s}
                       type="button"
-                      onClick={() => set("tags", [...draft.tags, s])}
+                      onClick={() => setDraft((d) => ({ ...d, tags: [...d.tags, s] }))}
                       className="rounded-full border border-dashed border-neutral-300 px-2.5 py-1 text-xs text-neutral-500 hover:border-brand-500 hover:text-brand-600"
                     >
                       + {s}
@@ -855,7 +866,10 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                         key={s}
                         type="button"
                         onClick={() =>
-                          set("skills", [...draft.skills.filter((x) => x.name), { name: s }])
+                          setDraft((d) => ({
+                            ...d,
+                            skills: [...d.skills.filter((x) => x.name), { name: s }],
+                          }))
                         }
                         className="rounded-full border border-dashed border-neutral-300 px-2.5 py-1 text-xs text-neutral-500 hover:border-brand-500 hover:text-brand-600"
                       >
