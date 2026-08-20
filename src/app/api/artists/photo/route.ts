@@ -6,8 +6,11 @@ import { getSessionAgency } from "@/lib/data/session";
 import { agencyArtistIdBySlug } from "@/lib/data/ownership";
 
 // 아티스트 사진 업로드 → Vercel Blob → DB 반영.
-// slot 0 = 대표(image_url), slot 1~3 = 갤러리(gallery_urls[slot-1]).
+// slot 0 = 대표(image_url), slot 1~MAX_GALLERY = 갤러리(gallery_urls[slot-1]).
+// 1인 기획사에게 이 프로필이 사실상 홈페이지이므로 포트폴리오로 쓸 만큼은 받아야 한다.
 // 클라이언트에서 이미 WebP로 변환한 Blob을 FormData(file)로 전송한다.
+const MAX_GALLERY = 8; // 갤러리 슬롯 수(대표 제외)
+
 export async function POST(req: Request) {
   try {
     const agency = await getSessionAgency();
@@ -35,7 +38,7 @@ export async function POST(req: Request) {
     if (file.size > 5 * 1024 * 1024) {
       return NextResponse.json({ error: "5MB 초과" }, { status: 413 });
     }
-    if (!Number.isInteger(slot) || slot < 0 || slot > 3) {
+    if (!Number.isInteger(slot) || slot < 0 || slot > MAX_GALLERY) {
       return NextResponse.json({ error: "잘못된 slot" }, { status: 400 });
     }
 
@@ -75,7 +78,7 @@ export async function POST(req: Request) {
         .where(eq(schema.artists.id, artist.id));
     } else {
       const gallery = [...((artist.galleryUrls as string[]) ?? [])];
-      while (gallery.length < 3) gallery.push("");
+      while (gallery.length < MAX_GALLERY) gallery.push("");
       gallery[slot - 1] = blob.url;
       await db
         .update(schema.artists)

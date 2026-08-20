@@ -24,6 +24,7 @@ import {
 } from "@/lib/profile-fields";
 import { SpecList } from "./spec-list";
 import { CreditsTimeline } from "./credits-timeline";
+import { VideoGrid } from "./video-grid";
 import { ShareButton } from "./share-button";
 
 // SNS 입력(@핸들 또는 URL) → 실제 링크
@@ -49,8 +50,6 @@ import {
   BadgeCheck,
   Clock,
   MessageSquare,
-  Play,
-  Sparkles,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -190,6 +189,26 @@ export default async function ArtistPublicPage({ params }: PageProps) {
     ...(artist.imageUrl ? { image: absoluteUrl(artist.imageUrl) } : {}),
     jobTitle: CATEGORY_LABELS[artist.category],
     worksFor: { "@type": "Organization", name: artist.agencyName },
+    // 인물 상세 속성 — 필름메이커스가 Person 스키마에 채우는 것과 같은 축.
+    // 리댁션(artist)을 거친 값만 쓴다: 비공개 필드는 구조화 데이터로도 새면 안 된다.
+    ...(artist.heightCm ? { height: `${artist.heightCm} cm` } : {}),
+    ...(artist.skills?.length
+      ? { knowsAbout: artist.skills.map((s) => s.name) }
+      : {}),
+    ...(artist.languages?.length
+      ? { knowsLanguage: artist.languages.map((l) => l.lang) }
+      : {}),
+    ...(artist.activeRegions?.length
+      ? { workLocation: artist.activeRegions.map((r) => ({ "@type": "Place", name: r })) }
+      : {}),
+    ...((() => {
+      const same = [
+        instagramHref(artist.instagram),
+        youtubeHref(artist.youtube),
+        ...(artist.links ?? []).map((l) => l.url),
+      ].filter(Boolean);
+      return same.length ? { sameAs: same } : {};
+    })()),
     ...(rating.count > 0
       ? {
           aggregateRating: {
@@ -472,24 +491,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
               <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
                 {t("profile.videos.heading")}
               </h2>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {artist.videos!.map((v, i) => (
-                  <a
-                    key={i}
-                    href={v.url}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow"
-                    className="group flex items-center gap-3 rounded-xl bg-white/[0.04] p-4 ring-1 ring-white/8 transition-colors hover:bg-white/[0.07]"
-                  >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-500/15 text-brand-300">
-                      <Play className="h-4 w-4" />
-                    </span>
-                    <span className="min-w-0 flex-1 truncate text-sm text-white/80 group-hover:text-white">
-                      {v.title || v.url}
-                    </span>
-                  </a>
-                ))}
-              </div>
+              <VideoGrid videos={artist.videos!} />
             </section>
           )}
 
@@ -499,15 +501,25 @@ export default async function ArtistPublicPage({ params }: PageProps) {
               <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
                 {SECTION.photos}
               </h2>
-              <div className="grid grid-cols-3 gap-2">
+              {/* 3:4 세로 비율 — 정사각 크롭은 배우·모델 전신컷의 머리·발을 잘라먹는다.
+                  클릭하면 원본을 새 탭으로(라이트박스 없이 zero-JS). */}
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {galleryPhotos.map((url) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <a
                     key={url}
-                    src={url}
-                    alt={`${artist.name} 사진`}
-                    className="aspect-square w-full rounded-xl object-cover ring-1 ring-white/10"
-                  />
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group overflow-hidden rounded-xl ring-1 ring-white/10"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={url}
+                      alt={`${artist.name} 사진`}
+                      loading="lazy"
+                      className="aspect-[3/4] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                    />
+                  </a>
                 ))}
               </div>
             </section>

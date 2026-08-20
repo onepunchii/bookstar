@@ -139,13 +139,15 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
   const [saveError, setSaveError] = useState<string | null>(null);
 
   // 사진은 별도 저장 모델(슬롯 즉시 업로드)이라 draft에 넣지 않는다
-  const [photos, setPhotos] = useState<(WebPResult | null)[]>([null, null, null, null]);
+  // 대표 1 + 갤러리 8 — 1인 기획사에게 이 페이지가 사실상 홈페이지라 포트폴리오 분량이 필요하다
+  const PHOTO_SLOTS = 9;
+  const [photos, setPhotos] = useState<(WebPResult | null)[]>(
+    () => Array(PHOTO_SLOTS).fill(null)
+  );
   const [converting, setConverting] = useState<number | null>(null);
-  const [savedUrls, setSavedUrls] = useState<(string | undefined)[]>([
+  const [savedUrls, setSavedUrls] = useState<(string | undefined)[]>(() => [
     artist.imageUrl,
-    artist.galleryUrls?.[0],
-    artist.galleryUrls?.[1],
-    artist.galleryUrls?.[2],
+    ...Array.from({ length: PHOTO_SLOTS - 1 }, (_, i) => artist.galleryUrls?.[i]),
   ]);
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
   const [coverError, setCoverError] = useState<string | null>(null);
@@ -332,7 +334,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                   </span>
                 </div>
                 <div className="mt-2 grid grid-cols-4 gap-3">
-                  {[0, 1, 2, 3].map((idx) => {
+                  {Array.from({ length: PHOTO_SLOTS }, (_, idx) => {
                     const photo = photos[idx];
                     const isCover = idx === 0;
                     const previewSrc = photo?.dataUrl ?? savedUrls[idx];
