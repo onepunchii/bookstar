@@ -2,8 +2,8 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getDb, schema } from "@/lib/db";
-import { getSessionAgency } from "@/lib/data/session";
-import { agencyArtistIdBySlug } from "@/lib/data/ownership";
+import { getSessionAgency, getSessionArtistId } from "@/lib/data/session";
+import { agencyArtistIdBySlug, artistIdBySlug } from "@/lib/data/ownership";
 import type {
   ArtistCategory,
   ArtistChannel,
@@ -87,21 +87,38 @@ function sanitizeNameLocalized(
 
 export async function POST(req: Request) {
   try {
-    const agency = await getSessionAgency();
-    if (!agency) {
-      return NextResponse.json({ error: "소속사 인증이 필요합니다" }, { status: 401 });
-    }
-
     const body = (await req.json()) as Payload;
     if (!body.slug) {
       return NextResponse.json({ error: "slug 누락" }, { status: 400 });
     }
-    // 이 slug가 세션 소속사 소유인지 확인 (IDOR 방어)
-    if (!(await agencyArtistIdBySlug(agency.id, body.slug)))
+
+    // 두 가지 편집 주체 — 소속사(콘솔)와 본인(크리에이터 셀프).
+    // 소속사 전속 아티스트가 본인 계정으로 단가·분배율을 임의로 바꾸면 안 되므로
+    // 본인 편집은 운영값을 만지지 못하게 잘라낸다.
+    const agency = await getSessionAgency();
+    const ownsViaAgency =
+      agency !== null && (await agencyArtistIdBySlug(agency.id, body.slug));
+    const selfArtistId = ownsViaAgency ? null : await getSessionArtistId();
+    const isSelf =
+      selfArtistId !== null &&
+      selfArtistId === (await artistIdBySlug(body.slug));
+
+    if (!ownsViaAgency && !isSelf) {
       return NextResponse.json(
-        { error: "해당 아티스트를 찾을 수 없습니다" },
-        { status: 404 }
+        { error: "편집 권한이 없습니다" },
+        { status: ownsViaAgency === false && !agency ? 401 : 404 }
       );
+    }
+
+    // 본인 편집이면 운영값(견적 프리셋·분배율)은 무시한다 — 소속사만 정한다.
+    if (isSelf && !ownsViaAgency) {
+      delete body.presetFee;
+      delete body.presetIncludes;
+      delete body.presetNote;
+      delete body.defaultAgencyRateBp;
+      delete body.budgetMin;
+      delete body.budgetMax;
+    }
 
     // undefined 필드는 건드리지 않음 (부분 업데이트)
     const patch: Partial<typeof schema.artists.$inferInsert> = {};

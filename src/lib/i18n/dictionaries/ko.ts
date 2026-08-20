@@ -1469,6 +1469,8 @@ const ko = {
   "profile.kitCta": "프로필 자료(PDF)",
   "agency.artistEditor.channelsHint": "브랜드는 팔로워보다 참여율·평균 조회수를 먼저 봅니다. 채널 연동 전까지는 '자가 신고'로 표시돼요.",
   "agency.artistEditor.avgViews": "평균 조회수",
+  "nav.artist.profile": "내 프로필",
+  "me.profile.back": "내 화면으로",
 } as const;
 
 export default ko as Record<string, string>;

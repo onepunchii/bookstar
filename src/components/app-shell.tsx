@@ -47,6 +47,7 @@ const NAV_BY_ROLE: Record<
   ],
   artist: [
     { href: "/me", label: "nav.artist.schedule", icon: CalendarDays },
+    { href: "/me/profile", label: "nav.artist.profile", icon: CircleUserRound },
     { href: "/me/leave", label: "nav.artist.leave", icon: Palmtree },
     { href: "/me/earnings", label: "nav.artist.earnings", icon: Banknote },
   ],

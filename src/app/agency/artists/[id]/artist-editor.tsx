@@ -100,7 +100,15 @@ type Draft = {
   agencyRate?: number;
 };
 
-export function ArtistEditor({ artist }: { artist: Artist }) {
+export function ArtistEditor({
+  artist,
+  scope = "agency",
+}: {
+  artist: Artist;
+  /** creator = 본인 셀프 편집 — 단가·분배율 같은 운영값은 소속사가 정하므로 숨긴다 */
+  scope?: "agency" | "creator";
+}) {
+  const isCreator = scope === "creator";
   const t = useT();
 
   const [draft, setDraft] = useState<Draft>(() => ({
@@ -271,8 +279,6 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
           gender: draft.gender ?? null,
           birthYear: draft.birthYear ?? null,
           tags: draft.tags,
-          budgetMin: draft.budgetMin,
-          budgetMax: draft.budgetMax,
           acceptedEventTypes: draft.acceptedEventTypes,
           activeRegions: draft.activeRegions,
           minLeadDays: draft.minLeadDays ?? null,
@@ -292,13 +298,19 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
           weightKg: showWeight ? (draft.weightKg ?? null) : null,
           fieldVisibility: draft.fieldVisibility,
           profileExtras: { ...(artist.profileExtras ?? {}), spec: draft.spec },
-          presetFee: draft.presetFee ?? null,
-          presetIncludes: draft.presetIncludes.trim() || null,
-          presetNote: draft.presetNote.trim() || null,
-          defaultAgencyRateBp:
-            draft.agencyRate === undefined
-              ? undefined
-              : Math.round(draft.agencyRate * 100),
+          ...(isCreator
+            ? {}
+            : {
+                budgetMin: draft.budgetMin,
+                budgetMax: draft.budgetMax,
+                presetFee: draft.presetFee ?? null,
+                presetIncludes: draft.presetIncludes.trim() || null,
+                presetNote: draft.presetNote.trim() || null,
+                defaultAgencyRateBp:
+                  draft.agencyRate === undefined
+                    ? undefined
+                    : Math.round(draft.agencyRate * 100),
+              }),
         }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -318,10 +330,11 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
     // data-noswipe — 편집 중 좌우 스와이프로 다른 탭에 튕겨 입력이 날아가는 것을 막는다
     <div data-noswipe>
       <Link
-        href="/agency/artists"
+        href={isCreator ? "/me" : "/agency/artists"}
         className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-neutral-500 hover:text-neutral-900"
       >
-        <ArrowLeft className="h-3.5 w-3.5" /> {t("agency.artistEditor.backToList")}
+        <ArrowLeft className="h-3.5 w-3.5" />{" "}
+        {isCreator ? t("me.profile.back") : t("agency.artistEditor.backToList")}
       </Link>
 
       {saved && (
@@ -651,6 +664,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
               open={!!open.booking}
               onToggle={() => toggle("booking")}
             >
+              {!isCreator && (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="budget-min">{t("agency.artistEditor.budgetMin")}</Label>
@@ -675,6 +689,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
                   />
                 </div>
               </div>
+              )}
               <div>
                 <Label>{t("profile.spec.eventTypes")}</Label>
                 <ChipMulti
@@ -1202,7 +1217,8 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
             </div>
           )}
 
-          {/* ── 8. 내부 운영값 — 공개되지 않음 ── */}
+          {/* ── 8. 내부 운영값 — 공개되지 않음. 단가·분배율은 소속사가 정한다 ── */}
+          {!isCreator && (
           <div id="blk-internal">
             <FieldBlock
               title={t("agency.block.internal")}
@@ -1257,6 +1273,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
               </div>
             </FieldBlock>
           </div>
+          )}
 
           {saveError && (
             <p className="text-sm font-semibold text-red-600">{saveError}</p>

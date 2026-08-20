@@ -83,3 +83,22 @@ export async function agencyOwnsRecordArtist(
   if (!artistId) return false;
   return agencyOwnsArtist(agencyId, artistId);
 }
+
+/**
+ * slug → 아티스트 id (소유권 무관 단순 조회).
+ * 크리에이터 셀프 편집에서 "이 slug가 내 아티스트인가"를 판정할 때 쓴다.
+ * 이것만으로는 권한이 되지 않으므로 반드시 세션 아티스트 id와 비교할 것.
+ */
+export async function artistIdBySlug(slug: string): Promise<string | null> {
+  try {
+    const db = getDb();
+    const [row] = await db
+      .select({ id: schema.artists.id })
+      .from(schema.artists)
+      .where(eq(schema.artists.slug, slug))
+      .limit(1);
+    return row?.id ?? null;
+  } catch {
+    return null;
+  }
+}
