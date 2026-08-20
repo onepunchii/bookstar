@@ -16,6 +16,14 @@ import { fetchYoutubeSubscribers } from "@/lib/youtube";
 import { absoluteUrl, artistPublicUrl, SITE } from "@/lib/site";
 import { getT } from "@/lib/i18n/server";
 import { resolveArtistName } from "@/lib/profile";
+import {
+  buildSpecRows,
+  MIN_SPEC_ROWS,
+  redactArtist,
+  type ViewerType,
+} from "@/lib/profile-fields";
+import { SpecList } from "./spec-list";
+import { CreditsTimeline } from "./credits-timeline";
 import { ShareButton } from "./share-button";
 
 // SNS 입력(@핸들 또는 URL) → 실제 링크
@@ -41,6 +49,7 @@ import {
   BadgeCheck,
   Clock,
   MessageSquare,
+  Play,
   Sparkles,
   TrendingUp,
   Users,
@@ -133,18 +142,28 @@ export default async function ArtistPublicPage({ params }: PageProps) {
   // 크롤러에게 canonical 언어(한국어) 앵커를 안정적으로 보여준다. 사람은 영향 없음.
   const { t, locale } = await getT({ botDefault: "ko" });
   const { slug } = await params;
-  const artist = await getPublicArtistBySlug(slug);
-  if (!artist) notFound();
+  const raw = await getPublicArtistBySlug(slug);
+  if (!raw) notFound();
 
-  const schedule = await getPublicSchedule(artist.id);
+  const schedule = await getPublicSchedule(raw.id);
   const rating = getRatingSummaryBySlug(slug);
   // 신고·차단(App Store 1.2) — 뷰어 로그인 여부 + 프로필 운영 유저
   // + 관련 문서(같은 공개 프로필 템플릿) 내부링크용 전체 목록
   const [viewer, ownerUserId, allArtists] = await Promise.all([
     getSessionUser(),
-    getArtistOwnerUserId(artist.id),
+    getArtistOwnerUserId(raw.id),
     getPublicArtists(),
   ]);
+
+  // 리댁션 게이트 — 비공개 필드를 여기서 지운다. 이걸 건너뛰면 비공개 체중이
+  // HTML·RSC 페이로드에 그대로 실린다(UX 결함이 아니라 사고).
+  // 아래 코드는 반드시 raw가 아닌 artist를 쓴다.
+  const viewerType: ViewerType = viewer
+    ? viewer.id === ownerUserId
+      ? "owner"
+      : "company"
+    : "guest";
+  const artist = redactArtist(raw, viewerType);
   // 관련 아티스트 — 같은 카테고리 우선, 부족하면 나머지로 채워 4~6개
   const others = allArtists.filter((a) => a.slug && a.slug !== slug);
   const relatedArtists = [
@@ -223,14 +242,30 @@ export default async function ArtistPublicPage({ params }: PageProps) {
   } as const;
   const galleryPhotos = (artist.galleryUrls ?? []).filter(Boolean);
   const hasGallery = galleryPhotos.length > 0;
+
+  // 스펙시트 — 값 없는 항목은 buildSpecRows가 배열에 넣지 않는다.
+  // 행이 3개 미만이면 섹션째 렌더하지 않는다(3행짜리 표는 없는 것보다 초라하다).
+  const specRows = buildSpecRows(artist, viewerType, t);
+  const hasSpec = specRows.length >= MIN_SPEC_ROWS;
+  // 활동 이력 — 구조화 credits 우선, 없으면 레거시 recentWork 폴백.
+  // 둘 다 없으면 섹션을 렌더하지 않는다(예전에는 빈 <ul>이 무조건 렌더됐다).
+  const hasWork =
+    (artist.credits?.length ?? 0) > 0 || artist.recentWork.length > 0;
+  const hasVideos = (artist.videos?.length ?? 0) > 0;
+
+  // 목차 칩 — 네이버가 "본문 바로가기" 칩으로 그대로 노출하는 SEO 자산이다.
+  // 렌더되지 않는 섹션을 넣으면 빈 곳으로 이동시키므로, 섹션 조건과 반드시 같은 값을 쓴다.
+  // 상한 6개: 아랍어·포르투갈어 라벨은 한국어의 2배 길이라 7개면 3줄로 랩된다.
   const tocItems = [
     { id: "faq", label: t("profile.faqHeading", { name: artist.name }) },
-    { id: "work", label: SECTION.work },
+    ...(hasSpec ? [{ id: "spec", label: t("profile.spec.heading") }] : []),
+    ...(hasWork ? [{ id: "work", label: SECTION.work }] : []),
+    ...(hasVideos ? [{ id: "video", label: t("profile.videos.heading") }] : []),
     ...(hasGallery ? [{ id: "photos", label: SECTION.photos }] : []),
     ...(artist.youtube ? [{ id: "youtube", label: SECTION.youtube }] : []),
     { id: "availability", label: SECTION.availability },
     { id: "booking", label: t("profile.bookingCta") },
-  ];
+  ].slice(0, 6);
 
   return (
     <div className="min-h-dvh overflow-x-clip bg-[#0a0a0b] text-white">
@@ -297,7 +332,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
                   key={c}
                   className="rounded-full bg-white/12 px-3 py-1 text-xs font-semibold text-white backdrop-blur"
                 >
-                  {CATEGORY_LABELS[c]}
+                  {t(`category.${c}`)}
                 </span>
               ))}
               {artist.verified && (
@@ -392,25 +427,71 @@ export default async function ArtistPublicPage({ params }: PageProps) {
             </section>
           )}
 
-          {/* 최근 활동 */}
-          <section id="work" className="scroll-mt-24">
-            <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
-              {SECTION.work}
-            </h2>
-            <ul className="space-y-2.5">
-              {artist.recentWork.map((work) => (
-                <li
-                  key={work}
-                  className="flex items-start gap-3 rounded-xl bg-white/[0.04] p-4 text-sm ring-1 ring-white/8"
-                >
-                  <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
-                  <span className="leading-relaxed text-white/80">
-                    {work}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
+          {/* 프로필 스펙시트 — 광고주가 3초 안에 훑는 라벨:값 격자 */}
+          {hasSpec && (
+            <section id="spec" className="scroll-mt-24">
+              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
+                {t("profile.spec.heading")}
+              </h2>
+              <SpecList rows={specRows} lockedLabel={t("profile.spec.locked")} />
+            </section>
+          )}
+
+          {/* 소개 */}
+          {artist.bio && (
+            <section className="scroll-mt-24">
+              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
+                {t("profile.about.heading")}
+              </h2>
+              <p
+                className="whitespace-pre-line text-[15px] leading-[1.85] text-white/75"
+                style={{ wordBreak: "keep-all" }}
+              >
+                {artist.bio}
+              </p>
+            </section>
+          )}
+
+          {/* 활동 이력 — 앵커 id는 #work 유지(외부 링크·기존 목차 호환) */}
+          {hasWork && (
+            <section id="work" className="scroll-mt-24">
+              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
+                {SECTION.work}
+              </h2>
+              <CreditsTimeline
+                credits={artist.credits}
+                recentWork={artist.recentWork}
+                moreLabel={t("profile.credits.more", { n: 0 }).replace("0", "{n}")}
+              />
+            </section>
+          )}
+
+          {/* 대표 영상 */}
+          {hasVideos && (
+            <section id="video" className="scroll-mt-24">
+              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/40">
+                {t("profile.videos.heading")}
+              </h2>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {artist.videos!.map((v, i) => (
+                  <a
+                    key={i}
+                    href={v.url}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                    className="group flex items-center gap-3 rounded-xl bg-white/[0.04] p-4 ring-1 ring-white/8 transition-colors hover:bg-white/[0.07]"
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-500/15 text-brand-300">
+                      <Play className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-sm text-white/80 group-hover:text-white">
+                      {v.title || v.url}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* 갤러리 */}
           {hasGallery && (
@@ -552,7 +633,7 @@ export default async function ArtistPublicPage({ params }: PageProps) {
                 className="premium-ease group rounded-2xl bg-white/[0.04] p-4 ring-1 ring-white/10 hover:bg-white/[0.07] hover:ring-white/25"
               >
                 <p className="text-[11px] font-semibold text-white/40">
-                  {CATEGORY_LABELS[a.category]}
+                  {t(`category.${a.category}`)}
                 </p>
                 <p className="mt-1 truncate text-[15px] font-bold text-white/90 group-hover:text-white">
                   {a.name}

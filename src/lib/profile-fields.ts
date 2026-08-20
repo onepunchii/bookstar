@@ -187,9 +187,17 @@ export function displayAge(birthYear?: number): string | null {
 
 // ── 공개 프로필 스펙 행 조립 ──
 export interface SpecRow {
+  key: string;
   label: string;
   value: string;
+  /** 긴 값(특기·가능 섭외 등)은 2열 그리드에서 한 줄 전체를 쓴다 */
+  wide?: boolean;
+  /** members로 잠긴 값 — 값 대신 "로그인한 광고주에게 공개"를 렌더 */
+  locked?: boolean;
 }
+
+/** 스펙시트를 렌더할지 판단하는 최소 행 수 — 3행짜리 표는 없는 것보다 나쁘다 */
+export const MIN_SPEC_ROWS = 3;
 
 /**
  * 값이 없는 항목은 행 자체를 만들지 않는다 —
@@ -202,14 +210,27 @@ export function buildSpecRows(
 ): SpecRow[] {
   const rows: SpecRow[] = [];
   const cats = artist.categories?.length ? artist.categories : [artist.category];
+  const lockedKeys = (artist.profileExtras?._locked as string[] | undefined) ?? [];
 
   const age = displayAge(artist.birthYear);
-  if (age && canSee(artist, "birthYear", viewer)) {
-    rows.push({ label: t("profile.spec.birthYear"), value: age });
+  if (age) {
+    rows.push({ key: "birthYear", label: t("profile.spec.birthYear"), value: age });
+  } else if (lockedKeys.includes("birthYear")) {
+    rows.push({ key: "birthYear", label: t("profile.spec.birthYear"), value: "", locked: true });
   }
+
+  if (artist.gender) {
+    rows.push({
+      key: "gender",
+      label: t("profile.spec.gender"),
+      value: t(`profile.gender.${artist.gender}`),
+    });
+  }
+
   if (artist.careerStartYear) {
     const years = new Date().getFullYear() - artist.careerStartYear;
     rows.push({
+      key: "career",
       label: t("profile.spec.career"),
       value: t("profile.spec.careerValue", {
         year: artist.careerStartYear,
@@ -217,49 +238,71 @@ export function buildSpecRows(
       }),
     });
   }
+
   if (artist.activeRegions?.length) {
     rows.push({
+      key: "regions",
       label: t("profile.spec.regions"),
       value: artist.activeRegions.join(" · "),
     });
   }
-  if (
-    artist.heightCm &&
-    usesHeight(cats) &&
-    canSee(artist, "height", viewer)
-  ) {
-    rows.push({ label: t("profile.spec.height"), value: `${artist.heightCm} cm` });
+
+  if (usesHeight(cats)) {
+    if (artist.heightCm) {
+      rows.push({ key: "height", label: t("profile.spec.height"), value: `${artist.heightCm} cm` });
+    } else if (lockedKeys.includes("height")) {
+      rows.push({ key: "height", label: t("profile.spec.height"), value: "", locked: true });
+    }
   }
-  if (
-    artist.weightKg &&
-    usesWeight(cats) &&
-    !isMinor(artist.birthYear) &&
-    canSee(artist, "weight", viewer)
-  ) {
-    rows.push({ label: t("profile.spec.weight"), value: `${artist.weightKg} kg` });
+  if (usesWeight(cats)) {
+    if (artist.weightKg) {
+      rows.push({ key: "weight", label: t("profile.spec.weight"), value: `${artist.weightKg} kg` });
+    } else if (lockedKeys.includes("weight")) {
+      rows.push({ key: "weight", label: t("profile.spec.weight"), value: "", locked: true });
+    }
   }
+
   if (artist.languages?.length) {
     rows.push({
+      key: "languages",
       label: t("profile.spec.languages"),
       value: artist.languages
-        .map((l) => {
-          const lv = LANGUAGE_LEVELS.find((x) => x.value === l.level);
-          return lv ? `${l.lang}(${lv.label})` : l.lang;
-        })
+        .map((l) =>
+          l.level ? `${l.lang}(${t(`profile.langLevel.${l.level}`)})` : l.lang
+        )
         .join(" · "),
     });
   }
+
+  if (artist.skills?.length) {
+    rows.push({
+      key: "skills",
+      label: t("profile.spec.skills"),
+      wide: true,
+      value: artist.skills
+        .map((s) =>
+          s.level ? `${s.name}(${t(`profile.skillLevel.${s.level}`)})` : s.name
+        )
+        .join(" · "),
+    });
+  }
+
   if (artist.acceptedEventTypes?.length) {
     rows.push({
+      key: "eventTypes",
       label: t("profile.spec.eventTypes"),
+      wide: true,
       value: artist.acceptedEventTypes.join(" · "),
     });
   }
+
   if (artist.minLeadDays) {
     rows.push({
+      key: "leadTime",
       label: t("profile.spec.leadTime"),
       value: t("profile.spec.leadTimeValue", { n: artist.minLeadDays }),
     });
   }
+
   return rows;
 }
