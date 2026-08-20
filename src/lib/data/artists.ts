@@ -86,12 +86,13 @@ export async function getAgencyArtists(agencyId?: string): Promise<Artist[]> {
           .select()
           .from(schema.artists)
           .orderBy(asc(schema.artists.createdAt));
-    // 실 소속사(가입)면 빈 목록도 그대로 반환, 데모면 폴백 허용
+    // 실 소속사(가입)면 빈 목록도 그대로 반환
     if (agencyId) return rows.map(rowToArtist);
-    if (rows.length > 0) return rows.map(rowToArtist);
   } catch {
     /* 폴백 */
   }
+  // agencyId가 없으면 둘러보기(데모) — 실제 고객 아티스트를 보여주면
+  // 남의 프로필·내부값이 데모 화면에 노출되므로 항상 샘플 데이터만 쓴다.
   return agencyId ? [] : MOCK_ARTISTS;
 }
 
