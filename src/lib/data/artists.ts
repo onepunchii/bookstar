@@ -91,10 +91,11 @@ export async function getPublicArtists(): Promise<Artist[]> {
         )
       )
       .orderBy(asc(schema.artists.createdAt));
-    if (rows.length === 0) return MOCK_ARTISTS;
     return rows.map(rowToArtist);
   } catch {
-    return MOCK_ARTISTS;
+    // 공개 경로는 목데이터로 폴백하지 않는다 — 샘플 프로필(실존 소속사명 포함)이
+    // 검색·사이트맵에 노출되던 사고가 있었다. 데모(둘러보기)만 목을 쓴다.
+    return [];
   }
 }
 
@@ -109,9 +110,9 @@ export async function getPublicArtistById(id: string): Promise<Artist | null> {
       .limit(1);
     if (row) return rowToArtist(row);
   } catch {
-    /* 폴백 */
+    /* 조회 실패 → 404 (목데이터로 되살리지 않는다) */
   }
-  return MOCK_ARTISTS.find((a) => a.id === id) ?? null;
+  return null;
 }
 
 /** 슬러그로 공개 아티스트 1명 */
@@ -127,9 +128,9 @@ export async function getPublicArtistBySlug(
       .limit(1);
     if (row) return rowToArtist(row);
   } catch {
-    /* 폴백 */
+    /* 조회 실패 → 404 (목데이터로 되살리지 않는다) */
   }
-  return MOCK_ARTISTS.find((a) => a.slug === slug) ?? null;
+  return null;
 }
 
 /** 아티스트를 운영하는 유저 id — 연결된 크리에이터 계정 우선, 없으면 소속사 대표.
