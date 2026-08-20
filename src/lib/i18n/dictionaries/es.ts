@@ -1252,6 +1252,12 @@ const es: Record<string, string> = {
   "artists.browse.age30s": "30-39",
   "artists.browse.age40plus": "40+",
   "artists.browse.regionAll": "Todas las regiones",
+  "kit.hint": "Imprime esta página o guárdala en PDF para usarla como perfil de presentación.",
+  "kit.saveCta": "Guardar en PDF · Imprimir",
+  "kit.budget": "Tarifa de contratación",
+  "kit.scanLabel": "Perfil en línea",
+  "kit.footer": "Escanea el QR para ver el perfil actualizado y la disponibilidad.",
+  "profile.kitCta": "Ficha de perfil (PDF)",
 };
 
 export default es;

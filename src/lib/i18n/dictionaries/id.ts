@@ -1252,6 +1252,12 @@ const id: Record<string, string> = {
   "artists.browse.age30s": "30-an",
   "artists.browse.age40plus": "40+",
   "artists.browse.regionAll": "Semua wilayah",
+  "kit.hint": "Cetak atau simpan sebagai PDF untuk digunakan sebagai profil siap kirim.",
+  "kit.saveCta": "Simpan PDF · Cetak",
+  "kit.budget": "Kisaran anggaran",
+  "kit.scanLabel": "Profil online",
+  "kit.footer": "Pindai QR untuk melihat profil terbaru dan jadwal tersedia.",
+  "profile.kitCta": "Media Kit (PDF)",
 };
 
 export default id;

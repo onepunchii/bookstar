@@ -1252,6 +1252,12 @@ const vi: Record<string, string> = {
   "artists.browse.age30s": "30 – 39 tuổi",
   "artists.browse.age40plus": "40 tuổi trở lên",
   "artists.browse.regionAll": "Toàn bộ khu vực",
+  "kit.hint": "In hoặc lưu thành PDF để dùng làm hồ sơ giới thiệu khi nộp.",
+  "kit.saveCta": "Lưu PDF · In",
+  "kit.budget": "Giá booking",
+  "kit.scanLabel": "Hồ sơ trực tuyến",
+  "kit.footer": "Quét mã QR để xem hồ sơ mới nhất và lịch trống.",
+  "profile.kitCta": "Hồ sơ giới thiệu (PDF)",
 };
 
 export default vi;

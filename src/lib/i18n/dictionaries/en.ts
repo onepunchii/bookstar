@@ -1252,6 +1252,12 @@ const en: Record<string, string> = {
   "artists.browse.age30s": "30s",
   "artists.browse.age40plus": "40+",
   "artists.browse.regionAll": "All regions",
+  "kit.hint": "Print it or save it as a PDF to use as a submission-ready profile.",
+  "kit.saveCta": "Save PDF · Print",
+  "kit.budget": "Booking rate",
+  "kit.scanLabel": "Online profile",
+  "kit.footer": "Scan the QR code for the latest profile and availability.",
+  "profile.kitCta": "Media kit (PDF)",
 };
 
 export default en;

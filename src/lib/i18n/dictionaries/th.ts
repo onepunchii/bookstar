@@ -1251,6 +1251,12 @@ const th: Record<string, string> = {
   "artists.browse.age30s": "30-39 ปี",
   "artists.browse.age40plus": "40 ปีขึ้นไป",
   "artists.browse.regionAll": "ทุกพื้นที่",
+  "kit.hint": "พิมพ์ออกมาหรือบันทึกเป็น PDF เพื่อใช้เป็นโปรไฟล์สำหรับยื่นเสนองาน",
+  "kit.saveCta": "บันทึก PDF · พิมพ์",
+  "kit.budget": "ค่าตัว",
+  "kit.scanLabel": "โปรไฟล์ออนไลน์",
+  "kit.footer": "สแกน QR เพื่อดูโปรไฟล์ล่าสุดและคิวว่างได้ทันที",
+  "profile.kitCta": "เอกสารโปรไฟล์ (PDF)",
 };
 
 export default th;

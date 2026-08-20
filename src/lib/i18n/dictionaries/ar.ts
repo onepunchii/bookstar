@@ -1251,6 +1251,12 @@ const ar: Record<string, string> = {
   "artists.browse.age30s": "الثلاثينات",
   "artists.browse.age40plus": "الأربعينات فأكثر",
   "artists.browse.regionAll": "كل المناطق",
+  "kit.hint": "اطبع هذه الصفحة أو احفظها بصيغة PDF لاستخدامها ملفاً تعريفياً عند التقديم.",
+  "kit.saveCta": "حفظ PDF · طباعة",
+  "kit.budget": "أجر الاستقطاب",
+  "kit.scanLabel": "الملف الشخصي على الإنترنت",
+  "kit.footer": "امسح رمز QR للاطّلاع على أحدث نسخة من الملف الشخصي والمواعيد المتاحة.",
+  "profile.kitCta": "الملف التعريفي (PDF)",
 };
 
 export default ar;

@@ -1251,6 +1251,12 @@ const ja: Record<string, string> = {
   "artists.browse.age30s": "30代",
   "artists.browse.age40plus": "40代以上",
   "artists.browse.regionAll": "すべての地域",
+  "kit.hint": "印刷またはPDFで保存して、提出用プロフィールとしてご利用ください。",
+  "kit.saveCta": "PDFで保存・印刷",
+  "kit.budget": "出演料",
+  "kit.scanLabel": "オンラインプロフィール",
+  "kit.footer": "QRコードをスキャンすると、最新のプロフィールと出演可能日をご確認いただけます。",
+  "profile.kitCta": "プロフィール資料（PDF）",
 };
 
 export default ja;

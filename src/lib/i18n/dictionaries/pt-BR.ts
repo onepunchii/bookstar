@@ -1252,6 +1252,12 @@ const ptBR: Record<string, string> = {
   "artists.browse.age30s": "30-39",
   "artists.browse.age40plus": "40+",
   "artists.browse.regionAll": "Todas as regiões",
+  "kit.hint": "Imprima ou salve em PDF para usar como perfil de apresentação.",
+  "kit.saveCta": "Salvar em PDF · Imprimir",
+  "kit.budget": "Cachê",
+  "kit.scanLabel": "Perfil online",
+  "kit.footer": "Escaneie o QR para ver o perfil atualizado e as datas disponíveis.",
+  "profile.kitCta": "Mídia kit (PDF)",
 };
 
 export default ptBR;

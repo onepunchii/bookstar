@@ -1249,6 +1249,12 @@ const zhTW: Record<string, string> = {
   "artists.browse.age30s": "30幾歲",
   "artists.browse.age40plus": "40歲以上",
   "artists.browse.regionAll": "全部地區",
+  "kit.hint": "列印或儲存為 PDF，即可作為提案用的簡介資料。",
+  "kit.saveCta": "儲存 PDF · 列印",
+  "kit.budget": "通告價",
+  "kit.scanLabel": "線上檔案",
+  "kit.footer": "掃描 QR Code 即可查看最新檔案與可接洽檔期。",
+  "profile.kitCta": "簡介資料（PDF）",
 };
 
 export default zhTW;
