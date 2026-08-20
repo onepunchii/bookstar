@@ -1243,6 +1243,12 @@ const zhTW: Record<string, string> = {
   "profile.langLevel.native": "母語",
   "profile.langLevel.business": "商務",
   "profile.langLevel.conversational": "日常會話",
+  "artists.browse.ageAll": "全部年齡",
+  "artists.browse.age10s": "10幾歲",
+  "artists.browse.age20s": "20幾歲",
+  "artists.browse.age30s": "30幾歲",
+  "artists.browse.age40plus": "40歲以上",
+  "artists.browse.regionAll": "全部地區",
 };
 
 export default zhTW;

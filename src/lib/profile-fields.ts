@@ -109,6 +109,130 @@ export function usesWeight(categories: ArtistCategory[]): boolean {
   return categories.some((c) => WEIGHT_CATEGORIES.includes(c));
 }
 
+// ── 카테고리별 전문 스펙 ──
+// 컬럼을 늘리지 않고 profileExtras.spec.{key}에 담는다.
+// 검색·필터에 연결되는 축만 나중에 정규 컬럼으로 승격한다.
+export type SpecFieldUI = "text" | "number" | "chips" | "segmented";
+
+export interface SpecFieldDef {
+  key: string;
+  label: string;
+  ui: SpecFieldUI;
+  options?: readonly string[];
+  /** 공개 프로필 스펙시트에 행으로 노출할지 */
+  publicRow?: boolean;
+  suffix?: string;
+}
+
+const CATEGORY_SPEC: Partial<Record<ArtistCategory, SpecFieldDef[]>> = {
+  idol: [
+    {
+      key: "genres",
+      label: "장르",
+      ui: "chips",
+      publicRow: true,
+      options: ["발라드", "댄스", "힙합", "R&B", "록", "트로트", "POP", "재즈", "국악"],
+    },
+    {
+      key: "teamType",
+      label: "팀 구성",
+      ui: "segmented",
+      publicRow: true,
+      options: ["솔로", "듀오", "그룹"],
+    },
+    { key: "memberCount", label: "인원", ui: "number", publicRow: true, suffix: "명" },
+    { key: "runningTimeMin", label: "공연 가능 시간", ui: "number", publicRow: true, suffix: "분" },
+  ],
+  mc: [
+    {
+      key: "hostingTypes",
+      label: "진행 유형",
+      ui: "chips",
+      publicRow: true,
+      options: ["전문MC", "아나운서", "쇼호스트", "외국어 진행", "개그맨"],
+    },
+    { key: "runningTimeMin", label: "진행 가능 시간", ui: "number", publicRow: true, suffix: "분" },
+  ],
+  speaker: [
+    {
+      key: "speakingFields",
+      label: "강연 분야",
+      ui: "chips",
+      publicRow: true,
+      options: ["비즈니스", "소통·스피치", "AI·IT", "경제", "건강", "인문학", "교육", "진로", "동기부여"],
+    },
+    { key: "speakingTopics", label: "대표 주제", ui: "text", publicRow: true },
+  ],
+  actor: [
+    { key: "playableAgeMin", label: "연기 가능 연령 (최소)", ui: "number", suffix: "세" },
+    { key: "playableAgeMax", label: "연기 가능 연령 (최대)", ui: "number", suffix: "세" },
+  ],
+  model: [
+    { key: "playableAgeMin", label: "촬영 가능 연령 (최소)", ui: "number", suffix: "세" },
+    { key: "playableAgeMax", label: "촬영 가능 연령 (최대)", ui: "number", suffix: "세" },
+  ],
+  athlete: [
+    { key: "sport", label: "종목", ui: "text", publicRow: true },
+    { key: "position", label: "포지션", ui: "text", publicRow: true },
+    { key: "team", label: "소속팀", ui: "text", publicRow: true },
+    {
+      key: "careerStatus",
+      label: "활동 상태",
+      ui: "segmented",
+      publicRow: true,
+      options: ["현역", "은퇴"],
+    },
+  ],
+  influencer: [
+    {
+      key: "contentTypes",
+      label: "콘텐츠 유형",
+      ui: "chips",
+      publicRow: true,
+      options: ["숏폼", "브이로그", "리뷰", "라이브커머스", "튜토리얼", "챌린지"],
+    },
+  ],
+};
+
+/** 선택된 카테고리들의 스펙 필드 — 중복 키는 첫 번째 것만(아이돌+MC의 runningTimeMin 등) */
+export function specFieldsFor(
+  categories: ArtistCategory[]
+): { category: ArtistCategory; fields: SpecFieldDef[] }[] {
+  const seen = new Set<string>();
+  const out: { category: ArtistCategory; fields: SpecFieldDef[] }[] = [];
+  for (const c of categories) {
+    const defs = (CATEGORY_SPEC[c] ?? []).filter((f) => {
+      if (seen.has(f.key)) return false;
+      seen.add(f.key);
+      return true;
+    });
+    if (defs.length) out.push({ category: c, fields: defs });
+  }
+  return out;
+}
+
+/** 공개 프로필 스펙시트에 붙일 카테고리 전용 행 */
+export function specExtraRows(artist: Artist): SpecRow[] {
+  const cats = artist.categories?.length ? artist.categories : [artist.category];
+  const values = (artist.profileExtras?.spec ?? {}) as Record<string, unknown>;
+  const rows: SpecRow[] = [];
+  for (const { fields } of specFieldsFor(cats)) {
+    for (const f of fields) {
+      if (!f.publicRow) continue;
+      const v = values[f.key];
+      const text = Array.isArray(v) ? v.join(" · ") : v == null ? "" : String(v);
+      if (!text.trim()) continue;
+      rows.push({
+        key: `spec.${f.key}`,
+        label: f.label,
+        value: f.suffix ? `${text}${f.suffix}` : text,
+        wide: f.ui === "chips" || f.ui === "text",
+      });
+    }
+  }
+  return rows;
+}
+
 // ── 공개 범위 ──
 export type ViewerType = "guest" | "company" | "owner";
 

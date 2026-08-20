@@ -1246,6 +1246,12 @@ const en: Record<string, string> = {
   "profile.langLevel.native": "Native",
   "profile.langLevel.business": "Business",
   "profile.langLevel.conversational": "Conversational",
+  "artists.browse.ageAll": "All ages",
+  "artists.browse.age10s": "10s",
+  "artists.browse.age20s": "20s",
+  "artists.browse.age30s": "30s",
+  "artists.browse.age40plus": "40+",
+  "artists.browse.regionAll": "All regions",
 };
 
 export default en;

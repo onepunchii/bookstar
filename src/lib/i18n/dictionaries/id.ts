@@ -1246,6 +1246,12 @@ const id: Record<string, string> = {
   "profile.langLevel.native": "Penutur asli",
   "profile.langLevel.business": "Bisnis",
   "profile.langLevel.conversational": "Percakapan",
+  "artists.browse.ageAll": "Semua usia",
+  "artists.browse.age10s": "10-an",
+  "artists.browse.age20s": "20-an",
+  "artists.browse.age30s": "30-an",
+  "artists.browse.age40plus": "40+",
+  "artists.browse.regionAll": "Semua wilayah",
 };
 
 export default id;

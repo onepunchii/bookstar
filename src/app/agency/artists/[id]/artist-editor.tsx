@@ -22,6 +22,7 @@ import {
   REGIONS,
   SKILL_LEVELS,
   SKILL_SUGGESTIONS,
+  specFieldsFor,
   usesHeight,
   usesWeight,
 } from "@/lib/profile-fields";
@@ -87,6 +88,8 @@ type Draft = {
   heightCm?: number;
   weightKg?: number;
   fieldVisibility: Record<string, FieldVisibility>;
+  /** 카테고리 전용 스펙 — profileExtras.spec */
+  spec: Record<string, unknown>;
   presetFee?: number;
   presetIncludes: string;
   presetNote: string;
@@ -122,6 +125,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
     heightCm: artist.heightCm,
     weightKg: artist.weightKg,
     fieldVisibility: artist.fieldVisibility ?? {},
+    spec: ((artist.profileExtras?.spec ?? {}) as Record<string, unknown>),
     presetFee: artist.quotePreset?.baseFee,
     presetIncludes: artist.quotePreset?.includes ?? "",
     presetNote: artist.quotePreset?.note ?? "",
@@ -206,6 +210,9 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
   const creditTypes = useMemo(() => creditTypesFor(cats), [cats]);
   const showHeight = usesHeight(cats);
   const showWeight = usesWeight(cats);
+  const specGroups = useMemo(() => specFieldsFor(cats), [cats]);
+  const setSpec = (key: string, v: unknown) =>
+    setDraft((d) => ({ ...d, spec: { ...d.spec, [key]: v } }));
 
   const vis = (k: string): FieldVisibility =>
     draft.fieldVisibility[k] ?? (k === "weight" ? "private" : "public");
@@ -275,6 +282,7 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
           heightCm: showHeight ? (draft.heightCm ?? null) : null,
           weightKg: showWeight ? (draft.weightKg ?? null) : null,
           fieldVisibility: draft.fieldVisibility,
+          profileExtras: { ...(artist.profileExtras ?? {}), spec: draft.spec },
           presetFee: draft.presetFee ?? null,
           presetIncludes: draft.presetIncludes.trim() || null,
           presetNote: draft.presetNote.trim() || null,
@@ -973,6 +981,80 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
               </div>
             </FieldBlock>
           </div>
+
+          {/* ── 7. 전문 스펙 — 선택한 카테고리에만 나타난다(유니온 1장, 카드 N장 아님) ── */}
+          {specGroups.length > 0 && (
+            <div id="blk-specialty">
+              <FieldBlock
+                title={t("agency.block.specialty")}
+                hint={t("agency.block.specialtyHint")}
+                summary={specGroups
+                  .flatMap((g) => g.fields)
+                  .map((f) => {
+                    const v = draft.spec[f.key];
+                    const txt = Array.isArray(v) ? v.join("/") : v == null ? "" : String(v);
+                    return txt ? `${f.label} ${txt}` : "";
+                  })
+                  .filter(Boolean)
+                  .join(" · ")}
+                done={specGroups
+                  .flatMap((g) => g.fields)
+                  .some((f) => {
+                    const v = draft.spec[f.key];
+                    return Array.isArray(v) ? v.length > 0 : Boolean(v);
+                  })}
+                open={!!open.specialty}
+                onToggle={() => toggle("specialty")}
+              >
+                {specGroups.map((g) => (
+                  <div key={g.category} className="space-y-4">
+                    <p className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+                      {t(`category.${g.category}`)}
+                    </p>
+                    {g.fields.map((f) => (
+                      <div key={f.key}>
+                        <Label>{f.label}</Label>
+                        {f.ui === "chips" && (
+                          <ChipMulti
+                            options={f.options ?? []}
+                            value={(draft.spec[f.key] as string[]) ?? []}
+                            onChange={(v) => setSpec(f.key, v)}
+                          />
+                        )}
+                        {f.ui === "segmented" && (
+                          <Segmented
+                            allowClear
+                            value={draft.spec[f.key] as string | undefined}
+                            onChange={(v) => setSpec(f.key, v)}
+                            options={(f.options ?? []).map((o) => ({ value: o, label: o }))}
+                          />
+                        )}
+                        {f.ui === "number" && (
+                          <Input
+                            inputMode="numeric"
+                            value={(draft.spec[f.key] as number | undefined) ?? ""}
+                            onChange={(e) =>
+                              setSpec(
+                                f.key,
+                                Number(e.target.value.replace(/[^0-9]/g, "")) || undefined
+                              )
+                            }
+                            className="w-32"
+                          />
+                        )}
+                        {f.ui === "text" && (
+                          <Input
+                            value={(draft.spec[f.key] as string | undefined) ?? ""}
+                            onChange={(e) => setSpec(f.key, e.target.value)}
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </FieldBlock>
+            </div>
+          )}
 
           {/* ── 7. 신체 정보 — 배우·모델·아이돌만 존재 ── */}
           {showHeight && (

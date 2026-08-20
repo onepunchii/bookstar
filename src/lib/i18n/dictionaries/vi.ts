@@ -1246,6 +1246,12 @@ const vi: Record<string, string> = {
   "profile.langLevel.native": "Bản ngữ",
   "profile.langLevel.business": "Thành thạo",
   "profile.langLevel.conversational": "Giao tiếp",
+  "artists.browse.ageAll": "Toàn bộ độ tuổi",
+  "artists.browse.age10s": "10 – 19 tuổi",
+  "artists.browse.age20s": "20 – 29 tuổi",
+  "artists.browse.age30s": "30 – 39 tuổi",
+  "artists.browse.age40plus": "40 tuổi trở lên",
+  "artists.browse.regionAll": "Toàn bộ khu vực",
 };
 
 export default vi;

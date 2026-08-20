@@ -1245,6 +1245,12 @@ const ja: Record<string, string> = {
   "profile.langLevel.native": "ネイティブ",
   "profile.langLevel.business": "ビジネス",
   "profile.langLevel.conversational": "日常会話",
+  "artists.browse.ageAll": "すべての年代",
+  "artists.browse.age10s": "10代",
+  "artists.browse.age20s": "20代",
+  "artists.browse.age30s": "30代",
+  "artists.browse.age40plus": "40代以上",
+  "artists.browse.regionAll": "すべての地域",
 };
 
 export default ja;

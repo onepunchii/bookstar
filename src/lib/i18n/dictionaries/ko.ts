@@ -1453,6 +1453,14 @@ const ko = {
   "agency.artistEditor.videoTitle": "영상 제목 (선택)",
   "agency.artistEditor.externalLinks": "외부 링크",
   "agency.artistEditor.tagPlaceholder": "태그 입력 후 Enter",
+  "artists.browse.ageAll": "나이 전체",
+  "artists.browse.age10s": "10대",
+  "artists.browse.age20s": "20대",
+  "artists.browse.age30s": "30대",
+  "artists.browse.age40plus": "40대 이상",
+  "artists.browse.regionAll": "지역 전체",
+  "agency.block.specialty": "전문 스펙",
+  "agency.block.specialtyHint": "선택한 카테고리에 맞는 항목만 나와요",
 } as const;
 
 export default ko as Record<string, string>;

@@ -1245,6 +1245,12 @@ const th: Record<string, string> = {
   "profile.langLevel.native": "เจ้าของภาษา",
   "profile.langLevel.business": "ระดับธุรกิจ",
   "profile.langLevel.conversational": "สนทนาได้",
+  "artists.browse.ageAll": "ทุกวัย",
+  "artists.browse.age10s": "10-19 ปี",
+  "artists.browse.age20s": "20-29 ปี",
+  "artists.browse.age30s": "30-39 ปี",
+  "artists.browse.age40plus": "40 ปีขึ้นไป",
+  "artists.browse.regionAll": "ทุกพื้นที่",
 };
 
 export default th;

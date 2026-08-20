@@ -5,6 +5,7 @@ import { PremiumArtistCard } from "@/components/premium/premium-artist-card";
 import { Reveal } from "@/components/premium/reveal";
 import { SiteFooter } from "@/components/site-footer";
 import { SLACounter } from "@/components/sla-counter";
+import { REGIONS } from "@/lib/profile-fields";
 import { getPublicArtists, getPublicScheduleMap } from "@/lib/data/artists";
 import { getT } from "@/lib/i18n/server";
 import { parseNL } from "@/lib/nl-search";
@@ -52,6 +53,15 @@ export async function generateMetadata({
   };
 }
 
+// 연령대 — 캐스팅 검색의 1번 축. 한국식 나이 표기 관행에 맞춰 계산한다.
+const AGE_FILTERS = [
+  { key: "all", labelKey: "artists.browse.ageAll", min: 0, max: 200 },
+  { key: "10s", labelKey: "artists.browse.age10s", min: 0, max: 19 },
+  { key: "20s", labelKey: "artists.browse.age20s", min: 20, max: 29 },
+  { key: "30s", labelKey: "artists.browse.age30s", min: 30, max: 39 },
+  { key: "40plus", labelKey: "artists.browse.age40plus", min: 40, max: 200 },
+] as const;
+
 const BUDGET_FILTERS = [
   { key: "all", labelKey: "artists.browse.budgetAll", min: 0, max: Infinity },
   { key: "u1000", labelKey: "artists.browse.budgetU1000", min: 0, max: 1000 },
@@ -80,12 +90,19 @@ function hasAvailabilityInRange(
 export default async function ArtistsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string; q?: string; budget?: string }>;
+  searchParams: Promise<{
+    category?: string;
+    q?: string;
+    budget?: string;
+    region?: string;
+    age?: string;
+  }>;
 }) {
   const { t } = await getT();
-  const { category, q, budget } = await searchParams;
+  const { category, q, budget, region, age } = await searchParams;
   const budgetFilter =
     BUDGET_FILTERS.find((b) => b.key === budget) ?? BUDGET_FILTERS[0];
+  const ageFilter = AGE_FILTERS.find((a) => a.key === age);
 
   // 자연어 파싱
   const nl = q ? parseNL(q) : undefined;
@@ -103,6 +120,17 @@ export default async function ArtistsPage({
       (a.budgetRange[0] > budgetFilter.max || a.budgetRange[1] < budgetFilter.min)
     )
       return false;
+    // 활동 지역 — 국내 행사 섭외의 1순위 필터축. '전국'은 어느 지역 조건에도 걸린다.
+    if (region) {
+      const regions = a.activeRegions ?? [];
+      if (!regions.includes(region) && !regions.includes("전국")) return false;
+    }
+    // 연령대 — 미입력 아티스트는 이 필터를 쓸 때 제외된다(값이 없으면 판정 불가)
+    if (ageFilter && ageFilter.key !== "all") {
+      if (!a.birthYear) return false;
+      const yrs = new Date().getFullYear() - a.birthYear + 1;
+      if (yrs < ageFilter.min || yrs > ageFilter.max) return false;
+    }
     if (nl) {
       // NL 카테고리
       if (
@@ -149,7 +177,7 @@ export default async function ArtistsPage({
 
   const buildQuery = (patch: Record<string, string | undefined>) => {
     const params = new URLSearchParams();
-    const merged = { category, q, budget, ...patch };
+    const merged = { category, q, budget, region, age, ...patch };
     for (const [k, v] of Object.entries(merged)) if (v) params.set(k, v);
     const s = params.toString();
     return s ? `/artists?${s}` : "/artists";
@@ -236,6 +264,50 @@ export default async function ArtistsPage({
             )}
           >
             {t(b.labelKey)}
+          </Link>
+        ))}
+      </div>
+
+      {/* 연령대 · 활동 지역 — 필드를 입력받았으면 반드시 걸러낼 수 있어야 한다 */}
+      <div className="mt-2.5 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {AGE_FILTERS.map((a) => (
+          <Link
+            key={a.key}
+            href={buildQuery({ age: a.key === "all" ? undefined : a.key })}
+            className={cn(
+              "premium-ease shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium",
+              (ageFilter?.key ?? "all") === a.key
+                ? "bg-brand-500 text-white"
+                : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-brand-300 hover:ring-brand-500/30"
+            )}
+          >
+            {t(a.labelKey)}
+          </Link>
+        ))}
+        <span className="shrink-0 self-center px-1 text-white/15">|</span>
+        <Link
+          href={buildQuery({ region: undefined })}
+          className={cn(
+            "premium-ease shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium",
+            !region
+              ? "bg-brand-500 text-white"
+              : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-brand-300 hover:ring-brand-500/30"
+          )}
+        >
+          {t("artists.browse.regionAll")}
+        </Link>
+        {REGIONS.filter((r) => r !== "전국" && r !== "해외").map((r) => (
+          <Link
+            key={r}
+            href={buildQuery({ region: r })}
+            className={cn(
+              "premium-ease shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium",
+              region === r
+                ? "bg-brand-500 text-white"
+                : "bg-white/5 text-white/60 ring-1 ring-white/10 hover:text-brand-300 hover:ring-brand-500/30"
+            )}
+          >
+            {r}
           </Link>
         ))}
       </div>

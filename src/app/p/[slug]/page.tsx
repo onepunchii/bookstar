@@ -20,6 +20,7 @@ import {
   buildSpecRows,
   MIN_SPEC_ROWS,
   redactArtist,
+  specExtraRows,
   type ViewerType,
 } from "@/lib/profile-fields";
 import { SpecList } from "./spec-list";
@@ -264,7 +265,8 @@ export default async function ArtistPublicPage({ params }: PageProps) {
 
   // 스펙시트 — 값 없는 항목은 buildSpecRows가 배열에 넣지 않는다.
   // 행이 3개 미만이면 섹션째 렌더하지 않는다(3행짜리 표는 없는 것보다 초라하다).
-  const specRows = buildSpecRows(artist, viewerType, t);
+  // 공통 스펙 + 카테고리 전용 스펙(장르·진행유형·종목 등)
+  const specRows = [...buildSpecRows(artist, viewerType, t), ...specExtraRows(artist)];
   const hasSpec = specRows.length >= MIN_SPEC_ROWS;
   // 활동 이력 — 구조화 credits 우선, 없으면 레거시 recentWork 폴백.
   // 둘 다 없으면 섹션을 렌더하지 않는다(예전에는 빈 <ul>이 무조건 렌더됐다).

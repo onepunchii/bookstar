@@ -1245,6 +1245,12 @@ const ar: Record<string, string> = {
   "profile.langLevel.native": "لغة أم",
   "profile.langLevel.business": "للأعمال",
   "profile.langLevel.conversational": "محادثة",
+  "artists.browse.ageAll": "كل الأعمار",
+  "artists.browse.age10s": "المراهقون",
+  "artists.browse.age20s": "العشرينات",
+  "artists.browse.age30s": "الثلاثينات",
+  "artists.browse.age40plus": "الأربعينات فأكثر",
+  "artists.browse.regionAll": "كل المناطق",
 };
 
 export default ar;
