@@ -197,7 +197,27 @@ export default async function ArtistsPage({
       </Reveal>
 
       <Reveal delay={60} className="mt-6">
-        <SLACounter variant="inline" dark artists={artists} />
+        <SLACounter
+          variant="inline"
+          dark
+          avgHours={
+            artists.length
+              ? Math.round(
+                  (artists.reduce((sum, a) => sum + a.responseHours, 0) /
+                    artists.length) *
+                    10
+                ) / 10
+              : undefined
+          }
+          avgRate={
+            artists.length
+              ? Math.round(
+                  artists.reduce((sum, a) => sum + a.responseRate, 0) /
+                    artists.length
+                )
+              : undefined
+          }
+        />
       </Reveal>
 
       <Reveal delay={90} className="mt-4">

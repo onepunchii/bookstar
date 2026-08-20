@@ -2,32 +2,26 @@
 
 import { Card } from "@/components/ui/card";
 import { useT } from "@/lib/i18n/client";
-import type { Artist } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Clock, TrendingUp, Zap } from "lucide-react";
 
 // 응답 SLA 지표 — DB 아티스트의 실제 평균(응답시간·응답률)만 표시.
+//
+// 집계값(숫자 2개)만 받는다. 예전에는 Artist[] 전체를 prop으로 받았는데,
+// 클라이언트 컴포넌트라 배열이 RSC 페이로드로 직렬화돼 비공개 필드(체중·생년 등)까지
+// HTML에 실렸다 — 공개 프로필의 리댁션 게이트를 우회하는 경로였다.
 export function SLACounter({
   variant = "hero",
   dark = false,
-  artists = [],
+  avgHours = 4.2,
+  avgRate = 96,
 }: {
   variant?: "hero" | "inline";
   dark?: boolean;
-  artists?: Artist[];
+  avgHours?: number;
+  avgRate?: number;
 }) {
   const t = useT();
-  const n = artists.length || 1;
-  const avgHours =
-    artists.length > 0
-      ? Math.round(
-          (artists.reduce((sum, a) => sum + a.responseHours, 0) / n) * 10
-        ) / 10
-      : 4.2;
-  const avgRate =
-    artists.length > 0
-      ? Math.round(artists.reduce((sum, a) => sum + a.responseRate, 0) / n)
-      : 96;
 
   if (variant === "inline") {
     return (

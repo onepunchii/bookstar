@@ -320,6 +320,23 @@ export interface SpecRow {
   locked?: boolean;
 }
 
+const SKILL_LEVEL_VALUES = SKILL_LEVELS.map((l) => l.value) as readonly string[];
+const LANG_LEVEL_VALUES = LANGUAGE_LEVELS.map((l) => l.value) as readonly string[];
+
+/**
+ * 사전에 없는 레벨 값이 저장돼 있어도 raw 키("profile.skillLevel.business")를
+ * 화면에 뱉지 않는다 — 옛 데이터·수기 입력·스키마 변경 때 실제로 발생한다.
+ */
+function levelLabel(
+  t: (k: string, p?: Record<string, string | number>) => string,
+  ns: "skillLevel" | "langLevel",
+  level: string | undefined,
+  allowed: readonly string[]
+): string | null {
+  if (!level || !allowed.includes(level)) return null;
+  return t(`profile.${ns}.${level}`);
+}
+
 /** 스펙시트를 렌더할지 판단하는 최소 행 수 — 3행짜리 표는 없는 것보다 나쁘다 */
 export const MIN_SPEC_ROWS = 3;
 
@@ -391,9 +408,10 @@ export function buildSpecRows(
       key: "languages",
       label: t("profile.spec.languages"),
       value: artist.languages
-        .map((l) =>
-          l.level ? `${l.lang}(${t(`profile.langLevel.${l.level}`)})` : l.lang
-        )
+        .map((l) => {
+          const lv = levelLabel(t, "langLevel", l.level, LANG_LEVEL_VALUES);
+          return lv ? `${l.lang}(${lv})` : l.lang;
+        })
         .join(" · "),
     });
   }
@@ -404,9 +422,10 @@ export function buildSpecRows(
       label: t("profile.spec.skills"),
       wide: true,
       value: artist.skills
-        .map((s) =>
-          s.level ? `${s.name}(${t(`profile.skillLevel.${s.level}`)})` : s.name
-        )
+        .map((s) => {
+          const lv = levelLabel(t, "skillLevel", s.level, SKILL_LEVEL_VALUES);
+          return lv ? `${s.name}(${lv})` : s.name;
+        })
         .join(" · "),
     });
   }
