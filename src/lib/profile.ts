@@ -16,32 +16,36 @@ export function resolveArtistName(
 }
 
 export interface CompletenessItem {
-  label: string;
+  /** i18n 키 접미사 — 화면에서 t(`agency.completeness.${key}`)로 렌더 */
+  key: string;
   done: boolean;
   weight: number;
+  /** 이 항목을 채우러 갈 블록 id */
+  block: string;
 }
 
-// 프로필 완성도 — 소속사가 무엇을 채워야 노출이 늘어나는지 알려주는 지표
+/**
+ * 프로필 완성도 — 소속사가 무엇을 채워야 노출이 늘어나는지 알려주는 지표.
+ *
+ * 항목은 7개 카테고리 전부에 동일해야 한다. 카테고리 전용 필드나 신체 필드를 넣으면
+ * 카테고리를 하나 더 고르는 순간 점수가 떨어져 카테고리 추가를 억제하는 역인센티브가
+ * 되고, 민감 정보를 게이지로 압박하게 된다.
+ */
 export function profileCompleteness(artist: Artist): {
   score: number;
   items: CompletenessItem[];
 } {
+  const workCount = (artist.credits?.length ?? 0) + artist.recentWork.length;
   const items: CompletenessItem[] = [
-    { label: "대표 사진", done: Boolean(artist.imageUrl), weight: 20 },
-    { label: "한 줄 소개", done: artist.tagline.length >= 10, weight: 15 },
-    { label: "태그 3개 이상", done: artist.tags.length >= 3, weight: 15 },
-    {
-      label: "활동 이력 2건 이상",
-      done: artist.recentWork.length >= 2,
-      weight: 15,
-    },
-    {
-      label: "예산대 설정",
-      done: artist.budgetRange[0] > 0,
-      weight: 15,
-    },
-    { label: "SNS 팔로워 연동", done: artist.followers > 0, weight: 10 },
-    { label: "소속사 인증", done: artist.verified, weight: 10 },
+    { key: "photo", done: Boolean(artist.imageUrl), weight: 20, block: "head" },
+    { key: "tagline", done: artist.tagline.length >= 10, weight: 10, block: "head" },
+    { key: "category", done: artist.categories.length > 0, weight: 10, block: "identity" },
+    { key: "regions", done: (artist.activeRegions?.length ?? 0) > 0, weight: 10, block: "booking" },
+    { key: "budget", done: artist.budgetRange[0] > 0, weight: 10, block: "booking" },
+    { key: "eventTypes", done: (artist.acceptedEventTypes?.length ?? 0) > 0, weight: 5, block: "booking" },
+    { key: "credits", done: workCount >= 2, weight: 15, block: "career" },
+    { key: "bio", done: Boolean(artist.bio && artist.bio.length >= 30), weight: 10, block: "career" },
+    { key: "skills", done: (artist.skills?.length ?? 0) >= 3, weight: 10, block: "career" },
   ];
   const score = items.reduce((sum, i) => sum + (i.done ? i.weight : 0), 0);
   return { score, items };

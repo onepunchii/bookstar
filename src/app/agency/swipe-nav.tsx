@@ -27,10 +27,15 @@ export function SwipeNav({ children }: { children: React.ReactNode }) {
 
   const onStart = (e: React.TouchEvent) => {
     const t = e.touches[0];
+    // data-noswipe 안에서는 탭 이동을 막는다 — 편집 중 스와이프 한 번에
+    // 입력하던 내용이 통째로 날아가는 사고를 방지한다(아티스트 편집기 등).
+    const inNoSwipe = !!(e.target as HTMLElement | null)?.closest?.(
+      "[data-noswipe]"
+    );
     start.current = {
       x: t.clientX,
       y: t.clientY,
-      ok: !isHScrollable(e.target),
+      ok: !inNoSwipe && !isHScrollable(e.target),
     };
   };
 
