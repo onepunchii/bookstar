@@ -1237,6 +1237,14 @@ export function ArtistEditor({ artist }: { artist: Artist }) {
         >
           {t("agency.artistEditor.previewPublic")}
         </Button>
+        <Button
+          size="lg"
+          variant="outline"
+          type="button"
+          onClick={() => window.open(`/p/${artist.slug}/kit`, "_blank")}
+        >
+          {t("profile.kitCta")}
+        </Button>
       </div>
     </div>
   );

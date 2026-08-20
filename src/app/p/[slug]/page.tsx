@@ -50,6 +50,7 @@ import type { Metadata } from "next";
 import {
   BadgeCheck,
   Clock,
+  FileText,
   MessageSquare,
   TrendingUp,
   Users,
@@ -602,6 +603,14 @@ export default async function ArtistPublicPage({ params }: PageProps) {
                 </a>
               )}
               <ShareButton url={artistPublicUrl(slug)} />
+              {/* 제출용 자료 — 오프라인 제출물에 프로필 URL·QR이 박혀 다시 유입이 된다 */}
+              <Link
+                href={`/p/${slug}/kit`}
+                className="flex h-11 items-center justify-center gap-2 rounded-xl bg-white/6 text-sm font-semibold text-white/70 ring-1 ring-white/10 transition-colors hover:bg-white/10 hover:text-white"
+              >
+                <FileText className="h-4 w-4" />
+                {t("profile.kitCta")}
+              </Link>
             </div>
           </div>
         </aside>

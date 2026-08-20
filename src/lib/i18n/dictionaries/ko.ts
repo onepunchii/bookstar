@@ -1461,6 +1461,12 @@ const ko = {
   "artists.browse.regionAll": "지역 전체",
   "agency.block.specialty": "전문 스펙",
   "agency.block.specialtyHint": "선택한 카테고리에 맞는 항목만 나와요",
+  "kit.hint": "인쇄하거나 PDF로 저장해 제출용 프로필로 쓰세요.",
+  "kit.saveCta": "PDF로 저장 · 인쇄",
+  "kit.budget": "섭외가",
+  "kit.scanLabel": "온라인 프로필",
+  "kit.footer": "QR을 스캔하면 최신 프로필과 가능 일정을 확인할 수 있습니다.",
+  "profile.kitCta": "프로필 자료(PDF)",
 } as const;
 
 export default ko as Record<string, string>;
