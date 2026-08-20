@@ -1363,6 +1363,15 @@ const ko = {
   "agency.artistEditor.localizedNamesHint": "해외 사용자에게 보일 이름입니다. 비우면 한국어 이름으로 표시됩니다. (검색·색인은 한국어 유지)",
   "meta.artistProfile.title": "{name} 섭외 · {cat}",
   "meta.artistProfile.desc": "{name} 섭외는 XONG에서 — 검증된 소속사 공식 창구와 직접, 매칭 수수료 0%. 예상 섭외가와 가능 일정을 확인하고 바로 문의하세요.",
+  "agency.artists.delete": "삭제",
+  "agency.artists.deleteTitle": "아티스트를 삭제할까요?",
+  "agency.artists.deleteDesc": "{name} 프로필과 일정·정산 기록이 모두 삭제되며 되돌릴 수 없습니다. 계속하려면 아래에 아티스트 이름을 정확히 입력하세요.",
+  "agency.artists.deleteConfirm": "영구 삭제",
+  "agency.artists.deleting": "처리 중…",
+  "agency.artists.deleteError": "삭제하지 못했습니다. 잠시 후 다시 시도해주세요.",
+  "agency.artists.archiveTitle": "삭제 대신 비공개로 전환할까요?",
+  "agency.artists.archiveDesc": "광고주가 보낸 섭외 요청 {n}건이 있어 삭제할 수 없습니다. 문의 기록을 지우지 않기 위해서예요. 대신 비공개로 전환하면 검색·공개 프로필에서 즉시 내려갑니다.",
+  "agency.artists.archiveConfirm": "비공개로 전환",
 } as const;
 
 export default ko as Record<string, string>;

@@ -9,6 +9,7 @@ import { CATEGORY_LABELS, formatBudget } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { getT } from "@/lib/i18n/server";
 import { Camera, Pencil } from "lucide-react";
+import { DeleteArtistButton } from "./delete-artist-button";
 import { NewArtistButton } from "./new-artist-button";
 import { StartAgencyButton } from "../start-agency-button";
 
@@ -115,6 +116,10 @@ export default async function AgencyArtistsPage() {
                   <Pencil className="h-3.5 w-3.5" />{" "}
                   {t("agency.artists.manageProfile")}
                 </Link>
+                {/* 데모(둘러보기)에서는 삭제 노출 안 함 — 실제 소속사만 */}
+                {!demo && (
+                  <DeleteArtistButton slug={artist.slug} name={artist.name} />
+                )}
               </div>
             </Card>
           );
