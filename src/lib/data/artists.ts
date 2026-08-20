@@ -43,7 +43,9 @@ function rowToArtist(row: ArtistRow): Artist {
     agencyName: row.agencyName ?? "",
     category: categories[0] ?? "idol",
     categories,
-    gender: (row.gender as Artist["gender"]) ?? "group",
+    // null을 'group'으로 폴백하면 미입력 솔로 아티스트가 전부 그룹으로 취급돼
+    // 공개 프로필 JSON-LD가 Person 대신 PerformingGroup으로 발행된다. 미입력은 미입력으로.
+    gender: (row.gender as Artist["gender"]) ?? undefined,
     tagline: row.tagline ?? "",
     imageUrl: row.imageUrl ?? undefined,
     galleryUrls: (row.galleryUrls as string[]) ?? [],
@@ -128,6 +130,31 @@ export async function getPublicArtistById(id: string): Promise<Artist | null> {
     if (row) return rowToArtist(row);
   } catch {
     /* 조회 실패 → 404 (목데이터로 되살리지 않는다) */
+  }
+  return null;
+}
+
+/**
+ * 소속사 소유 아티스트 1명 — 편집기 전용(내부 운영값 포함).
+ * 공개용 getPublicArtistBySlug를 편집기가 그대로 쓰면 남의 slug로 편집기를 열어
+ * 견적 프리셋·분배율까지 볼 수 있다(저장만 IDOR로 막혀 있었음).
+ */
+export async function getOwnedArtistBySlug(
+  agencyId: string,
+  slug: string
+): Promise<Artist | null> {
+  try {
+    const db = getDb();
+    const [row] = await db
+      .select()
+      .from(schema.artists)
+      .where(
+        and(eq(schema.artists.slug, slug), eq(schema.artists.agencyId, agencyId))
+      )
+      .limit(1);
+    if (row) return rowToArtist(row);
+  } catch {
+    /* 조회 실패 → null */
   }
   return null;
 }

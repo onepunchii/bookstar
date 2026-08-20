@@ -73,7 +73,7 @@ export interface Artist {
   agencyName: string;
   category: ArtistCategory;
   categories: ArtistCategory[];
-  gender: "male" | "female" | "group";
+  gender?: "male" | "female" | "group"; // 미입력 허용 — 폴백하면 JSON-LD가 잘못 발행된다
   tagline: string;
   imageUrl?: string;
   galleryUrls?: string[]; // 추가 사진 (대표 외 최대 3장)
