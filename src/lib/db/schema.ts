@@ -13,6 +13,13 @@ import {
   serial,
   primaryKey,
 } from "drizzle-orm/pg-core";
+import type {
+  ArtistCredit,
+  ArtistLanguage,
+  ArtistLink,
+  ArtistSkill,
+  ArtistVideo,
+} from "../types";
 
 export const userRole = pgEnum("user_role", [
   "company",
@@ -127,6 +134,23 @@ export const artists = pgTable("artists", {
   verified: boolean("verified").notNull().default(false),
   status: text("status").notNull().default("active"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+
+  // ── 프로필 확장 필드 ──
+  // 원칙: 검색·필터에 연결되는 축만 정규 컬럼, 나머지는 profileExtras(jsonb)에.
+  birthYear: integer("birth_year"), // 연도만 저장(월·일 미저장) — 연령 필터축
+  careerStartYear: integer("career_start_year"),
+  activeRegions: jsonb("active_regions").$type<string[]>(), // 시/도, 최대 3
+  heightCm: integer("height_cm"),
+  weightKg: integer("weight_kg"), // 기본 비공개(fieldVisibility)
+  skills: jsonb("skills").$type<ArtistSkill[]>(),
+  credits: jsonb("credits").$type<ArtistCredit[]>(),
+  videos: jsonb("videos").$type<ArtistVideo[]>(),
+  links: jsonb("links").$type<ArtistLink[]>(),
+  languages: jsonb("languages").$type<ArtistLanguage[]>(),
+  acceptedEventTypes: jsonb("accepted_event_types").$type<string[]>(),
+  minLeadDays: integer("min_lead_days"),
+  fieldVisibility: jsonb("field_visibility").$type<Record<string, string>>(),
+  profileExtras: jsonb("profile_extras").$type<Record<string, unknown>>(),
 });
 
 export const schedules = pgTable(

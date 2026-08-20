@@ -19,6 +19,7 @@ interface Body {
   includes?: string;
   tags?: string[];
   followers?: number;
+  activeRegions?: string[];
 }
 
 export async function POST(req: Request) {
@@ -95,6 +96,7 @@ export async function POST(req: Request) {
       presetFee: b.baseFee || null,
       presetIncludes: b.includes || null,
       followers: b.followers ?? 0,
+      activeRegions: b.activeRegions?.slice(0, 3) ?? null,
       tags: b.tags ?? [],
       recentWork: [],
       galleryUrls: [],

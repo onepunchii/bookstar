@@ -32,6 +32,38 @@ export interface QuotePreset {
   note?: string; // 조건 메모 (이동비, 러닝타임 등)
 }
 
+// ── 프로필 확장 필드 타입 ──
+/** 특기 — 이름만이 아니라 숙련도까지 있어야 실무 값이 된다("수영"보다 "수영·상급") */
+export interface ArtistSkill {
+  name: string;
+  level?: "beginner" | "intermediate" | "advanced";
+}
+/** 활동 이력 — 문자열이 아닌 구조체여야 "2024년 드라마 출연"으로 필터링된다 */
+export interface ArtistCredit {
+  type: string; // 드라마·영화·광고·페스티벌·기업행사 등 (카테고리별 사전)
+  year?: number;
+  title: string;
+  role?: string; // 배역·역할 (배우) / 파트 (가수)
+  org?: string; // 방송사·브랜드·주최
+  highlighted?: boolean; // 대표작(상위 고정, 최대 3)
+}
+/** 대표 영상 — galleryUrls는 이미지 전제라 영상 자리가 따로 필요 */
+export interface ArtistVideo {
+  url: string;
+  title?: string;
+}
+/** 외부 링크 — JSON-LD sameAs로도 그대로 나간다 */
+export interface ArtistLink {
+  type: string; // homepage·tiktok·x·threads·naverBlog·spotify·portfolio 등
+  url: string;
+}
+export interface ArtistLanguage {
+  lang: string;
+  level?: "native" | "business" | "conversational";
+}
+/** 항목별 공개 범위 — 민감 필드를 "넣되 강제하지 않기" 위한 장치 */
+export type FieldVisibility = "public" | "members" | "private";
+
 export interface Artist {
   id: string;
   slug: string; // 공개 페이지 URL (`/@슬러그`)
@@ -57,6 +89,23 @@ export interface Artist {
   defaultAgencyRate?: number;
   instagram?: string;
   youtube?: string;
+
+  // ── 프로필 확장 필드 (전부 선택 — 값이 없으면 화면에서 행 자체를 숨긴다) ──
+  bio?: string; // 상세 소개 (schema의 profile 컬럼)
+  birthYear?: number;
+  careerStartYear?: number;
+  activeRegions?: string[];
+  heightCm?: number;
+  weightKg?: number;
+  skills?: ArtistSkill[];
+  credits?: ArtistCredit[];
+  videos?: ArtistVideo[];
+  links?: ArtistLink[];
+  languages?: ArtistLanguage[];
+  acceptedEventTypes?: string[];
+  minLeadDays?: number;
+  fieldVisibility?: Record<string, FieldVisibility>;
+  profileExtras?: Record<string, unknown>;
 }
 
 export interface ScheduleDay {

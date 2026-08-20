@@ -55,11 +55,10 @@ export function CreatorWizard() {
 
   const [handle, setHandle] = useState("");
   const [youtube, setYoutube] = useState("");
-  const [snsLoading, setSnsLoading] = useState(false);
-  const [snsResult, setSnsResult] = useState<{
-    followers: number;
-    verified: boolean;
-  } | null>(null);
+  // 팔로워는 본인이 입력하는 자가 신고 값이다. 예전에는 핸들 문자코드로 가짜 수치를
+  // 만들어 저장했는데(플랫폼 신뢰 붕괴 위험), 실측 연동 전까지는 자가 신고로만 받는다.
+  const [followersInput, setFollowersInput] = useState("");
+  const followers = Number(followersInput.replace(/[^0-9]/g, "")) || 0;
 
   const [baseFee, setBaseFee] = useState<string>("");
   const [includes, setIncludes] = useState("");
@@ -79,21 +78,6 @@ export function CreatorWizard() {
     (step === 2 && baseFee && Number(baseFee) > 0) ||
     step === 3 ||
     step === 4;
-
-  const simulateSNS = () => {
-    if (!handle.trim()) return;
-    setSnsLoading(true);
-    setSnsResult(null);
-    setTimeout(() => {
-      // 결정적 팔로워 수 시뮬레이션
-      const seed = handle
-        .split("")
-        .reduce((s, c) => s + c.charCodeAt(0), 0);
-      const followers = 10000 + (seed * 137) % 2000000;
-      setSnsResult({ followers, verified: followers > 100000 });
-      setSnsLoading(false);
-    }, 1200);
-  };
 
   const handlePhoto = async (file: File | undefined | null) => {
     if (!file) return;
@@ -129,7 +113,9 @@ export function CreatorWizard() {
           baseFee: Number(baseFee) || undefined,
           includes: includes || undefined,
           tags,
-          followers: snsResult?.followers ?? 0,
+          followers,
+          // 스텝1에서 입력받고도 payload에 없어 저장되지 않던 값
+          activeRegions: region.trim() ? [region.trim()] : undefined,
         }),
       });
       if (res.status === 401) {
@@ -153,7 +139,7 @@ export function CreatorWizard() {
         name,
         slug,
         category,
-        followers: String(snsResult?.followers ?? 0),
+        followers: String(followers),
       });
       router.push(`/join/complete?${params.toString()}` as never);
     } catch {
@@ -282,11 +268,7 @@ export function CreatorWizard() {
                 <input
                   id="w-handle"
                   value={handle}
-                  onChange={(e) => {
-                    setHandle(e.target.value);
-                    setSnsResult(null);
-                  }}
-                  onBlur={simulateSNS}
+                  onChange={(e) => setHandle(e.target.value)}
                   placeholder="haneul"
                   className="h-10 flex-1 bg-transparent text-sm focus:outline-none"
                 />
@@ -300,35 +282,21 @@ export function CreatorWizard() {
                 </p>
               )}
             </div>
-            {snsLoading && (
-              <div className="flex items-center gap-2 rounded-xl bg-neutral-50 p-4 text-sm text-neutral-500">
-                <Loader2 className="h-4 w-4 animate-spin text-brand-500" />
-                {t("join.creator.snsChecking")}
-              </div>
-            )}
-            {snsResult && (
-              <div className="rounded-xl border border-brand-200 bg-brand-50/50 p-4">
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-brand-500" />
-                  <span className="text-sm font-bold text-brand-700">
-                    {t("join.creator.snsDone")}
-                  </span>
-                </div>
-                <p className="mt-2 text-sm text-neutral-700">
-                  {t("join.creator.followers")}{" "}
-                  <span className="text-lg font-black text-brand-600">
-                    {t("join.creator.followerCount", {
-                      n: (snsResult.followers / 10000).toFixed(1),
-                    })}
-                  </span>
-                  {snsResult.verified && (
-                    <span className="ml-2 rounded-full bg-brand-500 px-2 py-0.5 text-[10px] font-bold text-white">
-                      {t("join.creator.influencerBadge")}
-                    </span>
-                  )}
-                </p>
-              </div>
-            )}
+            <div>
+              <Label htmlFor="w-followers">
+                {t("join.creator.followersLabel")} {t("common.optional")}
+              </Label>
+              <Input
+                id="w-followers"
+                inputMode="numeric"
+                value={followersInput}
+                onChange={(e) => setFollowersInput(e.target.value)}
+                placeholder={t("join.creator.followersPlaceholder")}
+              />
+              <p className="mt-1.5 text-xs text-neutral-500">
+                {t("join.creator.followersHint")}
+              </p>
+            </div>
             <div>
               <Label htmlFor="w-yt">
                 {t("join.creator.youtube")} {t("common.optional")}
@@ -497,15 +465,13 @@ export function CreatorWizard() {
                 </span>
                 <span className="font-bold">@{handle.toLowerCase()}</span>
               </div>
-              {snsResult && (
+              {followers > 0 && (
                 <div className="flex justify-between">
                   <span className="text-neutral-500">
                     {t("join.creator.followers")}
                   </span>
                   <span className="font-bold text-brand-600">
-                    {t("join.creator.followerCount", {
-                      n: (snsResult.followers / 10000).toFixed(1),
-                    })}
+                    {followers.toLocaleString()}
                   </span>
                 </div>
               )}

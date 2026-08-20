@@ -1372,6 +1372,9 @@ const ko = {
   "agency.artists.archiveTitle": "삭제 대신 비공개로 전환할까요?",
   "agency.artists.archiveDesc": "광고주가 보낸 섭외 요청 {n}건이 있어 삭제할 수 없습니다. 문의 기록을 지우지 않기 위해서예요. 대신 비공개로 전환하면 검색·공개 프로필에서 즉시 내려갑니다.",
   "agency.artists.archiveConfirm": "비공개로 전환",
+  "join.creator.followersLabel": "팔로워 수",
+  "join.creator.followersPlaceholder": "예: 52000",
+  "join.creator.followersHint": "본인이 입력하는 값이며 프로필에 '자가 신고'로 표시됩니다. 채널 연동 시 실제 수치로 자동 갱신됩니다.",
 } as const;
 
 export default ko as Record<string, string>;
